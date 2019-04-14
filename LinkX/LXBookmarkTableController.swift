@@ -1,23 +1,27 @@
 //
-//  ViewController.swift
+//  LXBookmarkTableController.swift
 //  LinkX
 //
-//  Created by Rodney Gainous Jr on 3/22/19.
+//  Created by Rodney Gainous Jr on 4/13/19.
 //  Copyright © 2019 CodeSigned. All rights reserved.
 //
 
+
+import Foundation
 import UIKit
 import Firebase
+import CoreData
 
-class ViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
+class BookmarkTableController: UIViewController, UITableViewDataSource, UITableViewDelegate {
     
-    @IBOutlet weak var emailsLabel: UILabel!
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var searchBar: UISearchBar!
     
-    var investors = [Investor]()
-    var filteredInvestors = [Investor]()
-    var selectedInvestor: Investor?
+    var investors = [LXInvestor]()
+    var filteredInvestors = [LXInvestor]()
+    var selectedInvestor: LXInvestor?
+    
+    let appDelegate = UIApplication.shared.delegate as! AppDelegate
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -32,57 +36,39 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         
         // Setup the Search Controller
         searchBar.delegate = self
-        
-        fetchAllInvestors(completion: { investors in
-            self.investors = investors
-            self.tableView.reloadData()
-        }) { error in
-            print(error.localizedDescription)
-        }
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-    }
-    
-    func checkEmails() {
-        if IAPHandler.shared.shouldReset() {
-            IAPHandler.shared.setEmails(0)
-        }
         
-        let emails = IAPHandler.shared.getEmailCount()
-        if emails > 4 {
-            emailsLabel.text = "0 Emails Available"
-        } else {
-            emailsLabel.text =  "\(5 - emails) Emails Available"
-        }
+        fetchAllInvestors(completion: { investors in
+            self.investors = investors
+            self.tableView.reloadData()
+            
+            self.filterContentForSearchText("")
+        })
     }
     
     // MARK: - Private instance methods
     
-    func fetchAllInvestors(completion: @escaping ([Investor]) -> (), withCancel cancel: ((Error) -> ())?) {
-        let ref = Database.database().reference().child("investors")
+    public func fetchAllInvestors(completion: @escaping ([LXInvestor]) -> ()) {
+        let context = appDelegate.persistentContainer.viewContext
         
-        ref.observeSingleEvent(of: .value, with: { (snapshot) in
-            guard let children = snapshot.children.allObjects as? [DataSnapshot] else {
-                completion([])
-                return
+        let request = NSFetchRequest<NSFetchRequestResult>(entityName: "LXInvestor")
+        request.returnsObjectsAsFaults = false
+        
+        do {
+            let result = try context.fetch(request)
+            guard let investors = result as? [LXInvestor] else {
+                return //TODO: handle no investors found
             }
             
-            var newInvestors = [Investor]()
-            for child in children {
-                if let value = child.value as? [String : Any] {
-                    newInvestors.append(Investor(id: child.key, data: value))
-                }
-            }
-            
-            completion(newInvestors)
-        }) { (err) in
-            print("Failed to fetch posts:", err)
-            cancel?(err)
+            completion(investors)
+        } catch {
+            print("Failed to fetch investors") //TODO: handle this error
         }
     }
-    
+
     func updateBackground() {
         if filteredInvestors.count < 1 {
             tableView.backgroundView = UIImageView(image: UIImage(named: "link-icon")!)
@@ -92,7 +78,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     }
     
     func filterContentForSearchText(_ searchText: String) {
-        filteredInvestors = investors.filter({( investor: Investor) -> Bool in
+        filteredInvestors = investors.filter({( investor: LXInvestor) -> Bool in
             return investor.fullName().lowercased().starts(with: searchText.lowercased())
         })
         
@@ -115,9 +101,9 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
             return
         }
         
-        if segue.identifier == "ShowEmailFromDiscover" {
+        if segue.identifier == "ShowEmailFromBookmarks" {
             let emailVC = segue.destination as! EmailViewController
-            emailVC.investor = investor
+            emailVC.investor = convertStoredInvestor(stored: investor)
         }
     }
     
@@ -126,7 +112,20 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     }
 }
 
-extension ViewController {
+extension BookmarkTableController {
+    public func convertStoredInvestor(stored: LXInvestor) -> Investor? {
+        guard let id = stored.id, let first = stored.first, let last = stored.last, let city = stored.city, let firm = stored.firm, let state = stored.state, let title = stored.title, let email = stored.email, let metadata = stored.metadata else {
+            return nil
+        }
+        
+        let contactInfo = ["email" : email, "city" : city, "state" : state]
+        let investorData = ["first" : first, "last" : last, "firm" : firm, "title" : title, "contactInfo" : contactInfo, "metadata" : metadata] as [String : Any]
+        
+        return Investor(id: id, data: investorData)
+    }
+}
+
+extension BookmarkTableController {
     // MARK: - Table View
     func numberOfSections(in tableView: UITableView) -> Int {
         return 1
@@ -143,10 +142,10 @@ extension ViewController {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell =
             tableView.dequeueReusableCell(withIdentifier: "InvestorTableViewCell", for: indexPath) as? InvestorTableViewCell else {
-            return UITableViewCell()
+                return UITableViewCell()
         }
         
-        cell.configure(investor: filteredInvestors[indexPath.row])
+        cell.configure(storedInvestor: filteredInvestors[indexPath.row])
         return cell
     }
     
@@ -160,58 +159,20 @@ extension ViewController {
         searchBar.resignFirstResponder()
         tableView.deselectRow(at: indexPath, animated: false)
         
-        performSegue(withIdentifier: "ShowEmailFromDiscover", sender: self)
+        performSegue(withIdentifier: "ShowEmailFromBookmarks", sender: self)
     }
 }
 
-extension ViewController: UISearchBarDelegate {
+extension BookmarkTableController: UISearchBarDelegate {
     // MARK: - UISearchBar Delegate
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         filterContentForSearchText(searchBar.text!)
     }
 }
 
-extension ViewController: UISearchResultsUpdating {
+extension BookmarkTableController: UISearchResultsUpdating {
     // MARK: - UISearchResultsUpdating Delegate
     func updateSearchResults(for searchController: UISearchController) {
         filterContentForSearchText(searchController.searchBar.text!)
     }
 }
-
-//    var allInvestorData = [[String : Any]]()
-//    for investor in newInvestors {
-//    allInvestorData.append(self.investorInfo(investor: investor))
-//    }
-//    self.printInvestors(investors: allInvestorData)
-//
-//    func investorInfo(investor: Investor) -> [String : Any] {
-//        var metadata = investor.metadata
-//        let contactInfo = [
-//            "email": metadata["Email"] ?? "",
-//            "city": metadata["City"] ?? "",
-//            "state": metadata["State"] ?? ""
-//        ]
-//
-//        let investorInfo: [String : Any] = [
-//            "first": metadata["First"] ?? "",
-//            "last": metadata["Last"] ?? "",
-//            "title": metadata["Title"] ?? "",
-//            "firm": metadata["Firm"] ?? "",
-//            "contact_info": contactInfo
-//        ]
-//
-//        return investorInfo
-//    }
-//
-//    func printInvestors(investors: [[String : Any]]) {
-//        let metadata = ["investors" : investors]
-//
-//        // Serialize to JSON
-//        let jsonData = try! JSONSerialization.data(withJSONObject: metadata, options: [.prettyPrinted])
-//
-//        // Convert to a string and print
-//        if let JSONString = String(data: jsonData, encoding: String.Encoding.ascii) {
-//            print(JSONString)
-//        }
-//    }
-

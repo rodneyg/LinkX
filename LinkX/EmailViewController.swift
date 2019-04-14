@@ -14,6 +14,7 @@ class EmailViewController: UIViewController, MFMailComposeViewControllerDelegate
     
     public var investor: Investor!
     
+    @IBOutlet var nameLabel: UILabel!
     @IBOutlet var sendLabel: UILabel!
     @IBOutlet var bookmarkButton: UIButton!
     
@@ -30,6 +31,7 @@ class EmailViewController: UIViewController, MFMailComposeViewControllerDelegate
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
+        nameLabel.text = investor.fullName()
         sendLabel.text = investor.contactInfo.email
     }
     
@@ -83,9 +85,10 @@ class EmailViewController: UIViewController, MFMailComposeViewControllerDelegate
         let entity = NSEntityDescription.entity(forEntityName: "LXInvestor", in: context)
         let newInvestor = NSManagedObject(entity: entity!, insertInto: context)
         
+        newInvestor.setValue(investor.id, forKey: "id")
         newInvestor.setValue(investor.first, forKey: "first")
         newInvestor.setValue(investor.last, forKey: "last")
-        newInvestor.setValue(investor.first, forKey: "firm")
+        newInvestor.setValue(investor.firm, forKey: "firm")
         newInvestor.setValue(investor.title, forKey: "title")
         newInvestor.setValue(investor.metadata, forKey: "metadata")
         newInvestor.setValue(investor.contactInfo.city, forKey: "city")
@@ -94,6 +97,7 @@ class EmailViewController: UIViewController, MFMailComposeViewControllerDelegate
         
         do {
             try context.save()
+            bookmarkButton.isSelected = true
         } catch {
             print("Failed saving") //TODO: add failed to bookmark
         }

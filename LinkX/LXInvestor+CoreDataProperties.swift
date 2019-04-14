@@ -10,7 +10,6 @@
 import Foundation
 import CoreData
 
-
 extension LXInvestor {
 
     @nonobjc public class func fetchRequest() -> NSFetchRequest<LXInvestor> {
@@ -21,10 +20,13 @@ extension LXInvestor {
     @NSManaged public var email: String?
     @NSManaged public var firm: String?
     @NSManaged public var first: String?
-    @NSManaged public var id: UUID?
+    @NSManaged public var id: String?
     @NSManaged public var last: String?
     @NSManaged public var metadata: NSData?
     @NSManaged public var state: String?
     @NSManaged public var title: String?
 
+    public func fullName() -> String {
+        return "\(first ?? "") \(last ?? "")"
+    }
 }

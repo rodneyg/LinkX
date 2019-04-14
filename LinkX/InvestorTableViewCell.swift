@@ -8,7 +8,7 @@
 
 import UIKit
 
-class InvestorTableViewCell: UITableViewCell {
+public class InvestorTableViewCell: UITableViewCell {
     
     @IBOutlet var name: UILabel!
     @IBOutlet var firm: UILabel!
@@ -16,5 +16,10 @@ class InvestorTableViewCell: UITableViewCell {
     public func configure(investor: Investor) {
         name.text = investor.fullName()
         firm.text = investor.firm
+    }
+    
+    public func configure(storedInvestor: LXInvestor) {
+        name.text = storedInvestor.fullName()
+        firm.text = storedInvestor.firm ?? ""
     }
 }

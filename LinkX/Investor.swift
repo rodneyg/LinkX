@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct Investor {
+public struct Investor {
     public var id: String
     public var first: String
     public var last: String
@@ -17,7 +17,7 @@ struct Investor {
     public var contactInfo: ContactInfo
     public var metadata: [String : Any]
     
-    struct ContactInfo {
+    public struct ContactInfo {
         public var email: String
         public var city: String
         public var state: String
@@ -30,8 +30,8 @@ struct Investor {
     }
     
     
-    init(data: [String : Any]) {
-        self.id = UUID().uuidString //pull from server
+    public init(id: String, data: [String : Any]) {
+        self.id = id
         self.first = (data["first"] as? String) ?? ""
         self.last = (data["last"] as? String) ?? ""
         self.title = (data["title"] as? String) ?? ""

@@ -32,6 +32,9 @@
 		2AFB676A2262B09C00AE860C /* LXInvestor+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AFB67662262B09C00AE860C /* LXInvestor+CoreDataProperties.swift */; };
 		2AFB676B2262B09C00AE860C /* LXInvestor+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AFB67662262B09C00AE860C /* LXInvestor+CoreDataProperties.swift */; };
 		2AFB676C2262B09C00AE860C /* LXInvestor+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AFB67662262B09C00AE860C /* LXInvestor+CoreDataProperties.swift */; };
+		2AFB67762262B7F800AE860C /* LXBookmarkTableController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AFB67752262B7F800AE860C /* LXBookmarkTableController.swift */; };
+		2AFB67772262B7F800AE860C /* LXBookmarkTableController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AFB67752262B7F800AE860C /* LXBookmarkTableController.swift */; };
+		2AFB67782262B7F800AE860C /* LXBookmarkTableController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AFB67752262B7F800AE860C /* LXBookmarkTableController.swift */; };
 		CC33249F163993D9B9B705B2 /* Pods_LinkX.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7EBF4A599DD3E61FAE6035E1 /* Pods_LinkX.framework */; };
 /* End PBXBuildFile section */
 
@@ -76,6 +79,7 @@
 		2ABA83A5224570C5003A4339 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		2AFB67652262B09C00AE860C /* LXInvestor+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LXInvestor+CoreDataClass.swift"; sourceTree = "<group>"; };
 		2AFB67662262B09C00AE860C /* LXInvestor+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LXInvestor+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		2AFB67752262B7F800AE860C /* LXBookmarkTableController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LXBookmarkTableController.swift; sourceTree = "<group>"; };
 		3DB6C44D9B371464DD60D117 /* Pods_LinkXUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_LinkXUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		56C0924E2538B8FB0CE431F7 /* Pods-LinkXUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-LinkXUITests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-LinkXUITests/Pods-LinkXUITests.debug.xcconfig"; sourceTree = "<group>"; };
 		7EBF4A599DD3E61FAE6035E1 /* Pods_LinkX.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_LinkX.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -156,6 +160,7 @@
 				2A21617F22473A2700D0ACDA /* InvestorTableViewCell.xib */,
 				2A5C9FB5224748EC0072CC2F /* IAPHandler.swift */,
 				2A5C9FB72247499B0072CC2F /* Date+Ext.swift */,
+				2AFB67752262B7F800AE860C /* LXBookmarkTableController.swift */,
 			);
 			path = LinkX;
 			sourceTree = "<group>";
@@ -503,6 +508,7 @@
 				2A5C9FB6224748EC0072CC2F /* IAPHandler.swift in Sources */,
 				2A21618022473A2700D0ACDA /* InvestorTableViewCell.swift in Sources */,
 				2A5C9FB82247499B0072CC2F /* Date+Ext.swift in Sources */,
+				2AFB67762262B7F800AE860C /* LXBookmarkTableController.swift in Sources */,
 				2ABA837D22456E52003A4339 /* LinkX.xcdatamodeld in Sources */,
 				2ABA837522456E52003A4339 /* AppDelegate.swift in Sources */,
 				2AFB67672262B09C00AE860C /* LXInvestor+CoreDataClass.swift in Sources */,
@@ -516,6 +522,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2AFB67772262B7F800AE860C /* LXBookmarkTableController.swift in Sources */,
 				2ABA838D22456E53003A4339 /* LinkXTests.swift in Sources */,
 				2AFB676B2262B09C00AE860C /* LXInvestor+CoreDataProperties.swift in Sources */,
 				2AFB67682262B09C00AE860C /* LXInvestor+CoreDataClass.swift in Sources */,
@@ -526,6 +533,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2AFB67782262B7F800AE860C /* LXBookmarkTableController.swift in Sources */,
 				2ABA839822456E53003A4339 /* LinkXUITests.swift in Sources */,
 				2AFB676C2262B09C00AE860C /* LXInvestor+CoreDataProperties.swift in Sources */,
 				2AFB67692262B09C00AE860C /* LXInvestor+CoreDataClass.swift in Sources */,
