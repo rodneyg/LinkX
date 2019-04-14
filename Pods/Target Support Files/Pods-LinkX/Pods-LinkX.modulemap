@@ -1,0 +1,6 @@
+framework module Pods_LinkX {
+  umbrella header "Pods-LinkX-umbrella.h"
+
+  export *
+  module * { export * }
+}
