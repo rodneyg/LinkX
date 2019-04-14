@@ -14,10 +14,12 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     @IBOutlet weak var emailsLabel: UILabel!
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var searchBar: UISearchBar!
+    @IBOutlet var topBarButton: UIButton!
     
     var investors = [Investor]()
     var filteredInvestors = [Investor]()
     var selectedInvestor: Investor?
+    var tableButton = UIButton()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -27,7 +29,10 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         tableView.delegate = self
         tableView.dataSource = self
         tableView.separatorStyle = .none
-        tableView.backgroundView = UIImageView(image: UIImage(named: "link-icon")!)
+        
+        tableButton.setBackgroundImage(UIImage(named: "link-icon")!, for: .normal)
+        tableView.backgroundView = tableButton//UIImageView(image: UIImage(named: "link-icon")!)
+        tableButton.addTarget(self, action: #selector(ViewController.tableButtonTouched), for: .touchUpInside)
         updateBackground()
         
         // Setup the Search Controller
@@ -43,6 +48,19 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        
+        tableButton.frame = tableView.frame
+    }
+    
+    @IBAction func topBarTouched(_ sender: Any) {
+        if searchBar.text == nil || searchBar.text!.isEmpty {
+            searchBar.resignFirstResponder() //if no search text, and the user is tapping the top bar, dismiss
+        }
+    }
+    
+    @objc
+    public func tableButtonTouched() {
+        searchBar.resignFirstResponder()
     }
     
     func checkEmails() {
@@ -85,7 +103,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     
     func updateBackground() {
         if filteredInvestors.count < 1 {
-            tableView.backgroundView = UIImageView(image: UIImage(named: "link-icon")!)
+            tableView.backgroundView = tableButton//UIImageView(image: UIImage(named: "link-icon")!)
         } else {
             tableView.backgroundView = nil
         }
@@ -157,7 +175,6 @@ extension ViewController {
         
         selectedInvestor = filteredInvestors[indexPath.row]
         
-        searchBar.resignFirstResponder()
         tableView.deselectRow(at: indexPath, animated: false)
         
         performSegue(withIdentifier: "ShowEmailFromDiscover", sender: self)

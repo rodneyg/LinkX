@@ -53,9 +53,20 @@
                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="KaF-E2-Cjn">
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="86"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="86" id="wwH-rp-FFP"/>
+                                </constraints>
+                                <connections>
+                                    <action selector="topBarTouched:" destination="BYZ-38-t0r" eventType="touchUpInside" id="Djj-Ic-xwe"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" red="0.87925177809999999" green="0.35766321420000002" blue="0.2882355452" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="top" secondItem="KaF-E2-Cjn" secondAttribute="top" constant="20" id="1Lk-s1-03e"/>
+                            <constraint firstItem="KaF-E2-Cjn" firstAttribute="width" secondItem="8bC-Xf-vdC" secondAttribute="width" id="3oA-mD-hE3"/>
                             <constraint firstItem="5Di-ar-AST" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="25" id="5JJ-Pa-e8x"/>
                             <constraint firstItem="twV-g8-shZ" firstAttribute="leading" secondItem="Mcy-ap-1oL" secondAttribute="leading" id="FYH-lW-uin"/>
                             <constraint firstItem="Mcy-ap-1oL" firstAttribute="top" secondItem="twV-g8-shZ" secondAttribute="bottom" id="In0-ll-E6R"/>
@@ -65,6 +76,7 @@
                             <constraint firstItem="5Di-ar-AST" firstAttribute="centerX" secondItem="6Tk-OE-BBY" secondAttribute="centerX" id="ker-Jc-gTp"/>
                             <constraint firstItem="twV-g8-shZ" firstAttribute="trailing" secondItem="Mcy-ap-1oL" secondAttribute="trailing" id="mTy-7i-783"/>
                             <constraint firstAttribute="trailing" secondItem="twV-g8-shZ" secondAttribute="trailing" id="oXr-Sj-y4J"/>
+                            <constraint firstItem="KaF-E2-Cjn" firstAttribute="centerX" secondItem="6Tk-OE-BBY" secondAttribute="centerX" id="wB3-gV-jVx"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>
@@ -75,6 +87,7 @@
                         <outlet property="searchBar" destination="twV-g8-shZ" id="HS2-mp-DOs"/>
                         <outlet property="searchDisplayController" destination="rjY-mN-nrt" id="gmc-J4-SFB"/>
                         <outlet property="tableView" destination="Mcy-ap-1oL" id="QnP-eo-ggk"/>
+                        <outlet property="topBarButton" destination="KaF-E2-Cjn" id="j7x-jR-kDq"/>
                         <segue destination="ZY1-df-nXl" kind="show" identifier="ShowEmailFromDiscover" id="FQ7-U6-n2n"/>
                     </connections>
                 </viewController>
@@ -88,7 +101,7 @@
                     </connections>
                 </searchDisplayController>
             </objects>
-            <point key="canvasLocation" x="417" y="-151"/>
+            <point key="canvasLocation" x="416.80000000000001" y="-151.57421289355324"/>
         </scene>
         <!--Email View Controller-->
         <scene sceneID="dMz-Zt-z6n">
@@ -315,6 +328,6 @@
         <image name="bookmark-white-star" width="128" height="128"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="Ure-YX-N1m"/>
+        <segue reference="FQ7-U6-n2n"/>
     </inferredMetricsTieBreakers>
 </document>

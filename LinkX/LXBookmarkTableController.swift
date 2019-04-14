@@ -119,7 +119,7 @@ extension BookmarkTableController {
         }
         
         let contactInfo = ["email" : email, "city" : city, "state" : state]
-        let investorData = ["first" : first, "last" : last, "firm" : firm, "title" : title, "contactInfo" : contactInfo, "metadata" : metadata] as [String : Any]
+        let investorData = ["first" : first, "last" : last, "firm" : firm, "title" : title, "contact_info" : contactInfo, "metadata" : metadata] as [String : Any]
         
         return Investor(id: id, data: investorData)
     }
