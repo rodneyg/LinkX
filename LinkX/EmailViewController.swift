@@ -16,6 +16,8 @@ class EmailViewController: UIViewController, MFMailComposeViewControllerDelegate
     public var investor: Investor!
     
     @IBOutlet var nameLabel: UILabel!
+    @IBOutlet var titleLabel: UILabel!
+    @IBOutlet var firmLabel: UILabel!
     @IBOutlet var sendLabel: UILabel!
     @IBOutlet var bookmarkButton: UIButton!
     
@@ -24,6 +26,7 @@ class EmailViewController: UIViewController, MFMailComposeViewControllerDelegate
     
     @IBOutlet var userRating: CosmosView!
     @IBOutlet var commentsText: UITextView!
+    @IBOutlet var commentsHeight: NSLayoutConstraint!
     @IBOutlet var submitButton: UIButton!
     
     private var storedInvestor: LXInvestor?
@@ -34,13 +37,23 @@ class EmailViewController: UIViewController, MFMailComposeViewControllerDelegate
         super.viewDidLoad()
         
         fetchInvestor()
+        
+        userRating.didFinishTouchingCosmos = { rating in
+            self.submitButton.isEnabled = true
+        }
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
         nameLabel.text = investor.fullName()
+        titleLabel.text = investor.title
+        firmLabel.text = investor.firm
         sendLabel.text = investor.contactInfo.email
+    }
+    
+    public func addRating() {
+        
     }
     
     public func fetchInvestor() {

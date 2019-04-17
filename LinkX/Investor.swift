@@ -15,6 +15,7 @@ public struct Investor {
     public var title: String
     public var firm: String
     public var contactInfo: ContactInfo
+    public var rating: Rating
     public var metadata: [String : Any]
     
     public struct ContactInfo {
@@ -29,6 +30,15 @@ public struct Investor {
         }
     }
     
+    public struct Rating {
+        public var avgRating: Double
+        public var numOfRatings: Int
+        
+        init(data: [String : Any]) {
+            self.avgRating = (data["avg_rating"] as? Double) ?? 0.0
+            self.numOfRatings = (data["num_of_ratings"] as? Int) ?? 0
+        }
+    }
     
     public init(id: String, data: [String : Any]) {
         self.id = id
@@ -42,6 +52,12 @@ public struct Investor {
             self.contactInfo = ContactInfo(data: contactData)
         } else {
             self.contactInfo = ContactInfo(data: [String : Any]())
+        }
+        
+        if let ratingData = data["rating"] as? [String : Any] {
+            self.rating = Rating(data: ratingData)
+        } else {
+            self.rating = Rating(data: [String : Any]())
         }
     }
     
