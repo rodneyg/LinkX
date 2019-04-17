@@ -8,6 +8,7 @@ target 'LinkX' do
   # Pods for LinkX
   pod 'Firebase/Core'
   pod 'Firebase/Database'
+  pod 'Cosmos', '~> 18.0'
 
   target 'LinkXTests' do
     inherit! :search_paths

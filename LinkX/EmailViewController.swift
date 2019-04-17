@@ -9,6 +9,7 @@
 import UIKit
 import MessageUI
 import CoreData
+import Cosmos
 
 class EmailViewController: UIViewController, MFMailComposeViewControllerDelegate {
     
@@ -17,6 +18,13 @@ class EmailViewController: UIViewController, MFMailComposeViewControllerDelegate
     @IBOutlet var nameLabel: UILabel!
     @IBOutlet var sendLabel: UILabel!
     @IBOutlet var bookmarkButton: UIButton!
+    
+    @IBOutlet var investorRating: CosmosView!
+    @IBOutlet var ratingsLabel: UILabel!
+    
+    @IBOutlet var userRating: CosmosView!
+    @IBOutlet var commentsText: UITextView!
+    @IBOutlet var submitButton: UIButton!
     
     private var storedInvestor: LXInvestor?
     
@@ -53,6 +61,9 @@ class EmailViewController: UIViewController, MFMailComposeViewControllerDelegate
         } catch {
             print("Failed")
         }
+    }
+    
+    @IBAction func submitTouched(_ sender: Any) {
     }
     
     @IBAction func shareTouched(_ sender: Any) {
