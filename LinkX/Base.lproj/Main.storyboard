@@ -301,7 +301,7 @@
                                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <nil key="highlightedColor"/>
                                     </label>
-                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="d4P-xk-hSk" customClass="CosmosView" customModule="Cosmos">
+                                    <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="d4P-xk-hSk" customClass="CosmosView" customModule="Cosmos">
                                         <rect key="frame" x="168" y="288" width="175" height="31"/>
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <constraints>
@@ -320,6 +320,16 @@
                                             </userDefinedRuntimeAttribute>
                                         </userDefinedRuntimeAttributes>
                                     </view>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8Oq-1h-Iwl">
+                                        <rect key="frame" x="24" y="188" width="215" height="30"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="215" id="Dj1-QH-EFB"/>
+                                            <constraint firstAttribute="height" constant="30" id="obw-74-r6Z"/>
+                                        </constraints>
+                                        <connections>
+                                            <action selector="loginTouched:" destination="ZY1-df-nXl" eventType="touchUpInside" id="K9b-CO-IDQ"/>
+                                        </connections>
+                                    </button>
                                 </subviews>
                                 <color key="backgroundColor" red="0.87925177812576294" green="0.35766321420669556" blue="0.28823554515838623" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <constraints>
@@ -328,6 +338,7 @@
                                     <constraint firstItem="d4P-xk-hSk" firstAttribute="leading" secondItem="agk-hP-awp" secondAttribute="trailing" constant="5" id="6ry-ki-gYa"/>
                                     <constraint firstItem="ebU-37-No3" firstAttribute="top" secondItem="x9D-Aa-3ZN" secondAttribute="bottom" constant="8" id="8Nn-RZ-fSK"/>
                                     <constraint firstItem="wnH-3o-Nyk" firstAttribute="centerX" secondItem="o7O-Bt-Qeb" secondAttribute="centerX" id="8b0-jT-gSr"/>
+                                    <constraint firstItem="8Oq-1h-Iwl" firstAttribute="leading" secondItem="URa-Gp-asj" secondAttribute="leading" id="DCw-Xl-x3E"/>
                                     <constraint firstItem="hK5-Od-W26" firstAttribute="centerX" secondItem="o7O-Bt-Qeb" secondAttribute="centerX" id="Drd-kF-Jep"/>
                                     <constraint firstItem="hK5-Od-W26" firstAttribute="leading" secondItem="o7O-Bt-Qeb" secondAttribute="leading" constant="24" id="FXw-Ga-FQy"/>
                                     <constraint firstItem="URa-Gp-asj" firstAttribute="centerX" secondItem="o7O-Bt-Qeb" secondAttribute="centerX" constant="1" id="G7r-sc-ytN"/>
@@ -338,6 +349,7 @@
                                     <constraint firstAttribute="trailing" secondItem="hK5-Od-W26" secondAttribute="trailing" constant="24" id="TKk-xk-jbw"/>
                                     <constraint firstItem="rj5-eZ-FHc" firstAttribute="top" secondItem="d4P-xk-hSk" secondAttribute="bottom" constant="15" id="Uwc-7l-Iu3"/>
                                     <constraint firstItem="ebc-Mb-wfH" firstAttribute="top" secondItem="hK5-Od-W26" secondAttribute="bottom" constant="8" id="YCu-YL-maQ"/>
+                                    <constraint firstItem="8Oq-1h-Iwl" firstAttribute="top" secondItem="E4n-Hp-QqX" secondAttribute="bottom" constant="16" id="Z2H-qq-C9d"/>
                                     <constraint firstItem="eH5-wc-SN8" firstAttribute="top" secondItem="5C0-dK-aFG" secondAttribute="bottom" constant="20" id="bjt-he-v0s"/>
                                     <constraint firstItem="ebU-37-No3" firstAttribute="leading" secondItem="o7O-Bt-Qeb" secondAttribute="leading" constant="24" id="d8U-Jd-O22"/>
                                     <constraint firstItem="5C0-dK-aFG" firstAttribute="centerX" secondItem="o7O-Bt-Qeb" secondAttribute="centerX" constant="-83" id="iPc-CT-3R1"/>
@@ -383,6 +395,7 @@
                         <outlet property="commentsText" destination="rj5-eZ-FHc" id="KRd-S4-Nca"/>
                         <outlet property="firmLabel" destination="x9D-Aa-3ZN" id="4Fa-X7-puC"/>
                         <outlet property="investorRating" destination="Kb4-hr-0zP" id="RQy-0f-hQQ"/>
+                        <outlet property="loginButton" destination="8Oq-1h-Iwl" id="8K7-mc-ys9"/>
                         <outlet property="nameLabel" destination="hK5-Od-W26" id="G02-IR-Odz"/>
                         <outlet property="ratingsLabel" destination="Kaw-6O-0kk" id="g8q-2Q-RbZ"/>
                         <outlet property="sendLabel" destination="URa-Gp-asj" id="I1g-m7-V1X"/>

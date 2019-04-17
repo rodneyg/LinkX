@@ -7,7 +7,10 @@ target 'LinkX' do
 
   # Pods for LinkX
   pod 'Firebase/Core'
+  pod 'FirebaseUI'
+  pod 'Firebase/Firestore'
   pod 'Firebase/Database'
+  pod 'Firebase/Auth'
   pod 'Cosmos', '~> 18.0'
 
   target 'LinkXTests' do

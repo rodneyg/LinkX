@@ -10,8 +10,12 @@ import UIKit
 import MessageUI
 import CoreData
 import Cosmos
+import FirebaseAuth
+import FirebaseDatabase
+import FirebaseFirestore
+import FirebaseUI
 
-class EmailViewController: UIViewController, MFMailComposeViewControllerDelegate {
+class EmailViewController: UIViewController, MFMailComposeViewControllerDelegate, FUIAuthDelegate {
     
     public var investor: Investor!
     
@@ -19,6 +23,7 @@ class EmailViewController: UIViewController, MFMailComposeViewControllerDelegate
     @IBOutlet var titleLabel: UILabel!
     @IBOutlet var firmLabel: UILabel!
     @IBOutlet var sendLabel: UILabel!
+    @IBOutlet var loginButton: UIButton!
     @IBOutlet var bookmarkButton: UIButton!
     
     @IBOutlet var investorRating: CosmosView!
@@ -33,14 +38,40 @@ class EmailViewController: UIViewController, MFMailComposeViewControllerDelegate
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     
+    let db = Firestore.firestore()
+    let authUI = FUIAuth.defaultAuthUI()
+    let providers: [FUIAuthProvider] = [
+        FUIEmailAuth()
+    ]
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         commentsHeight.constant = 0
         
+        checkUser()
         fetchInvestor()
         
+        fetchUserRating(completion: { rating in
+            self.userRating.isUserInteractionEnabled = false
+            self.userRating.isHidden = false
+            self.userRating.rating = rating
+        }) { error in
+            self.userRating.isHidden = false
+            //TODO: handle error
+        }
+        
+        userRating.didTouchCosmos = { rating in
+            self.presentAuthentication()
+        }
+
+        
         userRating.didFinishTouchingCosmos = { rating in
+            guard Auth.auth().currentUser != nil else {
+                self.userRating.rating = 0.0
+                return //user is nil
+            }
+            
             self.submitButton.isEnabled = true
         }
     }
@@ -51,13 +82,128 @@ class EmailViewController: UIViewController, MFMailComposeViewControllerDelegate
         nameLabel.text = investor.fullName()
         titleLabel.text = investor.title
         firmLabel.text = investor.firm
-        sendLabel.text = investor.contactInfo.email
         ratingsLabel.text = "\(investor.rating.numOfRatings) ratings"
         investorRating.rating = investor.rating.avgRating
     }
     
-    public func addRating() {
+    @IBAction func loginTouched(_ sender: Any) {
+        presentAuthentication()
+    }
+    
+    func presentAuthentication() {
+        guard let auth = authUI, Auth.auth().currentUser == nil else {
+            return //auth ui is nil or user is already logged in
+        }
         
+        auth.delegate = self
+        auth.providers = providers
+        
+        let authViewController = auth.authViewController()
+        present(authViewController, animated: true, completion: nil)
+    }
+    
+    func authUI(_ authUI: FUIAuth, didSignInWith user: User?, error: Error?) {
+        checkUser()
+    }
+    
+    func checkUser() {
+        guard let _ = Auth.auth().currentUser else {
+            self.sendLabel.text = "Login To See Email"
+            return // no user
+        }
+        
+        sendLabel.text = investor.contactInfo.email
+    }
+    
+    public func fetchRating() {
+        let ref = Database.database().reference().child("ratings").child(investor.id)
+        
+        ref.observeSingleEvent(of: .value, with: { (snapshot) in
+            guard let value = snapshot.value as? DataSnapshot else {
+                return
+            }
+            
+            if let ratings = value.value as? [String : Any] {
+                let numOfRatings = ratings["num_of_ratings"] as? Int
+                let avgRating = ratings["avg_rating"] as? Double
+                
+                self.ratingsLabel.text = "\(numOfRatings ?? 0) ratings"
+                self.investorRating.rating = avgRating ?? 0.0
+            }
+        }) { (err) in
+            print("Failed to fetch posts:", err)
+        }
+    }
+    
+    public func fetchUserRating(completion: @escaping (Double) -> (), withCancel cancel: ((Error) -> ())?) {
+        guard let user = Auth.auth().currentUser else {
+            return
+        }
+        
+        let userRating = db.collection("ratings").whereField("sender_id", isEqualTo: user.uid)
+        userRating.getDocuments() { (querySnapshot, err) in
+            if let err = err {
+                print("Error getting documents: \(err)")
+                cancel?(err)
+            } else {
+                guard let document = querySnapshot!.documents.first else {
+                    return // no rating found for user
+                }
+                
+                var docData = document.data()
+                let rating = (docData["rating"] as? Double) ?? 0.0
+                completion(rating)
+            }
+        }
+    }
+    
+    public func updateAndIncrementUserRating() {
+        let ref = Database.database().reference().child("ratings").child(investor.id)
+
+        ref.runTransactionBlock({ (currentData: MutableData) -> TransactionResult in
+            if var rating = currentData.value as? [String : AnyObject] {
+                var ratingCount = rating["num_of_ratings"] as? Int ?? 0
+                
+                ratingCount += 1
+                
+                rating["num_of_ratings"] = ratingCount as AnyObject?
+                rating["avg_rating"] = 0 as AnyObject?
+                
+                // Set value and report transaction success
+                currentData.value = rating
+                
+                return TransactionResult.success(withValue: currentData)
+            }
+            return TransactionResult.success(withValue: currentData)
+        }) { (error, committed, snapshot) in
+            if let error = error {
+                print(error.localizedDescription)
+            }
+        }
+    }
+    
+    public func addRating(rating: Double, completion: @escaping () -> (), withCancel cancel: ((Error) -> ())?) {
+        guard let user = Auth.auth().currentUser else {
+            return
+        }
+        
+        var ref: DocumentReference? = nil
+        
+        // Add a document with a generated ID.
+        ref = db.collection("ratings").addDocument(data: [
+            "comment": "",
+            "sender_id": user.uid,
+            "timestamp": Date().timeIntervalSince1970,
+            "value": rating
+        ]) { err in
+            if let err = err {
+                cancel?(err)
+                print("Error adding document: \(err)")
+            } else {
+                completion()
+                print("Document added with ID: \(ref!.documentID)")
+            }
+        }
     }
     
     public func fetchInvestor() {
@@ -81,6 +227,13 @@ class EmailViewController: UIViewController, MFMailComposeViewControllerDelegate
     }
     
     @IBAction func submitTouched(_ sender: Any) {
+        addRating(rating: userRating.rating, completion: {
+            self.userRating.isUserInteractionEnabled = false
+            
+            self.updateAndIncrementUserRating()
+        }) { error in
+            //TODO: handle error
+        }
     }
     
     @IBAction func shareTouched(_ sender: Any) {
