@@ -36,6 +36,8 @@ class EmailViewController: UIViewController, MFMailComposeViewControllerDelegate
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        commentsHeight.constant = 0
+        
         fetchInvestor()
         
         userRating.didFinishTouchingCosmos = { rating in
@@ -50,6 +52,8 @@ class EmailViewController: UIViewController, MFMailComposeViewControllerDelegate
         titleLabel.text = investor.title
         firmLabel.text = investor.firm
         sendLabel.text = investor.contactInfo.email
+        ratingsLabel.text = "\(investor.rating.numOfRatings) ratings"
+        investorRating.rating = investor.rating.avgRating
     }
     
     public func addRating() {
@@ -103,6 +107,7 @@ class EmailViewController: UIViewController, MFMailComposeViewControllerDelegate
         guard storedInvestor == nil else { //investor already stored locally, delete bookmark
             context.delete(storedInvestor!)
             bookmarkButton.isSelected = false
+            storedInvestor = nil
             return
         }
         
@@ -121,6 +126,7 @@ class EmailViewController: UIViewController, MFMailComposeViewControllerDelegate
         
         do {
             try context.save()
+            storedInvestor = newInvestor as? LXInvestor
             bookmarkButton.isSelected = true
         } catch {
             print("Failed saving") //TODO: add failed to bookmark
