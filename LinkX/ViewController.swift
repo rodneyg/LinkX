@@ -90,8 +90,14 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
             
             var newInvestors = [Investor]()
             for child in children {
-                if let value = child.value as? [String : Any] {
-                    newInvestors.append(Investor(id: child.key, data: value))
+                if var value = child.value as? [String : Any] {
+                    let id = value["id"] as? String
+                    if id == nil {
+                        value["id"] = UUID.init().uuidString
+                        Database.database().reference().child("investors").child(child.key).setValue(value)
+                    }
+                    
+                    newInvestors.append(Investor(data: value))
                 }
             }
             

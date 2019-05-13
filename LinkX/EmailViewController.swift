@@ -51,20 +51,11 @@ class EmailViewController: UIViewController, MFMailComposeViewControllerDelegate
         
         checkUser()
         fetchInvestor()
-        
-        fetchUserRating(completion: { rating in
-            self.userRating.isUserInteractionEnabled = false
-            self.userRating.isHidden = false
-            self.userRating.rating = rating
-        }) { error in
-            self.userRating.isHidden = false
-            //TODO: handle error
-        }
-        
+
         userRating.didTouchCosmos = { rating in
             self.presentAuthentication()
+            self.submitButton.isHidden = false
         }
-
         
         userRating.didFinishTouchingCosmos = { rating in
             guard Auth.auth().currentUser != nil else {
@@ -78,6 +69,17 @@ class EmailViewController: UIViewController, MFMailComposeViewControllerDelegate
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        
+        fetchUserRating(completion: { rating in
+            self.userRating.isUserInteractionEnabled = false
+            self.userRating.isHidden = false
+            self.userRating.rating = rating
+        }) { error in
+            self.userRating.isHidden = false
+            //TODO: handle error
+        }
+        
+        fetchRating()
         
         nameLabel.text = investor.fullName()
         titleLabel.text = investor.title
@@ -119,39 +121,39 @@ class EmailViewController: UIViewController, MFMailComposeViewControllerDelegate
         let ref = Database.database().reference().child("ratings").child(investor.id)
         
         ref.observeSingleEvent(of: .value, with: { (snapshot) in
-            guard let value = snapshot.value as? DataSnapshot else {
+            guard let ratings = snapshot.value as? [String : Any] else {
                 return
             }
             
-            if let ratings = value.value as? [String : Any] {
-                let numOfRatings = ratings["num_of_ratings"] as? Int
-                let avgRating = ratings["avg_rating"] as? Double
-                
-                self.ratingsLabel.text = "\(numOfRatings ?? 0) ratings"
-                self.investorRating.rating = avgRating ?? 0.0
-            }
+            let numOfRatings = ratings["num_of_ratings"] as? Int
+            let avgRating = ratings["avg_rating"] as? Double
+            
+            self.ratingsLabel.text = "\(numOfRatings ?? 0) ratings"
+            self.investorRating.rating = avgRating ?? 0.0
         }) { (err) in
-            print("Failed to fetch posts:", err)
+            print("Failed to fetch ratings:", err)
         }
     }
     
-    public func fetchUserRating(completion: @escaping (Double) -> (), withCancel cancel: ((Error) -> ())?) {
+    public func fetchUserRating(completion: @escaping (Double) -> (), withCancel cancel: ((Error?) -> ())?) {
         guard let user = Auth.auth().currentUser else {
+            cancel?(nil)
             return
         }
         
-        let userRating = db.collection("ratings").whereField("sender_id", isEqualTo: user.uid)
+        let userRating = db.collection("ratings").whereField("sender_id", isEqualTo: user.uid).whereField("user_id", isEqualTo: investor.id)
         userRating.getDocuments() { (querySnapshot, err) in
             if let err = err {
                 print("Error getting documents: \(err)")
                 cancel?(err)
             } else {
                 guard let document = querySnapshot!.documents.first else {
+                    cancel?(err)
                     return // no rating found for user
                 }
                 
                 var docData = document.data()
-                let rating = (docData["rating"] as? Double) ?? 0.0
+                let rating = (docData["value"] as? Double) ?? 0.0
                 completion(rating)
             }
         }
@@ -192,6 +194,7 @@ class EmailViewController: UIViewController, MFMailComposeViewControllerDelegate
         // Add a document with a generated ID.
         ref = db.collection("ratings").addDocument(data: [
             "comment": "",
+            "user_id" : investor.id,
             "sender_id": user.uid,
             "timestamp": Date().timeIntervalSince1970,
             "value": rating

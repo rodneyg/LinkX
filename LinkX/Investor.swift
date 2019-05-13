@@ -40,8 +40,8 @@ public struct Investor {
         }
     }
     
-    public init(id: String, data: [String : Any]) {
-        self.id = id
+    public init(data: [String : Any]) {
+        self.id = (data["id"] as? String) ?? ""
         self.first = (data["first"] as? String) ?? ""
         self.last = (data["last"] as? String) ?? ""
         self.title = (data["title"] as? String) ?? ""
