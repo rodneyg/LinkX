@@ -26,6 +26,8 @@
 		2ABA83A6224570C5003A4339 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 2ABA83A5224570C5003A4339 /* GoogleService-Info.plist */; };
 		2ABA83A7224571F6003A4339 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 2ABA83A5224570C5003A4339 /* GoogleService-Info.plist */; };
 		2ABA83A8224571F6003A4339 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 2ABA83A5224570C5003A4339 /* GoogleService-Info.plist */; };
+		2ABD3A63229B8CF400DCA1BE /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2ABD3A62229B8CF400DCA1BE /* ProfileViewController.swift */; };
+		2ABD3A65229B8CFE00DCA1BE /* EditProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2ABD3A64229B8CFE00DCA1BE /* EditProfileViewController.swift */; };
 		2ABEAB51228A2C5B00587B7E /* Comment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2ABEAB50228A2C5B00587B7E /* Comment.swift */; };
 		2ABEAB53228A2D9F00587B7E /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2ABEAB52228A2D9F00587B7E /* User.swift */; };
 		2AFB67672262B09C00AE860C /* LXInvestor+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AFB67652262B09C00AE860C /* LXInvestor+CoreDataClass.swift */; };
@@ -79,6 +81,8 @@
 		2ABA839722456E53003A4339 /* LinkXUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkXUITests.swift; sourceTree = "<group>"; };
 		2ABA839922456E53003A4339 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		2ABA83A5224570C5003A4339 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		2ABD3A62229B8CF400DCA1BE /* ProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewController.swift; sourceTree = "<group>"; };
+		2ABD3A64229B8CFE00DCA1BE /* EditProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditProfileViewController.swift; sourceTree = "<group>"; };
 		2ABEAB50228A2C5B00587B7E /* Comment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Comment.swift; sourceTree = "<group>"; };
 		2ABEAB52228A2D9F00587B7E /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		2AFB67652262B09C00AE860C /* LXInvestor+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LXInvestor+CoreDataClass.swift"; sourceTree = "<group>"; };
@@ -167,6 +171,8 @@
 				2A5C9FB72247499B0072CC2F /* Date+Ext.swift */,
 				2AFB67752262B7F800AE860C /* LXBookmarkTableController.swift */,
 				2ABEAB52228A2D9F00587B7E /* User.swift */,
+				2ABD3A62229B8CF400DCA1BE /* ProfileViewController.swift */,
+				2ABD3A64229B8CFE00DCA1BE /* EditProfileViewController.swift */,
 			);
 			path = LinkX;
 			sourceTree = "<group>";
@@ -495,9 +501,11 @@
 				2ABA837722456E52003A4339 /* ViewController.swift in Sources */,
 				2A5C9FB6224748EC0072CC2F /* IAPHandler.swift in Sources */,
 				2A21618022473A2700D0ACDA /* InvestorTableViewCell.swift in Sources */,
+				2ABD3A63229B8CF400DCA1BE /* ProfileViewController.swift in Sources */,
 				2A5C9FB82247499B0072CC2F /* Date+Ext.swift in Sources */,
 				2AFB67762262B7F800AE860C /* LXBookmarkTableController.swift in Sources */,
 				2ABA837D22456E52003A4339 /* LinkX.xcdatamodeld in Sources */,
+				2ABD3A65229B8CFE00DCA1BE /* EditProfileViewController.swift in Sources */,
 				2ABA837522456E52003A4339 /* AppDelegate.swift in Sources */,
 				2ABEAB51228A2C5B00587B7E /* Comment.swift in Sources */,
 				2AFB67672262B09C00AE860C /* LXInvestor+CoreDataClass.swift in Sources */,
