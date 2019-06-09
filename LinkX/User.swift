@@ -12,6 +12,8 @@ struct User {
     
     let uid: String
     let username: String
+    let firstName: String
+    let lastName: String
     let profileImageUrl: String?
     let headline: String?
     let title: String?
@@ -21,6 +23,8 @@ struct User {
     init(uid: String, dictionary: [String: Any]) {
         self.uid = uid
         self.username = dictionary["username"] as? String ?? ""
+        self.firstName = dictionary["firstName"] as? String ?? ""
+        self.lastName = dictionary["lastName"] as? String ?? ""
         self.profileImageUrl = dictionary["profileImageUrl"] as? String ?? nil
         self.headline = dictionary["headline"] as? String ?? nil
         self.title = dictionary["title"] as? String ?? nil

@@ -97,6 +97,38 @@
             endingLineNumber = "77"
             landmarkName = "viewWillAppear(_:)"
             landmarkType = "7">
+            <Locations>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #1 (Swift.Double) -&gt; () in LinkX.EmailViewController.viewWillAppear(Swift.Bool) -&gt; ()"
+                  moduleName = "LinkX"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Rodney/Documents/iOS/LinkX/LinkX/EmailViewController.swift"
+                  timestampString = "581808611.292675"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "77"
+                  endingLineNumber = "77"
+                  offsetFromSymbolStart = "760">
+               </Location>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #2 (Swift.Optional&lt;Swift.Error&gt;) -&gt; () in LinkX.EmailViewController.viewWillAppear(Swift.Bool) -&gt; ()"
+                  moduleName = "LinkX"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Rodney/Documents/iOS/LinkX/LinkX/EmailViewController.swift"
+                  timestampString = "581808611.294211"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "78"
+                  endingLineNumber = "78"
+                  offsetFromSymbolStart = "116">
+               </Location>
+            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -113,6 +145,38 @@
             endingLineNumber = "73"
             landmarkName = "viewWillAppear(_:)"
             landmarkType = "7">
+            <Locations>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "LinkX.EmailViewController.viewWillAppear(Swift.Bool) -&gt; ()"
+                  moduleName = "LinkX"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Rodney/Documents/iOS/LinkX/LinkX/EmailViewController.swift"
+                  timestampString = "581808611.298281"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "73"
+                  endingLineNumber = "73"
+                  offsetFromSymbolStart = "332">
+               </Location>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #1 (Swift.Double) -&gt; () in LinkX.EmailViewController.viewWillAppear(Swift.Bool) -&gt; ()"
+                  moduleName = "LinkX"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Rodney/Documents/iOS/LinkX/LinkX/EmailViewController.swift"
+                  timestampString = "581808611.2998641"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "74"
+                  endingLineNumber = "74"
+                  offsetFromSymbolStart = "112">
+               </Location>
+            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -145,6 +209,38 @@
             endingLineNumber = "123"
             landmarkName = "fetchRating()"
             landmarkType = "7">
+            <Locations>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "LinkX.EmailViewController.fetchRating() -&gt; ()"
+                  moduleName = "LinkX"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Rodney/Documents/iOS/LinkX/LinkX/EmailViewController.swift"
+                  timestampString = "581808611.307312"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "123"
+                  endingLineNumber = "123"
+                  offsetFromSymbolStart = "620">
+               </Location>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #1 (__C.FIRDataSnapshot) -&gt; () in LinkX.EmailViewController.fetchRating() -&gt; ()"
+                  moduleName = "LinkX"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Rodney/Documents/iOS/LinkX/LinkX/EmailViewController.swift"
+                  timestampString = "581808611.308834"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "124"
+                  endingLineNumber = "124"
+                  offsetFromSymbolStart = "220">
+               </Location>
+            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -160,6 +256,54 @@
             startingLineNumber = "131"
             endingLineNumber = "131"
             landmarkName = "fetchRating()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "LinkX/LXBookmarkTableController.swift"
+            timestampString = "581808610.808163"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "46"
+            endingLineNumber = "46"
+            landmarkName = "viewWillAppear(_:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "LinkX/ViewController.swift"
+            timestampString = "581808610.808223"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "44"
+            endingLineNumber = "44"
+            landmarkName = "viewDidLoad()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "LinkX/ViewController.swift"
+            timestampString = "581808610.808544"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "43"
+            endingLineNumber = "43"
+            landmarkName = "viewDidLoad()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

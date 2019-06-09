@@ -24,7 +24,6 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        
         tableView.register(UINib(nibName: "InvestorTableViewCell", bundle: nil), forCellReuseIdentifier: "InvestorTableViewCell")
         
         tableView.delegate = self
@@ -38,10 +37,12 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         
         // Setup the Search Controller
         searchBar.delegate = self
+        searchBar.isHidden = true
         
         fetchAllInvestors(completion: { investors in
             self.investors = investors
-            self.tableView.reloadData()
+            self.filterContentForSearchText("")
+            self.searchBar.isHidden = false
         }) { error in
             print(error.localizedDescription)
         }
@@ -91,11 +92,11 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
             var newInvestors = [Investor]()
             for child in children {
                 if var value = child.value as? [String : Any] {
-                    let id = value["id"] as? String
-                    if id == nil {
-                        value["id"] = UUID.init().uuidString
-                        Database.database().reference().child("investors").child(child.key).setValue(value)
-                    }
+//                    let id = value["id"] as? String
+//                    if id == nil {
+//                        value["id"] = UUID.init().uuidString
+//                        Database.database().reference().child("investors").child(child.key).setValue(value)
+//                    }
                     
                     newInvestors.append(Investor(data: value))
                 }

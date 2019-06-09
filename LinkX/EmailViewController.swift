@@ -104,7 +104,7 @@ class EmailViewController: UIViewController, MFMailComposeViewControllerDelegate
         present(authViewController, animated: true, completion: nil)
     }
     
-    func authUI(_ authUI: FUIAuth, didSignInWith user: User?, error: Error?) {
+    private func authUI(_ authUI: FUIAuth, didSignInWith user: User?, error: Error?) {
         checkUser()
     }
     

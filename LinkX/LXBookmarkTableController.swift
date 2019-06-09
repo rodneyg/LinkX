@@ -43,8 +43,6 @@ class BookmarkTableController: UIViewController, UITableViewDataSource, UITableV
         
         fetchAllInvestors(completion: { investors in
             self.investors = investors
-            self.tableView.reloadData()
-            
             self.filterContentForSearchText("")
         })
     }
@@ -82,8 +80,10 @@ class BookmarkTableController: UIViewController, UITableViewDataSource, UITableV
             return investor.fullName().lowercased().starts(with: searchText.lowercased())
         })
         
-        updateBackground()
-        tableView.reloadData()
+        DispatchQueue.main.async {
+            self.updateBackground()
+            self.tableView.reloadData()
+        }
     }
     
     func searchBarIsEmpty() -> Bool {
