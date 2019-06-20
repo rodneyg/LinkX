@@ -106,7 +106,7 @@
                   moduleName = "LinkX"
                   usesParentBreakpointCondition = "Yes"
                   urlString = "file:///Users/Rodney/Documents/iOS/LinkX/LinkX/EmailViewController.swift"
-                  timestampString = "581808611.292675"
+                  timestampString = "582677963.3640389"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "77"
@@ -121,7 +121,7 @@
                   moduleName = "LinkX"
                   usesParentBreakpointCondition = "Yes"
                   urlString = "file:///Users/Rodney/Documents/iOS/LinkX/LinkX/EmailViewController.swift"
-                  timestampString = "581808611.294211"
+                  timestampString = "582677963.365615"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "78"
@@ -154,7 +154,7 @@
                   moduleName = "LinkX"
                   usesParentBreakpointCondition = "Yes"
                   urlString = "file:///Users/Rodney/Documents/iOS/LinkX/LinkX/EmailViewController.swift"
-                  timestampString = "581808611.298281"
+                  timestampString = "582677963.369846"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "73"
@@ -169,7 +169,7 @@
                   moduleName = "LinkX"
                   usesParentBreakpointCondition = "Yes"
                   urlString = "file:///Users/Rodney/Documents/iOS/LinkX/LinkX/EmailViewController.swift"
-                  timestampString = "581808611.2998641"
+                  timestampString = "582677963.371217"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "74"
@@ -218,7 +218,7 @@
                   moduleName = "LinkX"
                   usesParentBreakpointCondition = "Yes"
                   urlString = "file:///Users/Rodney/Documents/iOS/LinkX/LinkX/EmailViewController.swift"
-                  timestampString = "581808611.307312"
+                  timestampString = "582677963.377236"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "123"
@@ -233,7 +233,7 @@
                   moduleName = "LinkX"
                   usesParentBreakpointCondition = "Yes"
                   urlString = "file:///Users/Rodney/Documents/iOS/LinkX/LinkX/EmailViewController.swift"
-                  timestampString = "581808611.308834"
+                  timestampString = "582677963.378561"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "124"
@@ -265,14 +265,46 @@
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "LinkX/LXBookmarkTableController.swift"
-            timestampString = "581808610.808163"
+            filePath = "LinkX/ProfileViewController.swift"
+            timestampString = "582677962.891387"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "46"
-            endingLineNumber = "46"
-            landmarkName = "viewWillAppear(_:)"
+            startingLineNumber = "34"
+            endingLineNumber = "34"
+            landmarkName = "viewDidLoad()"
             landmarkType = "7">
+            <Locations>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "LinkX.ProfileViewController.viewDidLoad() -&gt; ()"
+                  moduleName = "LinkX"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Rodney/Documents/iOS/LinkX/LinkX/ProfileViewController.swift"
+                  timestampString = "582677963.390117"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "34"
+                  endingLineNumber = "34"
+                  offsetFromSymbolStart = "1360">
+               </Location>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #1 (Swift.Optional&lt;LinkX.User&gt;) -&gt; () in LinkX.ProfileViewController.viewDidLoad() -&gt; ()"
+                  moduleName = "LinkX"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Rodney/Documents/iOS/LinkX/LinkX/ProfileViewController.swift"
+                  timestampString = "582677963.3914289"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "35"
+                  endingLineNumber = "35"
+                  offsetFromSymbolStart = "172">
+               </Location>
+            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -281,12 +313,12 @@
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "LinkX/ViewController.swift"
-            timestampString = "581808610.808223"
+            filePath = "LinkX/ProfileViewController.swift"
+            timestampString = "582677962.891758"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "44"
-            endingLineNumber = "44"
+            startingLineNumber = "42"
+            endingLineNumber = "42"
             landmarkName = "viewDidLoad()"
             landmarkType = "7">
          </BreakpointContent>
@@ -297,12 +329,28 @@
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "LinkX/ViewController.swift"
-            timestampString = "581808610.808544"
+            filePath = "LinkX/ProfileViewController.swift"
+            timestampString = "582677962.8919851"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "43"
-            endingLineNumber = "43"
+            startingLineNumber = "36"
+            endingLineNumber = "36"
+            landmarkName = "viewDidLoad()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "LinkX/ProfileViewController.swift"
+            timestampString = "582677962.892198"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "31"
+            endingLineNumber = "31"
             landmarkName = "viewDidLoad()"
             landmarkType = "7">
          </BreakpointContent>

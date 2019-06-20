@@ -1,6 +1,6 @@
 //
-//  FirebaseUtilities.swift
-//  LinkX
+//  CSFirebaseUtils.swift
+//  CodeSigned
 //
 //  Created by Rodney Gainous Jr on 6/9/19.
 //  Copyright © 2019 CodeSigned. All rights reserved.
@@ -40,6 +40,47 @@ extension Auth {
         
         let values = [uid: dictionaryValues]
         Database.database().reference().child("users").updateChildValues(values, withCompletionBlock: { (err, ref) in
+            if let err = err {
+                print("Failed to upload user to database:", err)
+                return
+            }
+            completion()
+        })
+    }
+    
+    private func addFund(withUID uid: String, contactMethod: String, city: String, state: String, stage: String, sectors: [String], email: String? = nil, completion: @escaping (() -> ())) {
+        var dictionaryValues: [String : Any] = ["contact_method" : contactMethod, "city" : city, "state" : state, "stage" : stage]
+        
+        var sectorDict = [String : String]()
+        sectors.forEach {
+            sectorDict[$0] = $0
+        }
+        
+        dictionaryValues["sectors"] = sectorDict
+        
+        if let email = email {
+            dictionaryValues["email"] = email
+        }
+        
+        let values = [uid: dictionaryValues]
+        Database.database().reference().child("investors").updateChildValues(values, withCompletionBlock: { (err, ref) in
+            if let err = err {
+                print("Failed to upload user to database:", err)
+                return
+            }
+            completion()
+        })
+    }
+    
+    
+    private func addInvestor(withUID uid: String, firstName: String, lastName: String, title: String, fundName: String, email: String? = nil, completion: @escaping (() -> ())) {
+        var dictionaryValues = ["firm" : fundName, "first" : firstName, "last" : lastName, title : "title"]
+        if let email = email {
+            dictionaryValues["email"] = email
+        }
+        
+        let values = [uid: dictionaryValues]
+        Database.database().reference().child("investors").updateChildValues(values, withCompletionBlock: { (err, ref) in
             if let err = err {
                 print("Failed to upload user to database:", err)
                 return

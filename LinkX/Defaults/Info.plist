@@ -24,6 +24,8 @@
 	<true/>
 	<key>NSCameraUsageDescription</key>
 	<string>We need access to your camera to take photos for your profile.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>We need access to your location to verify</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>We need access to your library to upload profile photos.</string>
 	<key>UILaunchStoryboardName</key>
