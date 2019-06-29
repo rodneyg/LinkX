@@ -13,13 +13,17 @@ public struct Point {
     public var id: String
     public var value: Double
     public var activity: Activity?
-    public var createdAt: String
+    public var notes: String?
+    public var createdAt: Date
     
     init(data: [String : Any]) {
         self.id = (data["id"] as? String) ?? ""
         self.value = (data["value"] as? Double) ?? 0.0
-        self.createdAt = (data["created_at"] as? String) ?? ""
+        let createdAtSeconds = (data["created_at"]  as? Double ?? 0)
+        self.createdAt = Date(timeIntervalSince1970: createdAtSeconds)
         
+        self.notes = (data["notes"] as? String)
+                
         if let activityData = data["activity"] as? [String : String] {
             self.activity = Activity(data: activityData)
         } else {

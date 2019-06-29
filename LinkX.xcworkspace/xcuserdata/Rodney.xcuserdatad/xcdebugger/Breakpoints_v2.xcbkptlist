@@ -97,38 +97,6 @@
             endingLineNumber = "77"
             landmarkName = "viewWillAppear(_:)"
             landmarkType = "7">
-            <Locations>
-               <Location
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "closure #1 (Swift.Double) -&gt; () in LinkX.EmailViewController.viewWillAppear(Swift.Bool) -&gt; ()"
-                  moduleName = "LinkX"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/Rodney/Documents/iOS/LinkX/LinkX/EmailViewController.swift"
-                  timestampString = "582677963.3640389"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "77"
-                  endingLineNumber = "77"
-                  offsetFromSymbolStart = "760">
-               </Location>
-               <Location
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "closure #2 (Swift.Optional&lt;Swift.Error&gt;) -&gt; () in LinkX.EmailViewController.viewWillAppear(Swift.Bool) -&gt; ()"
-                  moduleName = "LinkX"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/Rodney/Documents/iOS/LinkX/LinkX/EmailViewController.swift"
-                  timestampString = "582677963.365615"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "78"
-                  endingLineNumber = "78"
-                  offsetFromSymbolStart = "116">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -145,38 +113,6 @@
             endingLineNumber = "73"
             landmarkName = "viewWillAppear(_:)"
             landmarkType = "7">
-            <Locations>
-               <Location
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "LinkX.EmailViewController.viewWillAppear(Swift.Bool) -&gt; ()"
-                  moduleName = "LinkX"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/Rodney/Documents/iOS/LinkX/LinkX/EmailViewController.swift"
-                  timestampString = "582677963.369846"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "73"
-                  endingLineNumber = "73"
-                  offsetFromSymbolStart = "332">
-               </Location>
-               <Location
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "closure #1 (Swift.Double) -&gt; () in LinkX.EmailViewController.viewWillAppear(Swift.Bool) -&gt; ()"
-                  moduleName = "LinkX"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/Rodney/Documents/iOS/LinkX/LinkX/EmailViewController.swift"
-                  timestampString = "582677963.371217"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "74"
-                  endingLineNumber = "74"
-                  offsetFromSymbolStart = "112">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -209,38 +145,6 @@
             endingLineNumber = "123"
             landmarkName = "fetchRating()"
             landmarkType = "7">
-            <Locations>
-               <Location
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "LinkX.EmailViewController.fetchRating() -&gt; ()"
-                  moduleName = "LinkX"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/Rodney/Documents/iOS/LinkX/LinkX/EmailViewController.swift"
-                  timestampString = "582677963.377236"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "123"
-                  endingLineNumber = "123"
-                  offsetFromSymbolStart = "620">
-               </Location>
-               <Location
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "closure #1 (__C.FIRDataSnapshot) -&gt; () in LinkX.EmailViewController.fetchRating() -&gt; ()"
-                  moduleName = "LinkX"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/Rodney/Documents/iOS/LinkX/LinkX/EmailViewController.swift"
-                  timestampString = "582677963.378561"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "124"
-                  endingLineNumber = "124"
-                  offsetFromSymbolStart = "220">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -273,38 +177,6 @@
             endingLineNumber = "34"
             landmarkName = "viewDidLoad()"
             landmarkType = "7">
-            <Locations>
-               <Location
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "LinkX.ProfileViewController.viewDidLoad() -&gt; ()"
-                  moduleName = "LinkX"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/Rodney/Documents/iOS/LinkX/LinkX/ProfileViewController.swift"
-                  timestampString = "582677963.390117"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "34"
-                  endingLineNumber = "34"
-                  offsetFromSymbolStart = "1360">
-               </Location>
-               <Location
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "closure #1 (Swift.Optional&lt;LinkX.User&gt;) -&gt; () in LinkX.ProfileViewController.viewDidLoad() -&gt; ()"
-                  moduleName = "LinkX"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/Rodney/Documents/iOS/LinkX/LinkX/ProfileViewController.swift"
-                  timestampString = "582677963.3914289"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "35"
-                  endingLineNumber = "35"
-                  offsetFromSymbolStart = "172">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -352,6 +224,22 @@
             startingLineNumber = "31"
             endingLineNumber = "31"
             landmarkName = "viewDidLoad()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "LinkX/Utilities/FirebaseUtilities.swift"
+            timestampString = "583286208.593919"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "60"
+            endingLineNumber = "60"
+            landmarkName = "uploadUser(withUID:firstName:lastName:headline:title:company:points:profileImageUrl:completion:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

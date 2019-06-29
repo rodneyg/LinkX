@@ -19,16 +19,18 @@ struct User {
     let title: String?
     let company: String?
     let investorId: String?
+    let points: Double?
     
     init(uid: String, dictionary: [String: Any]) {
         self.uid = uid
         self.username = dictionary["username"] as? String ?? ""
-        self.firstName = dictionary["firstName"] as? String ?? ""
-        self.lastName = dictionary["lastName"] as? String ?? ""
-        self.profileImageUrl = dictionary["profileImageUrl"] as? String ?? nil
+        self.firstName = dictionary["first_name"] as? String ?? ""
+        self.lastName = dictionary["last_name"] as? String ?? ""
+        self.profileImageUrl = dictionary["profile_image_url"] as? String ?? nil
         self.headline = dictionary["headline"] as? String ?? nil
         self.title = dictionary["title"] as? String ?? nil
         self.company = dictionary["company"] as? String ?? nil
-        self.investorId = dictionary["investorId"] as? String ?? ""
+        self.investorId = dictionary["investor_id"] as? String ?? ""
+        self.points = dictionary["points"] as? Double ?? 0.0
     }
 }

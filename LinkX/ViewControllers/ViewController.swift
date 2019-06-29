@@ -8,6 +8,7 @@
 
 import UIKit
 import Firebase
+import PKHUD
 
 class ViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
     
@@ -37,15 +38,17 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         
         // Setup the Search Controller
         searchBar.delegate = self
-        searchBar.isHidden = true
+        searchBar.isHidden = false
         
-        fetchAllInvestors(completion: { investors in
-            self.investors = investors
-            self.filterContentForSearchText("")
-            self.searchBar.isHidden = false
-        }) { error in
-            print(error.localizedDescription)
-        }
+//        fetchAllInvestors(completion: { investors in
+//            self.investors = investors
+//            self.filterContentForSearchText("")
+//            self.searchBar.isHidden = false
+//        }) { error in
+//            print(error.localizedDescription)
+//        }
+//
+        self.filterContentForSearchText("")
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -80,6 +83,34 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     
     // MARK: - Private instance methods
     
+    func fetchInvestors(text: String, completion: @escaping ([Investor]) -> (), withCancel cancel: ((Error) -> ())?) {
+        let ref = Database.database().reference().child("investors")
+
+        //.queryEnding(atValue: text.lowercased() + "\u{f8ff}")
+        ref.queryOrdered(byChild: "name_search").queryStarting(atValue: text.lowercased()).queryEnding(atValue: text.lowercased() + "\u{f8ff}").queryLimited(toFirst: 25)
+            .observeSingleEvent(of: .value, with: { snapshot in
+                guard let children = snapshot.children.allObjects as? [DataSnapshot] else {
+                    completion([])
+                    return
+                }
+
+                var newInvestors = [Investor]()
+                
+                for child in children {
+                    if var value = child.value as? [String : Any] {
+                        print(value)
+                        newInvestors.append(Investor(data: value))
+                    }
+                }
+                
+                completion(newInvestors)
+                return
+            }){ (err) in
+                print("Failed to fetch investors:", err)
+                cancel?(err)
+        }
+    }
+    
     func fetchAllInvestors(completion: @escaping ([Investor]) -> (), withCancel cancel: ((Error) -> ())?) {
         let ref = Database.database().reference().child("investors")
         
@@ -92,19 +123,22 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
             var newInvestors = [Investor]()
             for child in children {
                 if var value = child.value as? [String : Any] {
-//                    let id = value["id"] as? String
-//                    if id == nil {
-//                        value["id"] = UUID.init().uuidString
-//                        Database.database().reference().child("investors").child(child.key).setValue(value)
-//                    }
+                    if  value["name_search"] == nil { //let nameSearch = value["name_search"] as? [String] {
+                        guard let first = value["first"] as? String, let last = value["last"] as? String else {
+                            return //first and last name don't exist
+                        }
+
+                        value["name_search"] = "\(first.lowercased()) \(last.lowercased())"
+                        Database.database().reference().child("investors").child(child.key).setValue(value)
+                    }
                     
-                    newInvestors.append(Investor(data: value))
+                    //newInvestors.append(Investor(data: value))
                 }
             }
             
             completion(newInvestors)
         }) { (err) in
-            print("Failed to fetch posts:", err)
+            print("Failed to fetch investors:", err)
             cancel?(err)
         }
     }
@@ -118,12 +152,16 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     }
     
     func filterContentForSearchText(_ searchText: String) {
-        filteredInvestors = investors.filter({( investor: Investor) -> Bool in
-            return investor.fullName().lowercased().starts(with: searchText.lowercased())
-        })
-        
-        updateBackground()
-        tableView.reloadData()
+        fetchInvestors(text: searchText, completion: { (investors) in
+            DispatchQueue.main.async {
+                self.filteredInvestors = investors
+                
+                self.updateBackground()
+                self.tableView.reloadData()
+            }
+        }) { error in
+            //TODO: handle error
+        }
     }
     
     func searchBarIsEmpty() -> Bool {
@@ -142,8 +180,12 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         }
         
         if segue.identifier == "ShowEmailFromDiscover" {
-            let emailVC = segue.destination as! EmailViewController
-            emailVC.investor = investor
+            let evc = segue.destination as! EmailViewController
+            evc.investor = investor
+            evc.onSigninTouched = { vc in
+                self.tabBarController?.selectedIndex = 2
+                vc.dismiss(animated: true, completion: nil)
+            }
         }
     }
     

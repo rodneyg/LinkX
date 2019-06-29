@@ -9,6 +9,7 @@
 import UIKit
 import Firebase
 import FirebaseAuth
+import PKHUD
 
 class SigninViewController: UIViewController {
 
@@ -23,12 +24,15 @@ class SigninViewController: UIViewController {
     
     @IBAction func forgotTouched(_ sender: Any) {
         guard let email = emailField.text, email.count > 2 else {
+            HUD.flash(.labeledError(title: "Error", subtitle: "Enter Valid E-mail"), delay: 2.0)
             return //enter valid e-mail
         }
         
         Auth.auth().sendPasswordReset(withEmail: email) { err in
             if let error = err {
                 //print error
+                HUD.flash(.labeledError(title: "Error", subtitle: error.localizedDescription), delay: 2.0)
+
                 print("error forgot password in: \(error.localizedDescription)")
                 return
             }
@@ -51,9 +55,11 @@ class SigninViewController: UIViewController {
                 //print error
                 //if account doesn't exist suggest the user sign up by sending them to the signup page pre-filled
                 print("error signing in: \(error.localizedDescription)")
+                HUD.flash(.labeledError(title: "Error", subtitle: error.localizedDescription), delay: 2.0)
                 return
             }
             
+            HUD.flash(.success, delay: 2.0)
             self.onSignin?(self)
         }
     }

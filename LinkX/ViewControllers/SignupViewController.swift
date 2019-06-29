@@ -8,6 +8,7 @@
 
 import UIKit
 import FirebaseAuth
+import PKHUD
 
 class SignupViewController: UIViewController {
 
@@ -19,9 +20,15 @@ class SignupViewController: UIViewController {
     var signingIn = false
     
     public var onSigninTouched: ((UIViewController) -> ())?
+    public var onCloseTouched: ((UIViewController) -> ())?
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        firstNameField.delegate = self
+        lastNameField.delegate = self
+        emailField.delegate = self
+        passwordField.delegate = self
     }
     
     @IBAction func joinTouched(_ sender: Any) {
@@ -47,13 +54,15 @@ class SignupViewController: UIViewController {
             return //password must be at least 5 characters
         }
         
-        Auth.auth().createUser(withEmail: email, password: password) { (authData, err) in
+        Auth.auth().createUser(withEmail: email, firstName: firstName, lastName: lastName, password: password, image: nil) { err in
             if let error = err {
                 //print error
                 self.signingIn = false
+                HUD.flash(.labeledError(title: "Error", subtitle: error.localizedDescription), delay: 1.5)
                 return
             }
             
+            HUD.flash(.success, delay: 1.5)
             self.signingIn = false
             self.dismiss(animated: true, completion: nil)
         }
@@ -64,6 +73,7 @@ class SignupViewController: UIViewController {
     }
     
     @IBAction func closeTouched(_ sender: Any) {
+        onCloseTouched?(self)
         dismiss(animated: true, completion: nil)
     }
     
@@ -77,4 +87,22 @@ class SignupViewController: UIViewController {
     }
     */
 
+}
+
+extension SignupViewController: UITextFieldDelegate {
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        if textField == firstNameField {
+            textField.resignFirstResponder()
+            lastNameField.becomeFirstResponder()
+        } else if textField == lastNameField {
+            textField.resignFirstResponder()
+            emailField.becomeFirstResponder()
+        } else if textField == emailField {
+            textField.resignFirstResponder()
+            passwordField.becomeFirstResponder()
+        } else if textField == passwordField {
+            signInTouched(textField)
+        }
+        return true
+    }
 }

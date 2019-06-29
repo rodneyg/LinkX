@@ -28,11 +28,15 @@ class EmailViewController: UIViewController, MFMailComposeViewControllerDelegate
     
     @IBOutlet var investorRating: CosmosView!
     @IBOutlet var ratingsLabel: UILabel!
+    @IBOutlet var contactView: UIStackView!
     
+    var lastRating: Double?
     @IBOutlet var userRating: CosmosView!
     @IBOutlet var commentsText: UITextView!
     @IBOutlet var commentsHeight: NSLayoutConstraint!
     @IBOutlet var submitButton: UIButton!
+    
+    public var onSigninTouched: ((UIViewController) -> ())?
     
     private var storedInvestor: LXInvestor?
     
@@ -53,8 +57,13 @@ class EmailViewController: UIViewController, MFMailComposeViewControllerDelegate
         fetchInvestor()
 
         userRating.didTouchCosmos = { rating in
-            self.presentAuthentication()
-            self.submitButton.isHidden = false
+            if rating == self.lastRating {
+                self.lastRating = 0
+                self.userRating.rating = 0
+            }
+            
+            self.onSigninTouched?(self)
+            //self.submitButton.isHidden = false
         }
         
         userRating.didFinishTouchingCosmos = { rating in
@@ -63,7 +72,7 @@ class EmailViewController: UIViewController, MFMailComposeViewControllerDelegate
                 return //user is nil
             }
             
-            self.submitButton.isEnabled = true
+            //self.submitButton.isEnabled = true
         }
     }
     
@@ -72,10 +81,10 @@ class EmailViewController: UIViewController, MFMailComposeViewControllerDelegate
         
         fetchUserRating(completion: { rating in
             self.userRating.isUserInteractionEnabled = false
-            self.userRating.isHidden = false
-            self.userRating.rating = rating
+            //self.userRating.isHidden = false
+            //self.userRating.rating = rating
         }) { error in
-            self.userRating.isHidden = false
+            //self.userRating.isHidden = false
             //TODO: handle error
         }
         
@@ -89,19 +98,7 @@ class EmailViewController: UIViewController, MFMailComposeViewControllerDelegate
     }
     
     @IBAction func loginTouched(_ sender: Any) {
-        presentAuthentication()
-    }
-    
-    func presentAuthentication() {
-        guard let auth = authUI, Auth.auth().currentUser == nil else {
-            return //auth ui is nil or user is already logged in
-        }
-        
-        auth.delegate = self
-        auth.providers = providers
-        
-        let authViewController = auth.authViewController()
-        present(authViewController, animated: true, completion: nil)
+        onSigninTouched?(self)
     }
     
     private func authUI(_ authUI: FUIAuth, didSignInWith user: User?, error: Error?) {
@@ -110,10 +107,12 @@ class EmailViewController: UIViewController, MFMailComposeViewControllerDelegate
     
     func checkUser() {
         guard let _ = Auth.auth().currentUser else {
-            self.sendLabel.text = "Login To See Email"
+            self.contactView.isUserInteractionEnabled = false
+            self.sendLabel.text = "Login To See Contact Details"
             return // no user
         }
         
+        self.contactView.isUserInteractionEnabled = true
         sendLabel.text = investor.contactInfo.email
     }
     
@@ -311,7 +310,7 @@ class EmailViewController: UIViewController, MFMailComposeViewControllerDelegate
     
     public func dismiss() {
         view.endEditing(true)
-        navigationController?.popViewController(animated: true)
+        dismiss(animated: true, completion: nil)
     }
     
     override var preferredStatusBarStyle: UIStatusBarStyle {
