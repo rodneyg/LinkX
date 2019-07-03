@@ -28,6 +28,10 @@ class UploadViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        profileImage.layer.cornerRadius = 10.0
+        profileImage.layer.borderColor = UIColor(white: 0, alpha: 0.2).cgColor
+        profileImage.layer.borderWidth = 0.5
+        
         self.imagePicker = ImagePicker(presentationController: self, delegate: self)
     }
     
@@ -85,7 +89,6 @@ class UploadViewController: UIViewController {
                 Analytics.logEvent("added_points", parameters: ["uid" : uid, "points" : point.value])
 
                 HUD.flash(.success, delay: 2.5)
-                self.tabBarController?.selectedIndex = 2
                 self.navigationController?.popToRootViewController(animated: true)
             })
         }

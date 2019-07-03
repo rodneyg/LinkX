@@ -26,21 +26,13 @@ class EmailViewController: UIViewController, MFMailComposeViewControllerDelegate
     
     @IBOutlet var nameLabel: UILabel!
     @IBOutlet var titleLabel: UILabel!
-    @IBOutlet var firmLabel: UILabel!
     @IBOutlet var sendLabel: UILabel!
     @IBOutlet var loginButton: UIButton!
     @IBOutlet var bookmarkButton: UIButton!
     
-    @IBOutlet var investorRating: CosmosView!
-    @IBOutlet var ratingsLabel: UILabel!
     @IBOutlet var contactView: UIStackView!
-    
-    var lastRating: Double?
-    
-    @IBOutlet var userRating: CosmosView!
-    @IBOutlet var commentsText: UITextView!
-    @IBOutlet var commentsHeight: NSLayoutConstraint!
-    @IBOutlet var submitButton: UIButton!
+        
+    @IBOutlet var profileImage: CustomImageView!
     
     public var onSigninTouched: ((UIViewController) -> ())?
     
@@ -57,54 +49,21 @@ class EmailViewController: UIViewController, MFMailComposeViewControllerDelegate
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        commentsHeight.constant = 0
+        profileImage.layer.cornerRadius = 10.0
+        profileImage.layer.borderColor = UIColor(white: 0, alpha: 0.2).cgColor
+        profileImage.layer.borderWidth = 0.5
         
         checkUser()
         fetchInvestor()
-
-        userRating.didTouchCosmos = { rating in
-            Analytics.logEvent("touched_rating", parameters: ["rating" : rating])
-
-            if rating == self.lastRating {
-                Analytics.logEvent("touched_rating_double", parameters: [:])
-
-                self.lastRating = 0
-                self.userRating.rating = 0
-            }
-            
-            self.onSigninTouched?(self)
-            //self.submitButton.isHidden = false
-        }
-        
-        userRating.didFinishTouchingCosmos = { rating in
-            guard Auth.auth().currentUser != nil else {
-                self.userRating.rating = 0.0
-                return //user is nil
-            }
-            
-            //self.submitButton.isEnabled = true
-        }
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        fetchUserRating(completion: { rating in
-            self.userRating.isUserInteractionEnabled = false
-            //self.userRating.isHidden = false
-            //self.userRating.rating = rating
-        }) { error in
-            //self.userRating.isHidden = false
-            //TODO: handle error
-        }
-        
-        fetchRating()
+        checkUser()
         
         nameLabel.text = investor.fullName()
-        titleLabel.text = investor.title
-        firmLabel.text = investor.firm
-        ratingsLabel.text = "\(investor.rating.numOfRatings) ratings"
-        investorRating.rating = investor.rating.avgRating
+        titleLabel.text = "\(investor.title) at \(investor.firm)"
     }
     
     @IBAction func loginTouched(_ sender: Any) {
@@ -133,6 +92,8 @@ class EmailViewController: UIViewController, MFMailComposeViewControllerDelegate
                         return
                     }
                     
+                    self.bookmarkTouched(self)
+                    self.loginButton.isHidden = true
                     self.contactView.isUserInteractionEnabled = true
                     self.sendLabel.text = self.investor.contactInfo.email
                     HUD.flash(.success, delay: 2.5)
@@ -148,6 +109,12 @@ class EmailViewController: UIViewController, MFMailComposeViewControllerDelegate
         }
     }
     
+    func splitEmail(email: String) -> String {
+        var splits = email.split(separator: "@")
+        
+        return splits.count > 1 ? "xxxx@\(splits[1])" : "xxxx@xxxx.com"
+    }
+    
     private func authUI(_ authUI: FUIAuth, didSignInWith user: User?, error: Error?) {
         checkUser()
     }
@@ -155,7 +122,9 @@ class EmailViewController: UIViewController, MFMailComposeViewControllerDelegate
     func checkUser() {
         guard let user = Auth.auth().currentUser else {
             self.contactView.isUserInteractionEnabled = false
-            self.sendLabel.text = "Login To See Contact Details"
+            self.loginButton.isHidden = false
+            self.loginButton.setTitle("Login To See Contact Details", for: .normal)
+            self.sendLabel.text = self.splitEmail(email: self.investor.contactInfo.email)
             return // no user
         }
         
@@ -164,113 +133,26 @@ class EmailViewController: UIViewController, MFMailComposeViewControllerDelegate
             
             if hasPurchasedInvestor {
                 self.contactView.isUserInteractionEnabled = true
+                self.loginButton.isHidden = true
                 self.sendLabel.text = self.investor.contactInfo.email
             } else {
                 Database.database().canPurchaseInvestor(uid: user.uid, completion: { canPurchase in
                     self.canPurchase = canPurchase
                     
                     if canPurchase {
+                        self.loginButton.isHidden = false
                         self.contactView.isUserInteractionEnabled = true
-                        self.sendLabel.text = "Spend 25 Points To See Contact Details"
+                        self.loginButton.setTitle("Access for 25 Points", for: .normal)
+                        self.sendLabel.text = self.splitEmail(email: self.investor.contactInfo.email)
                         return // no user
                     } else {
+                        self.loginButton.isHidden = false
                         self.contactView.isUserInteractionEnabled = false
-                        self.sendLabel.text = "Earn Points To See Contact Details"
+                        self.loginButton.setTitle("Earn Points To Access", for: .normal)
+                        self.sendLabel.text = self.splitEmail(email: self.investor.contactInfo.email)
                         return // no user
                     }
                 })
-            }
-        }
-    }
-    
-    public func fetchRating() {
-        let ref = Database.database().reference().child("ratings").child(investor.id)
-        
-        ref.observeSingleEvent(of: .value, with: { (snapshot) in
-            guard let ratings = snapshot.value as? [String : Any] else {
-                return
-            }
-            
-            let numOfRatings = ratings["num_of_ratings"] as? Int
-            let avgRating = ratings["avg_rating"] as? Double
-            
-            self.ratingsLabel.text = "\(numOfRatings ?? 0) ratings"
-            self.investorRating.rating = avgRating ?? 0.0
-        }) { (err) in
-            print("Failed to fetch ratings:", err)
-        }
-    }
-    
-    public func fetchUserRating(completion: @escaping (Double) -> (), withCancel cancel: ((Error?) -> ())?) {
-        guard let user = Auth.auth().currentUser else {
-            cancel?(nil)
-            return
-        }
-        
-        let userRating = db.collection("ratings").whereField("sender_id", isEqualTo: user.uid).whereField("user_id", isEqualTo: investor.id)
-        userRating.getDocuments() { (querySnapshot, err) in
-            if let err = err {
-                print("Error getting documents: \(err)")
-                cancel?(err)
-            } else {
-                guard let document = querySnapshot!.documents.first else {
-                    cancel?(err)
-                    return // no rating found for user
-                }
-                
-                var docData = document.data()
-                let rating = (docData["value"] as? Double) ?? 0.0
-                completion(rating)
-            }
-        }
-    }
-    
-    public func updateAndIncrementUserRating() {
-        let ref = Database.database().reference().child("ratings").child(investor.id)
-
-        ref.runTransactionBlock({ (currentData: MutableData) -> TransactionResult in
-            if var rating = currentData.value as? [String : AnyObject] {
-                var ratingCount = rating["num_of_ratings"] as? Int ?? 0
-                
-                ratingCount += 1
-                
-                rating["num_of_ratings"] = ratingCount as AnyObject?
-                rating["avg_rating"] = 0 as AnyObject?
-                
-                // Set value and report transaction success
-                currentData.value = rating
-                
-                return TransactionResult.success(withValue: currentData)
-            }
-            return TransactionResult.success(withValue: currentData)
-        }) { (error, committed, snapshot) in
-            if let error = error {
-                print(error.localizedDescription)
-            }
-        }
-    }
-    
-    public func addRating(rating: Double, completion: @escaping () -> (), withCancel cancel: ((Error) -> ())?) {
-        guard let user = Auth.auth().currentUser else {
-            return
-        }
-        
-        var ref: DocumentReference? = nil
-        
-        // Add a document with a generated ID.
-        ref = db.collection("ratings").addDocument(data: [
-            "comment": "",
-            "user_id" : investor.id,
-            "sender_id": user.uid,
-            "timestamp": Date().timeIntervalSince1970,
-            "value": rating
-        ]) { err in
-            if let err = err {
-                cancel?(err)
-                print("Error adding document: \(err)")
-            } else {
-                completion()
-                print("Document added with ID: \(ref!.documentID)")
             }
         }
     }
@@ -294,17 +176,7 @@ class EmailViewController: UIViewController, MFMailComposeViewControllerDelegate
             print("Failed")
         }
     }
-    
-    @IBAction func submitTouched(_ sender: Any) {
-        addRating(rating: userRating.rating, completion: {
-            self.userRating.isUserInteractionEnabled = false
-            
-            self.updateAndIncrementUserRating()
-        }) { error in
-            //TODO: handle error
-        }
-    }
-    
+
     @IBAction func shareTouched(_ sender: Any) {
         guard let uid = Auth.auth().currentUser?.uid else {
             return

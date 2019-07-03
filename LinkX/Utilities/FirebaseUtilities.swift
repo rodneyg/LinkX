@@ -36,7 +36,7 @@ extension Auth {
     }
     
     private func setupUser(uid: String, firstName: String, lastName: String, image: UIImage?, completion: @escaping (Error?) -> ()) {
-        let point = Point(data: ["value" : 150.0, "notes" : "Starter Points", "created_at" : Date().timeIntervalSinceNow])
+        let point = Point(data: ["value" : 50.0, "notes" : "Starter Points", "created_at" : Date().timeIntervalSinceNow])
         Database.database().addPoint(withUID: uid, point: point) { (error) in
         }
         
@@ -242,16 +242,18 @@ extension Database {
                 return
             }
             
+            var found = false
             children.forEach { child in
                 if let value = child.value as? [String : Any] {
                     let transaction = Transaction(data: value)
                     if transaction.itemId == investorId {
-                        completion(true) //found ivnestor
+                        found = true//found ivnestor
+                        return
                     }
                 }
             }
             
-            completion(false)
+            completion(found)
         }) { (err) in
             print("Failed to fetch user from database:", err)
         }

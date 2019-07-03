@@ -99,7 +99,7 @@ class ProfileViewController: UIViewController, UITextFieldDelegate {
         
         let titleAndCompany = user.title
         if user.title == nil && user.company == nil {
-            titleHeight.constant = 0
+            //titleHeight.constant = 0
         } else {
             if titleAndCompany == nil {
                 titleLabel.text = user.company
@@ -110,8 +110,8 @@ class ProfileViewController: UIViewController, UITextFieldDelegate {
             }
         }
         
-        nameLabel.text = "\(user.firstName) \(user.lastName)"
-        headlineLabel.text = user.headline ?? "No Headline"
+        self.nameLabel.text = "\(user.firstName) \(user.lastName)"
+        self.headlineLabel.text = user.headline ?? "No Headline"
         
         if let imageUrl = user.profileImageUrl {
             profileImage.loadImage(urlString: imageUrl)
