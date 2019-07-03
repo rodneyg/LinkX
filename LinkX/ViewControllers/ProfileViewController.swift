@@ -69,12 +69,12 @@ class ProfileViewController: UIViewController, UITextFieldDelegate {
             print(error.localizedDescription)
         }
         
-        Database.database().fetchUserPoints(withUID: uid) { points in
-            let allPoints = points.map { return $0.value }
-            var total = 0.0
-            allPoints.forEach { total += $0 }
-            self.pointsLabel.text = "\(Int(total)) points"
-        }
+//        Database.database().fetchUserPoints(withUID: uid) { points in
+//            let allPoints = points.map { return $0.value }
+//            var total = 0.0
+//            allPoints.forEach { total += $0 }
+//            self.pointsLabel.text = "\(Int(total)) points"
+//        }
         
         Database.database().fetchContributions(withUID: uid) { (contributions, error) in
             if let _ = error {
@@ -93,10 +93,11 @@ class ProfileViewController: UIViewController, UITextFieldDelegate {
     }
     
     func loadUser(user: User) {
-        nameLabel.text = "\(user.firstName) \(user.lastName)"
-        headlineLabel.text = user.headline ?? "No Headline"
+        if let points = user.points {
+            self.pointsLabel.text = "\(Int(points)) points"
+        }
         
-        var titleAndCompany = user.title
+        let titleAndCompany = user.title
         if user.title == nil && user.company == nil {
             titleHeight.constant = 0
         } else {
@@ -108,6 +109,9 @@ class ProfileViewController: UIViewController, UITextFieldDelegate {
                 titleLabel.text = titleAndCompany
             }
         }
+        
+        nameLabel.text = "\(user.firstName) \(user.lastName)"
+        headlineLabel.text = user.headline ?? "No Headline"
         
         if let imageUrl = user.profileImageUrl {
             profileImage.loadImage(urlString: imageUrl)
@@ -131,13 +135,17 @@ class ProfileViewController: UIViewController, UITextFieldDelegate {
     }
     
     @IBAction func logoutTouched(_ sender: Any) {
+        Analytics.logEvent("logout_touched", parameters: [:])
+
         let logoutAlert = UIAlertController(title: "Logout", message: "Are you sure you want to logout?", preferredStyle: .alert)
         
         logoutAlert.addAction(UIAlertAction(title: "Yes", style: .default, handler: { (action: UIAlertAction!) in
+            Analytics.logEvent("logoout_confirmed", parameters: [:])
             self.logout()
         }))
         
         logoutAlert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: { (action: UIAlertAction!) in
+            Analytics.logEvent("logoout_cancelled", parameters: [:])
         }))
         
         self.present(logoutAlert, animated: true, completion: nil)
@@ -151,6 +159,7 @@ class ProfileViewController: UIViewController, UITextFieldDelegate {
     }
     
     @IBAction func editTouched(_ sender: Any) {
+        Analytics.logEvent("edit_profile_touched", parameters: [:])
         performSegue(withIdentifier: "ShowEditProfile", sender: self)
     }
     
@@ -207,6 +216,8 @@ extension ProfileViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        Analytics.logEvent("contribution_cell_touched", parameters: [:])
+
         tableView.deselectRow(at: indexPath, animated: false)
     }
 }

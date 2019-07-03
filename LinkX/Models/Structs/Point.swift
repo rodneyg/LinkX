@@ -19,6 +19,7 @@ public struct Point {
     init(data: [String : Any]) {
         self.id = (data["id"] as? String) ?? ""
         self.value = (data["value"] as? Double) ?? 0.0
+        
         let createdAtSeconds = (data["created_at"]  as? Double ?? 0)
         self.createdAt = Date(timeIntervalSince1970: createdAtSeconds)
         

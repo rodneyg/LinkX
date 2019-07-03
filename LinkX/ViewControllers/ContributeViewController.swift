@@ -9,6 +9,7 @@
 import UIKit
 import PKHUD
 import FirebaseAuth
+import FirebaseAnalytics
 
 class ContributeViewController: UIViewController {
 
@@ -17,6 +18,7 @@ class ContributeViewController: UIViewController {
     @IBOutlet var titleField: UITextField!
     @IBOutlet var fundField: UITextField!
     @IBOutlet var emailField: UITextField!
+    @IBOutlet var closeButton: UIButton!
     
     var contribution: Contribution?
     
@@ -29,8 +31,14 @@ class ContributeViewController: UIViewController {
         fundField.delegate = self
         emailField.delegate = self
     }
-
+    
+    @IBAction func closeTouched(_ sender: Any) {
+        dismiss(animated: true, completion: nil)
+    }
+    
     @IBAction func nextTouched(_ sender: Any) {
+        Analytics.logEvent("contribute_next_touched", parameters: [:])
+
         guard let firstName = firstField.text, firstName.count > 1 else {
             HUD.flash(.labeledError(title: "Invalid", subtitle: "Please enter a valid first name"), delay: 2.0)
             return

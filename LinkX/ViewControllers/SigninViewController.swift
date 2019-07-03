@@ -9,6 +9,7 @@
 import UIKit
 import Firebase
 import FirebaseAuth
+import FirebaseAnalytics
 import PKHUD
 
 class SigninViewController: UIViewController {
@@ -23,8 +24,11 @@ class SigninViewController: UIViewController {
     }
     
     @IBAction func forgotTouched(_ sender: Any) {
+        Analytics.logEvent("forgot_touched", parameters: [:])
+
         guard let email = emailField.text, email.count > 2 else {
             HUD.flash(.labeledError(title: "Error", subtitle: "Enter Valid E-mail"), delay: 2.0)
+            Analytics.logEvent("forgot_failed", parameters: ["reason" : "email"])
             return //enter valid e-mail
         }
         
@@ -33,20 +37,25 @@ class SigninViewController: UIViewController {
                 //print error
                 HUD.flash(.labeledError(title: "Error", subtitle: error.localizedDescription), delay: 2.0)
 
+                Analytics.logEvent("forgot_password_failed", parameters: ["description" : error.localizedDescription])
                 print("error forgot password in: \(error.localizedDescription)")
                 return
             }
             
-            //TODO: let the user know to check their email
+            HUD.show(.labeledSuccess(title: "Email", subtitle: "Check your email for your forgot password link."))
         }
     }
     
     @IBAction func signinTouched(_ sender: Any) {
+        Analytics.logEvent("signin_touched", parameters: [:])
+
         guard let email = emailField.text, email.count > 2 else {
+            Analytics.logEvent("signin_failed", parameters: ["reason" : "email"])
             return //enter valid e-mail
         }
         
         guard let password = passwordField.text, password.count > 2 else {
+            Analytics.logEvent("signin_failed", parameters: ["reason" : "password"])
             return //enter valid password
         }
         
@@ -55,10 +64,12 @@ class SigninViewController: UIViewController {
                 //print error
                 //if account doesn't exist suggest the user sign up by sending them to the signup page pre-filled
                 print("error signing in: \(error.localizedDescription)")
+                Analytics.logEvent("signin_failed", parameters: ["description" : error.localizedDescription])
                 HUD.flash(.labeledError(title: "Error", subtitle: error.localizedDescription), delay: 2.0)
                 return
             }
             
+            Analytics.logEvent("success_signin", parameters: [:])
             HUD.flash(.success, delay: 2.0)
             self.onSignin?(self)
         }

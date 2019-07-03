@@ -11,6 +11,7 @@ import PKHUD
 import FirebaseDatabase
 import FirebaseAuth
 import FirebaseStorage
+import FirebaseAnalytics
 
 class UploadViewController: UIViewController {
 
@@ -62,9 +63,11 @@ class UploadViewController: UIViewController {
     func addContribution(withUID uid: String, contribution: Contribution) {
         Database.database().addContribution(withUID: uid, contribution: contribution) { error in
             if self.handleError(error: error) {
+                Analytics.logEvent("add_contribution_error", parameters: ["description" : error?.localizedDescription ?? ""])
                 return
             }
             
+            Analytics.logEvent("added_contribution", parameters: ["uid" : uid])
             let activity = Activity(data: ["id" : "add_investor", "name" : "Add Investor"])
             var pointData : [String : Any] =  ["value" : 15.0, "activity" : activity, "created_at" : Date().timeIntervalSinceNow]
             if self.contribution.profileImageUrl != nil {
@@ -74,10 +77,15 @@ class UploadViewController: UIViewController {
             let point = Point(data: pointData)
             Database.database().addPoint(withUID: uid, point: point, completion: { error in
                 if self.handleError(error: error) {
+                    Analytics.logEvent("add_points_error", parameters: ["description" : error?.localizedDescription ?? ""])
+
                     return
                 }
                 
+                Analytics.logEvent("added_points", parameters: ["uid" : uid, "points" : point.value])
+
                 HUD.flash(.success, delay: 2.5)
+                self.tabBarController?.selectedIndex = 2
                 self.navigationController?.popToRootViewController(animated: true)
             })
         }

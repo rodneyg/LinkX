@@ -8,6 +8,8 @@
 
 import UIKit
 import FirebaseAuth
+import FirebaseAnalytics
+import FirebaseDatabase
 import PKHUD
 
 class SignupViewController: UIViewController {
@@ -32,25 +34,32 @@ class SignupViewController: UIViewController {
     }
     
     @IBAction func joinTouched(_ sender: Any) {
+        Analytics.logEvent("join_touched", parameters: ["reason" : "first name"])
+
         guard signingIn == false else {
+            Analytics.logEvent("join_failed", parameters: ["reason" : "in progress"])
             return
         }
         
         signingIn = true
         
         guard let firstName = firstNameField.text, firstName.count > 1 else {
+            Analytics.logEvent("join_failed", parameters: ["reason" : "first name"])
             return
         }
         
         guard let lastName = lastNameField.text, lastName.count > 1 else {
+            Analytics.logEvent("join_failed", parameters: ["reason" : "last name"])
             return
         }
         
         guard let email = emailField.text, email.count > 1 else {
+            Analytics.logEvent("join_failed", parameters: ["reason" : "email"])
             return
         }
         
         guard let password = passwordField.text, password.count > 4 else {
+            Analytics.logEvent("join_failed", parameters: ["reason" : "password"])
             return //password must be at least 5 characters
         }
         
@@ -58,10 +67,12 @@ class SignupViewController: UIViewController {
             if let error = err {
                 //print error
                 self.signingIn = false
+                Analytics.logEvent("join_failed", parameters: ["description" : error.localizedDescription])
                 HUD.flash(.labeledError(title: "Error", subtitle: error.localizedDescription), delay: 1.5)
                 return
             }
             
+            Analytics.logEvent("join_success", parameters: [:])
             HUD.flash(.success, delay: 1.5)
             self.signingIn = false
             self.dismiss(animated: true, completion: nil)
@@ -92,15 +103,19 @@ class SignupViewController: UIViewController {
 extension SignupViewController: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         if textField == firstNameField {
+            Analytics.logEvent("signup_return_key", parameters: ["text_field" : "first name"])
             textField.resignFirstResponder()
             lastNameField.becomeFirstResponder()
         } else if textField == lastNameField {
+            Analytics.logEvent("signup_return_key", parameters: ["text_field" : "last name"])
             textField.resignFirstResponder()
             emailField.becomeFirstResponder()
         } else if textField == emailField {
+            Analytics.logEvent("signup_return_key", parameters: ["text_field" : "email"])
             textField.resignFirstResponder()
             passwordField.becomeFirstResponder()
         } else if textField == passwordField {
+            Analytics.logEvent("signup_return_key", parameters: ["text_field" : "password"])
             signInTouched(textField)
         }
         return true

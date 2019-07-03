@@ -8,6 +8,7 @@
 
 import UIKit
 import FirebaseAuth
+import FirebaseAnalytics
 import PKHUD
 import FirebaseStorage
 
@@ -60,13 +61,17 @@ class EditProfileViewController: UIViewController {
     }
 
     @IBAction func deleteTouched(_ sender: Any) {
+        Analytics.logEvent("delete_touched", parameters: [:])
+
         let deleteAlert = UIAlertController(title: "Delete", message: "Your account will permanently be deleted.", preferredStyle: .alert)
         
         deleteAlert.addAction(UIAlertAction(title: "Ok", style: .default, handler: { (action: UIAlertAction!) in
+            Analytics.logEvent("delete_confirmed", parameters: [:])
             self.deleteAccount()
         }))
         
         deleteAlert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: { (action: UIAlertAction!) in
+            Analytics.logEvent("delete_cancelled", parameters: [:])
         }))
         
         self.present(deleteAlert, animated: true, completion: nil)
@@ -76,8 +81,10 @@ class EditProfileViewController: UIViewController {
         HUD.show(.progress)
         Auth.auth().currentUser?.delete { error in
             if let error = error {
+                Analytics.logEvent("delete_error", parameters: ["description" :  error.localizedDescription])
                 HUD.flash(.labeledError(title: "Deletion Error", subtitle: error.localizedDescription), delay: 1.5)
             } else {
+                Analytics.logEvent("delete_success", parameters: [:])
                 HUD.flash(.success, delay: 2.0)
                 self.dismiss(animated: true, completion: nil)
             }
@@ -89,15 +96,20 @@ class EditProfileViewController: UIViewController {
     }
     
     @IBAction func saveTouched(_ sender: Any) {
+        Analytics.logEvent("saved_touched", parameters: [:])
+
         guard let firstName = firstField.text, firstName.count > 1 else {
+            Analytics.logEvent("saved_failed", parameters: ["reason" : "first name"])
             return
         }
         
         guard let lastName = lastField.text, lastName.count > 1 else {
+            Analytics.logEvent("saved_failed", parameters: ["reason" : "last name"])
             return
         }
         
         guard let email = emailField.text, email.count > 1 else {
+            Analytics.logEvent("saved_failed", parameters: ["reason" : "email"])
             return //TODO: add confirmation check for e-mail change
         }
         
@@ -119,6 +131,8 @@ class EditProfileViewController: UIViewController {
     }
     
     @IBAction func closeTouched(_ sender: Any) {
+        Analytics.logEvent("close_touched", parameters: [:])
+
         self.dismiss(animated: true, completion: nil)
     }
     

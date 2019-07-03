@@ -12,6 +12,7 @@ target 'LinkX' do
   pod 'Firebase/Database'
   pod 'Firebase/Auth'
   pod 'Firebase/DynamicLinks'
+  pod 'Firebase/Analytics'
   pod 'Cosmos', '~> 18.0'
   pod 'EFQRCode', '~> 5.0.0'
   pod 'PKHUD', '~> 5.0'

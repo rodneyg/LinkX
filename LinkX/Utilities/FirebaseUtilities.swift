@@ -11,25 +11,48 @@ import Firebase
 
 extension Auth {
     func createUser(withEmail email: String, firstName: String, lastName: String, password: String, image: UIImage?, completion: @escaping (Error?) -> ()) {
-        Auth.auth().createUser(withEmail: email, password: password, completion: { (user, err) in
-            if let err = err {
-                print("Failed to create user:", err)
-                completion(err)
-                return
+        if let user = Auth.auth().currentUser, user.isAnonymous {
+            let credential = EmailAuthProvider.credential(withEmail: email, password: password)
+            user.linkAndRetrieveData(with: credential) { (data, error) in
+                guard let user = data?.user else { return }
+                
+                let userRecord = Database.database().reference().child("users").child(user.uid)
+                userRecord.child("last_signin_at").setValue(ServerValue.timestamp())
+                
+                self.setupUser(uid: user.uid, firstName: firstName, lastName: lastName, image: image, completion: completion)
             }
-            guard let uid = user?.user.uid else { return }
-            if let image = image {
-                Storage.storage().uploadUserProfileImage(image: image, completion: { (profileImageUrl) in
-                    self.uploadUser(withUID: uid, firstName: firstName, lastName: lastName, points: 150.0, profileImageUrl: profileImageUrl) {
-                        completion(nil)
-                    }
-                })
-            } else {
-                self.uploadUser(withUID: uid, firstName: firstName, lastName: lastName, points: 150.0) {
+        } else {
+            Auth.auth().createUser(withEmail: email, password: password, completion: { (user, err) in
+                if let err = err {
+                    print("Failed to create user:", err)
+                    completion(err)
+                    return
+                }
+                guard let uid = user?.user.uid else { return }
+
+                self.setupUser(uid: uid, firstName: firstName, lastName: lastName, image: image, completion: completion)
+            })
+        }
+    }
+    
+    private func setupUser(uid: String, firstName: String, lastName: String, image: UIImage?, completion: @escaping (Error?) -> ()) {
+        let point = Point(data: ["value" : 150.0, "notes" : "Starter Points", "created_at" : Date().timeIntervalSinceNow])
+        Database.database().addPoint(withUID: uid, point: point) { (error) in
+        }
+        
+        Database.database().createInviteCode(withUser: uid, firstName: firstName, lastName: lastName, completion: nil)
+        
+        if let image = image {
+            Storage.storage().uploadUserProfileImage(image: image, completion: { (profileImageUrl) in
+                self.uploadUser(withUID: uid, firstName: firstName, lastName: lastName, points: 0.0, profileImageUrl: profileImageUrl) {
                     completion(nil)
                 }
+            })
+        } else {
+            self.uploadUser(withUID: uid, firstName: firstName, lastName: lastName, points: 0.0) {
+                completion(nil)
             }
-        })
+        }
     }
     
     public func uploadUser(withUID uid: String, firstName: String, lastName: String, headline: String? = nil, title: String? = nil, company: String? = nil, points: Double? = nil, profileImageUrl: String? = nil, completion: @escaping (() -> ())) {
@@ -54,8 +77,7 @@ extension Auth {
             dictionaryValues["points"] = points
         }
         
-        let values = [uid : dictionaryValues]
-        Database.database().reference().child("users").updateChildValues(values, withCompletionBlock: { (err, ref) in
+        Database.database().reference().child("users").child(uid).updateChildValues(dictionaryValues, withCompletionBlock: { (err, ref) in
             if let err = err {
                 print("Failed to upload user to database:", err)
                 return
@@ -197,8 +219,64 @@ extension Database {
                 completion(err)
                 return
             }
+            self.runPointTransaction(withUID: uid, point: point)
             completion(nil)
         })
+    }
+    
+    func canPurchaseInvestor(uid: String, completion: @escaping (Bool) -> ()) {
+        self.fetchUser(withUID: uid) { user in
+            guard let points = user.points else {
+                completion(false)
+                return
+            }
+            
+            completion(points >= 25.0) //investor costs 25.0 points
+        }
+    }
+    
+    func hasPurchasedInvestor(uid: String, investorId: String, completion: @escaping (Bool) -> ()) {
+        Database.database().reference().child("transactions").child(uid).observeSingleEvent(of: .value, with: { (snapshot) in
+            guard let children = snapshot.children.allObjects as? [DataSnapshot] else {
+                completion(false)
+                return
+            }
+            
+            children.forEach { child in
+                if let value = child.value as? [String : Any] {
+                    let transaction = Transaction(data: value)
+                    if transaction.itemId == investorId {
+                        completion(true) //found ivnestor
+                    }
+                }
+            }
+            
+            completion(false)
+        }) { (err) in
+            print("Failed to fetch user from database:", err)
+        }
+    }
+    
+    func purchaseInvestorContact(uid: String, investorId: String, completion: @escaping (Transaction?, Error?) -> ()) {
+        canPurchaseInvestor(uid: uid) { canPurchase in
+            guard canPurchase else {
+                completion(nil, nil)
+                return
+            }
+            
+            let dictionaryValues : [String : Any] = ["uid" : uid, "point_cost" : 25.0, "updated_at" : Date().timeIntervalSinceNow, "created_at" : Date().timeIntervalSince1970, "item_id" : investorId]
+            self.reference().child("transactions").child(uid).childByAutoId().updateChildValues(dictionaryValues, withCompletionBlock: { (err, ref) in
+                if let err = err {
+                    completion(nil, err)
+                    return
+                }
+                
+                let point = Point(data: ["value" : -25.0, "activity" : LXConstants.PURCHASE_INVESTOR_CONTACT, "notes" : "Referred by User", "created_at" : Date().timeIntervalSinceNow])
+                self.runPointTransaction(withUID: uid, point: point)
+                
+                completion(Transaction(data: dictionaryValues), nil)
+            })
+        }
     }
 
     func fetchUserPoints(withUID uid: String, completion: @escaping ([Point]) -> ()) {
@@ -221,40 +299,79 @@ extension Database {
         }
     }
     
-    func addPoint(withUID uid: String, point: Point) {
-//        let userRef = reference().child("users").child(uid)
-//
-//        userRef.runTransactionBlock({ (currentData: MutableData) -> TransactionResult in
-//            if var user = currentData.value as? [String : AnyObject], let uid = Auth.auth().currentUser?.uid {
-//                var points: Dictionary<String, Bool>
-//                points = user["points"] as? [String : Bool] ?? [:]
-//                var pointsCount = user["pointCount"] as? Int ?? 0
-//                if let _ = points[uid] {
-//                    // Unstar the post and remove self from stars
-//                    pointsCount -= 1
-//                    points.removeValue(forKey: uid)
-//                } else {
-//                    // Star the post and add self to stars
-//                    pointsCount += 1
-//                    points[uid] = true
-//                }
-//                points["pointCount"] = pointsCount as AnyObject?
-//                points["points"] = point as AnyObject?
-//
-//                // Set value and report transaction success
-//                currentData.value = point
-//
-//                return TransactionResult.success(withValue: currentData)
-//            }
-//            return TransactionResult.success(withValue: currentData)
-//        }) { (error, committed, snapshot) in
-//            if let error = error {
-//                print(error.localizedDescription)
-//            }
-//        }
+    private func runPointTransaction(withUID uid: String, point: Point) {
+        let userRef = reference().child("users").child(uid)
+
+        userRef.runTransactionBlock({ (currentData: MutableData) -> TransactionResult in
+            if var user = currentData.value as? [String : AnyObject] {
+                let pointsCount : Double = user["points"] as? Double ?? 0.0
+                let totalPoints = pointsCount + point.value
+                user["points"] = NSNumber(value: totalPoints) as AnyObject
+
+                // Set value and report transaction success
+                currentData.value = user
+
+                return TransactionResult.success(withValue: currentData)
+            }
+            return TransactionResult.success(withValue: currentData)
+        }) { (error, committed, snapshot) in
+            if let error = error {
+                print(error.localizedDescription)
+            }
+        }
     }
     
     //MARK: Users
+    
+    func removeSpecialCharsFromString(text: String) -> String {
+        let okayChars = Set("abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLKMNOPQRSTUVWXYZ1234567890+-=().!_")
+        return text.filter {okayChars.contains($0) }
+    }
+    
+    func createInviteCode(withUser uid: String, firstName: String, lastName: String, completion: ((String) -> ())?) {
+        let code = firstName.replacingOccurrences(of: " ", with: "") + String(lastName.first ?? "X")
+        //random code between 1-900 i.e. rodneyg391
+        let random = (Int.random(in: 1..<25) * Int.random(in: 1..<25)) + Int.random(in: 0..<100)
+        let inviteCode = removeSpecialCharsFromString(text: "\(code)\(random)").lowercased()
+        var dictionaryValues: [String : Any] = ["invite_code" : inviteCode]
+        
+        guard let link = URL(string: "https://linkx.page.link/?referredBy=\(inviteCode)") else { return }
+        
+        let linkBuilder = DynamicLinkComponents(link: link, domainURIPrefix: "https://linkx.page.link")
+        
+        linkBuilder?.iOSParameters = DynamicLinkIOSParameters(bundleID: "com.ios.codesigned.LinkX")
+        linkBuilder?.iOSParameters?.minimumAppVersion = "1.0"
+        linkBuilder?.iOSParameters?.appStoreID = "1457507501"
+        
+        linkBuilder?.shorten() { url, warnings, error in
+            if let error = error {
+                print("Failed to upload user to database:", error)
+                return
+            }
+            
+            print("The short URL is: \(url)")
+            dictionaryValues["invite_code_url"] = url?.absoluteString
+            
+            Database.database().reference().child("users").child(uid).updateChildValues(dictionaryValues, withCompletionBlock: { (err, ref) in
+                if let err = err {
+                    print("Failed to upload user to database:", err)
+                    return
+                }
+                
+                completion?(inviteCode)
+            })
+        }
+    }
+    
+    func fetchUserByInvite(code: String, completion: @escaping (String) -> ()) {
+        Database.database().reference().child("users").queryOrdered(byChild: "invite_code").queryEqual(toValue: code.lowercased()).observeSingleEvent(of: .value, with: { (snapshot) in
+            guard let value = snapshot.value as? [String : Any], let first = value.keys.first else { return }
+
+            completion(first)
+        }) { (err) in
+            print("Failed to fetch user from database:", err)
+        }
+    }
     
     func fetchUser(withUID uid: String, completion: @escaping (User) -> ()) {
         Database.database().reference().child("users").child(uid).observeSingleEvent(of: .value, with: { (snapshot) in

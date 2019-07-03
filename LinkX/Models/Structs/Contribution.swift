@@ -15,7 +15,7 @@ struct Contribution {
     var title: String
     var status: String
     var email: String?
-    var type: String //Investor, Fund
+    var type: String //Investor, Fund, Referral
     var reviewerId: String
     var createdAt: Date
     var updatedAt: Date

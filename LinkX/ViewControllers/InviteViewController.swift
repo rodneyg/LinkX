@@ -9,15 +9,43 @@
 import UIKit
 import ContactsUI
 import Contacts
+import FirebaseDynamicLinks
+import FirebaseDatabase
+import FirebaseAuth
 
 class InviteViewController: UIViewController {
     
     @IBOutlet var codeButton: UIButton!
     
+    var user: User! //user must be set
+    var inviteCode: String? {
+        didSet {
+            guard let code = inviteCode else {
+                return //create invite code
+            }
+
+            inviteTextButton.setTitle(code, for: .normal)
+        }
+    }
+    
+    @IBOutlet var inviteTextButton: UIButton!
+    @IBOutlet var inviteButton: UIButton!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        inviteCode = user.inviteCode
+        
+        if inviteCode == nil { //try to create invite code if it does not exist
+            Database.database().createInviteCode(withUser: user.uid, firstName: user.firstName, lastName: user.lastName) { code in
+                self.inviteCode = code
+            }
+        }
         // Do any additional setup after loading the view.
+    }
+    
+    @IBAction func closeTouched(_ sender: Any) {
+        dismiss(animated: true, completion: nil)
     }
     
     @IBAction func inviteTouched(_ sender: Any) {
@@ -26,18 +54,24 @@ class InviteViewController: UIViewController {
     
     @IBAction func codeTouched(_ sender: Any) {
         //if user does not have a code create one
+
     }
     
-    /*
-    // MARK: - Navigation
+    @IBAction func shareTouched(_ sender: Any) {
+        guard let link = user.inviteCodeUrl else {
+            return
+        }
+        
+        // text to share
 
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
+        // set up activity view controller
+        let textToShare = [ link ]
+        let activityViewController = UIActivityViewController(activityItems: textToShare, applicationActivities: nil)
+        activityViewController.popoverPresentationController?.sourceView = self.view // so that iPads won't crash
+        
+        // present the view controller
+        self.present(activityViewController, animated: true, completion: nil)
     }
-    */
-
 }
 
 extension InviteViewController: CNContactPickerDelegate {

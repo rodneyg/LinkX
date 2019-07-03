@@ -14,10 +14,15 @@ import FirebaseAuth
 import FirebaseDatabase
 import FirebaseFirestore
 import FirebaseUI
+import FirebaseAnalytics
+import PKHUD
 
 class EmailViewController: UIViewController, MFMailComposeViewControllerDelegate, FUIAuthDelegate {
     
     public var investor: Investor!
+    public var loggedIn: Bool = false
+    public var purchased: Bool = false
+    public var canPurchase: Bool = false
     
     @IBOutlet var nameLabel: UILabel!
     @IBOutlet var titleLabel: UILabel!
@@ -31,6 +36,7 @@ class EmailViewController: UIViewController, MFMailComposeViewControllerDelegate
     @IBOutlet var contactView: UIStackView!
     
     var lastRating: Double?
+    
     @IBOutlet var userRating: CosmosView!
     @IBOutlet var commentsText: UITextView!
     @IBOutlet var commentsHeight: NSLayoutConstraint!
@@ -57,7 +63,11 @@ class EmailViewController: UIViewController, MFMailComposeViewControllerDelegate
         fetchInvestor()
 
         userRating.didTouchCosmos = { rating in
+            Analytics.logEvent("touched_rating", parameters: ["rating" : rating])
+
             if rating == self.lastRating {
+                Analytics.logEvent("touched_rating_double", parameters: [:])
+
                 self.lastRating = 0
                 self.userRating.rating = 0
             }
@@ -98,7 +108,44 @@ class EmailViewController: UIViewController, MFMailComposeViewControllerDelegate
     }
     
     @IBAction func loginTouched(_ sender: Any) {
-        onSigninTouched?(self)
+        guard let uid = Auth.auth().currentUser?.uid else {
+            onSigninTouched?(self)
+            return // no user
+        }
+        
+        //hasPurchased, canPurchased
+        if canPurchase { //show prompt to accept purchase
+
+            let purchaseAlert = UIAlertController(title: "Confirm Purchase", message: "Access to this contact is 25 points. Are you sure you want to continue?", preferredStyle: .alert)
+            
+            purchaseAlert.addAction(UIAlertAction(title: "Yes, Purchase", style: .default, handler: { (action: UIAlertAction!) in
+                HUD.flash(.progress, onView: self.view, delay: 60.0, completion: nil)
+                
+                Database.database().purchaseInvestorContact(uid: uid, investorId: self.investor.id, completion: { (transaction, error) in
+                    if let error = error {
+                        print(error.localizedDescription)
+                        HUD.flash(.labeledError(title: "Error", subtitle: error.localizedDescription), delay: 4.5)
+                        return
+                    }
+                    
+                    guard let _ = transaction else {
+                        HUD.flash(.labeledError(title: "Error", subtitle: "Transaction could not be completed."), delay: 4.5)
+                        return
+                    }
+                    
+                    self.contactView.isUserInteractionEnabled = true
+                    self.sendLabel.text = self.investor.contactInfo.email
+                    HUD.flash(.success, delay: 2.5)
+                })
+            }))
+            
+            purchaseAlert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: { (action: UIAlertAction!) in
+            }))
+            
+            self.present(purchaseAlert, animated: true, completion: nil)
+        } else { //logged in and can't purchase
+            tabBarController?.selectedIndex = 4 // go to earn points
+        }
     }
     
     private func authUI(_ authUI: FUIAuth, didSignInWith user: User?, error: Error?) {
@@ -106,14 +153,34 @@ class EmailViewController: UIViewController, MFMailComposeViewControllerDelegate
     }
     
     func checkUser() {
-        guard let _ = Auth.auth().currentUser else {
+        guard let user = Auth.auth().currentUser else {
             self.contactView.isUserInteractionEnabled = false
             self.sendLabel.text = "Login To See Contact Details"
             return // no user
         }
         
-        self.contactView.isUserInteractionEnabled = true
-        sendLabel.text = investor.contactInfo.email
+        Database.database().hasPurchasedInvestor(uid: user.uid, investorId: investor.id) { hasPurchasedInvestor in
+            self.purchased = hasPurchasedInvestor
+            
+            if hasPurchasedInvestor {
+                self.contactView.isUserInteractionEnabled = true
+                self.sendLabel.text = self.investor.contactInfo.email
+            } else {
+                Database.database().canPurchaseInvestor(uid: user.uid, completion: { canPurchase in
+                    self.canPurchase = canPurchase
+                    
+                    if canPurchase {
+                        self.contactView.isUserInteractionEnabled = true
+                        self.sendLabel.text = "Spend 25 Points To See Contact Details"
+                        return // no user
+                    } else {
+                        self.contactView.isUserInteractionEnabled = false
+                        self.sendLabel.text = "Earn Points To See Contact Details"
+                        return // no user
+                    }
+                })
+            }
+        }
     }
     
     public func fetchRating() {
@@ -239,6 +306,12 @@ class EmailViewController: UIViewController, MFMailComposeViewControllerDelegate
     }
     
     @IBAction func shareTouched(_ sender: Any) {
+        guard let uid = Auth.auth().currentUser?.uid else {
+            return
+        }
+        
+        Analytics.logEvent("share_touched", parameters: ["uid" : uid, "investor_id" : investor.id, "investor_name" : investor.fullName()])
+
         // text to share
         let text = "Hey. Here is the e-mail for \(investor.first) \(investor.last): \(investor.contactInfo.email) \n I found it using LinkX on iOS!"
         
@@ -252,14 +325,26 @@ class EmailViewController: UIViewController, MFMailComposeViewControllerDelegate
     }
     
     @IBAction func clipboardTouched(_ sender: Any) {
+        guard let uid = Auth.auth().currentUser?.uid else {
+            return
+        }
+        
+        Analytics.logEvent("clipboard_touched", parameters: ["uid" : uid, "investor_id" : investor.id, "investor_name" : investor.fullName()])
         UIPasteboard.general.string = investor.contactInfo.email
         //TODO: add show alert
     }
     
     @IBAction func bookmarkTouched(_ sender: Any) {
+        guard let uid = Auth.auth().currentUser?.uid else {
+            return
+        }
+        
         let context = appDelegate.persistentContainer.viewContext
+        
+        Analytics.logEvent("bookmark_touched", parameters: ["uid" : uid, "investor_id" : investor.id, "investor_name" : investor.fullName()])
 
         guard storedInvestor == nil else { //investor already stored locally, delete bookmark
+            Analytics.logEvent("delete_bookmark", parameters: ["uid" : uid, "investor_id" : investor.id, "investor_name" : investor.fullName()])
             context.delete(storedInvestor!)
             bookmarkButton.isSelected = false
             storedInvestor = nil
@@ -280,22 +365,30 @@ class EmailViewController: UIViewController, MFMailComposeViewControllerDelegate
         newInvestor.setValue(investor.contactInfo.state, forKey: "state")
         
         do {
+            Analytics.logEvent("bookmark_saved", parameters: ["uid" : uid, "investor_id" : investor.id, "investor_name" : investor.fullName()])
             try context.save()
             storedInvestor = newInvestor as? LXInvestor
             bookmarkButton.isSelected = true
         } catch {
+            Analytics.logEvent("bookmark_failed", parameters: ["uid" : uid, "investor_id" : investor.id, "investor_name" : investor.fullName()])
             print("Failed saving") //TODO: add failed to bookmark
         }
     }
     
     @IBAction func emailTouched(_ sender: Any) {
+        guard let uid = Auth.auth().currentUser?.uid else {
+            return
+        }
+        
+        Analytics.logEvent("email_touched", parameters: ["uid" : uid, "investor_id" : investor.id, "investor_name" : investor.fullName()])
         let composeVC = MFMailComposeViewController()
 
         composeVC.mailComposeDelegate = self
         composeVC.setToRecipients([investor.contactInfo.email])
-        composeVC.setSubject("AirWave Mini - \(investor.first)")
+        composeVC.setSubject("Put Your Subject Here - \(investor.first)")
         
         guard MFMailComposeViewController.canSendMail() else { //TODO: show mail error alert
+            Analytics.logEvent("email_failed", parameters: ["uid" : uid, "investor_id" : investor.id, "investor_name" : investor.fullName()])
             return
         }
         
@@ -305,6 +398,7 @@ class EmailViewController: UIViewController, MFMailComposeViewControllerDelegate
     }
     
     @IBAction func closeTouched(_ sender: Any) {
+        Analytics.logEvent("close_touched", parameters: [:])
         dismiss()
     }
     

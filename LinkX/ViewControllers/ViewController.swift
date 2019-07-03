@@ -58,6 +58,8 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     }
     
     @IBAction func topBarTouched(_ sender: Any) {
+        Analytics.logEvent("top_bar_touched", parameters: [:])
+
         if searchBar.text == nil || searchBar.text!.isEmpty {
             searchBar.resignFirstResponder() //if no search text, and the user is tapping the top bar, dismiss
         }
@@ -68,26 +70,15 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         searchBar.resignFirstResponder()
     }
     
-    func checkEmails() {
-        if IAPHandler.shared.shouldReset() {
-            IAPHandler.shared.setEmails(0)
-        }
-        
-        let emails = IAPHandler.shared.getEmailCount()
-        if emails > 4 {
-            emailsLabel.text = "0 Emails Available"
-        } else {
-            emailsLabel.text =  "\(5 - emails) Emails Available"
-        }
-    }
-    
     // MARK: - Private instance methods
     
     func fetchInvestors(text: String, completion: @escaping ([Investor]) -> (), withCancel cancel: ((Error) -> ())?) {
         let ref = Database.database().reference().child("investors")
+        
+        Analytics.logEvent("fetch_investors", parameters: ["text" : text])
 
         //.queryEnding(atValue: text.lowercased() + "\u{f8ff}")
-        ref.queryOrdered(byChild: "name_search").queryStarting(atValue: text.lowercased()).queryEnding(atValue: text.lowercased() + "\u{f8ff}").queryLimited(toFirst: 25)
+        ref.queryOrdered(byChild: "name_search").queryStarting(atValue: text.lowercased()).queryEnding(atValue: text.lowercased() + "\u{f8ff}").queryLimited(toFirst: 10)
             .observeSingleEvent(of: .value, with: { snapshot in
                 guard let children = snapshot.children.allObjects as? [DataSnapshot] else {
                     completion([])
@@ -103,9 +94,12 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
                     }
                 }
                 
+                Analytics.logEvent("fetch_investors_success", parameters: ["text" : text, "result_count" : newInvestors.count])
                 completion(newInvestors)
                 return
             }){ (err) in
+                Analytics.logEvent("fetch_investors_error", parameters: ["description" : err.localizedDescription])
+
                 print("Failed to fetch investors:", err)
                 cancel?(err)
         }
@@ -113,6 +107,8 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     
     func fetchAllInvestors(completion: @escaping ([Investor]) -> (), withCancel cancel: ((Error) -> ())?) {
         let ref = Database.database().reference().child("investors")
+        
+        Analytics.logEvent("fetch_all_investors", parameters: [:])
         
         ref.observeSingleEvent(of: .value, with: { (snapshot) in
             guard let children = snapshot.children.allObjects as? [DataSnapshot] else {
@@ -136,8 +132,12 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
                 }
             }
             
+            Analytics.logEvent("fetch_all_investors_success", parameters: [:])
+
             completion(newInvestors)
         }) { (err) in
+            Analytics.logEvent("fetch_all_investors_error", parameters: ["description" : err.localizedDescription])
+
             print("Failed to fetch investors:", err)
             cancel?(err)
         }
@@ -224,6 +224,8 @@ extension ViewController {
         }
         
         selectedInvestor = filteredInvestors[indexPath.row]
+        
+        Analytics.logEvent("selected_investor", parameters: ["id" : selectedInvestor?.id ?? "", "name" : selectedInvestor?.fullName() ?? "", "firm" : selectedInvestor?.firm ?? ""])
         
         tableView.deselectRow(at: indexPath, animated: false)
         

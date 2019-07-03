@@ -21,7 +21,78 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         return true
     }
+    
+    func application(_ application: UIApplication, continue userActivity: NSUserActivity,
+                     restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
+        let handled = DynamicLinks.dynamicLinks().handleUniversalLink(userActivity.webpageURL!) { (dynamiclink, error) in
+            self.handleDynamicLink(dynamiclink)
+        }
+        
+        return handled
+    }
+    
+    @available(iOS 9.0, *)
+    func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any]) -> Bool {
+        return application(app, open: url,
+                           sourceApplication: options[UIApplication.OpenURLOptionsKey.sourceApplication] as? String,
+                           annotation: "")
+    }
+    
+    func application(_ application: UIApplication, open url: URL, sourceApplication: String?, annotation: Any) -> Bool {
+        if let dynamicLink = DynamicLinks.dynamicLinks().dynamicLink(fromCustomSchemeURL: url) {
+            // Handle the deep link. For example, show the deep-linked content or
+            // apply a promotional offer to the user's account.
+            // ...
+            return true
+        }
+        
+        if Auth.auth().canHandle(url) {
+            return true
+        }
+        return false
+    }
+    
+    func handleDynamicLink(_ dynamicLink: DynamicLink?) -> Bool {
+        guard let dynamicLink = dynamicLink else { return false }
+        guard let deepLink = dynamicLink.url else { return false }
+        let queryItems = URLComponents(url: deepLink, resolvingAgainstBaseURL: true)?.queryItems
+        let referredBy = queryItems?.filter({(item) in item.name == "referredBy"}).first?.value
+        // If the user isn't signed in and the app was opened via an invitation
+        // link, sign in the user anonymously and open the website in Safari.
+        let user = Auth.auth().currentUser
 
+        if (user == nil || (user?.isAnonymous ?? false)) && referredBy != nil {
+            Auth.auth().signInAnonymously() { (data, error) in
+                if let user = data?.user {
+                    Database.database().fetchUserByInvite(code: referredBy!) { uid in
+                        let userRecord = Database.database().reference().child("users").child(user.uid)
+                        userRecord.child("referred_by").setValue(uid)
+                        
+                        //add referral points to user
+                        let point = Point(data: ["value" : 15.0, "activity" : LXConstants.REFERRAL, "notes" : "Referred by User", "created_at" : Date().timeIntervalSinceNow])
+                        Database.database().addPoint(withUID: user.uid, point: point) { (error) in
+                        }
+                        
+                        self.showSignin()
+                    }
+                }
+            }
+        }
+        return true
+    }
+    
+    func showSignin() {
+        if let controller = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "SignupViewController") as? SignupViewController {
+            if let window = self.window, let rootViewController = window.rootViewController {
+                var currentController = rootViewController
+                while let presentedController = currentController.presentedViewController {
+                    currentController = presentedController
+                }
+                currentController.present(controller, animated: true, completion: nil)
+            }
+        }
+    }
+    
     func applicationWillResignActive(_ application: UIApplication) {
         // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
         // Use this method to pause ongoing tasks, disable timers, and invalidate graphics rendering callbacks. Games should use this method to pause the game.
