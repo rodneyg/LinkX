@@ -16,12 +16,16 @@ class EarnPointsViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
         
         guard let uid = Auth.auth().currentUser?.uid else {
             self.performSegue(withIdentifier: "ShowSignupFromEarnPoints", sender: self)
             return // no signed in user re-direct to login page
         }
-
+        
         fetchUserProfile(uid: uid, completion: { user in
             guard let user = user else {
                 return //user profile could not be fetched

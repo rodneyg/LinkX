@@ -330,6 +330,41 @@ extension Database {
         return text.filter {okayChars.contains($0) }
     }
     
+    func createInvestorLink(withInvestor investorKey: String,completion: ((String) -> ())?) {
+        guard let link = URL(string: "https://linkx.page.link/?investor=\(investorKey)") else { return }
+        
+        let linkBuilder = DynamicLinkComponents(link: link, domainURIPrefix: "https://linkx.page.link")
+        
+        linkBuilder?.iOSParameters = DynamicLinkIOSParameters(bundleID: "com.ios.codesigned.LinkX")
+        linkBuilder?.iOSParameters?.minimumAppVersion = "1.0"
+        linkBuilder?.iOSParameters?.appStoreID = "1457507501"
+        
+        linkBuilder?.shorten() { url, warnings, error in
+            if let error = error {
+                print("Failed to create investor link:", error)
+                return
+            }
+            
+            guard let urlStr = url?.absoluteString else {
+                print("Failed to create investor link:")
+                return
+            }
+            
+            print("The short URL is: \(url)")
+            
+            var dictionaryValues: [String : Any] = ["public_url" : urlStr]
+
+            Database.database().reference().child("investors").child(investorKey).updateChildValues(dictionaryValues, withCompletionBlock: { (err, ref) in
+                if let err = err {
+                    print("Failed to upload user to database:", err)
+                    return
+                }
+                
+                completion?(urlStr)
+            })
+        }
+    }
+    
     func createInviteCode(withUser uid: String, firstName: String, lastName: String, completion: ((String) -> ())?) {
         let code = firstName.replacingOccurrences(of: " ", with: "") + String(lastName.first ?? "X")
         //random code between 1-900 i.e. rodneyg391
@@ -370,6 +405,17 @@ extension Database {
             guard let value = snapshot.value as? [String : Any], let first = value.keys.first else { return }
 
             completion(first)
+        }) { (err) in
+            print("Failed to fetch user from database:", err)
+        }
+    }
+    
+    func fetchInvestor(withId investorKey: String, completion: @escaping (Investor) -> ()) {
+        Database.database().reference().child("investors").child(investorKey).observeSingleEvent(of: .value, with: { (snapshot) in
+            guard var userDictionary = snapshot.value as? [String: Any] else { return }
+            userDictionary["key"] = snapshot.key
+            let investor = Investor(data: userDictionary)
+            completion(investor)
         }) { (err) in
             print("Failed to fetch user from database:", err)
         }

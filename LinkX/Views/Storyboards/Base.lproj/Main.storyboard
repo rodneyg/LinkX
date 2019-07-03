@@ -379,7 +379,7 @@ CodeSigned</string>
         <!--Email View Controller-->
         <scene sceneID="dMz-Zt-z6n">
             <objects>
-                <viewController id="ZY1-df-nXl" customClass="EmailViewController" customModule="LinkX" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="EmailViewController" id="ZY1-df-nXl" customClass="EmailViewController" customModule="LinkX" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="Ojw-On-PFw">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -459,7 +459,7 @@ CodeSigned</string>
                                             <constraint firstItem="UJr-KZ-Oej" firstAttribute="trailing" secondItem="ex0-4d-Oap" secondAttribute="trailing" id="wHh-O6-zwo"/>
                                         </constraints>
                                     </view>
-                                    <stackView opaque="NO" contentMode="scaleToFill" misplaced="YES" distribution="equalSpacing" spacing="13" translatesAutoresizingMaskIntoConstraints="NO" id="5C0-dK-aFG">
+                                    <stackView opaque="NO" contentMode="scaleToFill" distribution="equalSpacing" spacing="13" translatesAutoresizingMaskIntoConstraints="NO" id="5C0-dK-aFG">
                                         <rect key="frame" x="120" y="165" width="135" height="27"/>
                                         <subviews>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ec4-WQ-knQ">
@@ -505,7 +505,7 @@ CodeSigned</string>
                                         </constraints>
                                     </stackView>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8Oq-1h-Iwl">
-                                        <rect key="frame" x="58" y="200" width="259" height="30"/>
+                                        <rect key="frame" x="58" y="210" width="259" height="30"/>
                                         <state key="normal" title="Spend 25 Points To Gain Access">
                                             <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         </state>
@@ -519,7 +519,7 @@ CodeSigned</string>
                                     <constraint firstItem="5C0-dK-aFG" firstAttribute="top" secondItem="1Hb-3Q-5Ex" secondAttribute="bottom" constant="8" symbolic="YES" id="0B3-4j-uqv"/>
                                     <constraint firstItem="69V-dK-dij" firstAttribute="leading" secondItem="o7O-Bt-Qeb" secondAttribute="leading" constant="24" id="4a3-uc-93g"/>
                                     <constraint firstAttribute="trailing" secondItem="1Hb-3Q-5Ex" secondAttribute="trailing" id="5ZO-cu-s6N"/>
-                                    <constraint firstItem="8Oq-1h-Iwl" firstAttribute="top" secondItem="5C0-dK-aFG" secondAttribute="bottom" constant="8" symbolic="YES" id="DfU-4T-0po"/>
+                                    <constraint firstItem="8Oq-1h-Iwl" firstAttribute="top" secondItem="5C0-dK-aFG" secondAttribute="bottom" constant="18" id="DfU-4T-0po"/>
                                     <constraint firstItem="5C0-dK-aFG" firstAttribute="leading" secondItem="o7O-Bt-Qeb" secondAttribute="leading" constant="120" id="F3l-Oc-OlO"/>
                                     <constraint firstItem="5C0-dK-aFG" firstAttribute="centerX" secondItem="8Oq-1h-Iwl" secondAttribute="centerX" id="Lnw-E8-2zq"/>
                                     <constraint firstItem="8Oq-1h-Iwl" firstAttribute="leading" secondItem="o7O-Bt-Qeb" secondAttribute="leading" constant="58" id="Tnl-zK-iDw"/>

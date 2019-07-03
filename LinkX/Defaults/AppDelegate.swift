@@ -56,29 +56,52 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         guard let dynamicLink = dynamicLink else { return false }
         guard let deepLink = dynamicLink.url else { return false }
         let queryItems = URLComponents(url: deepLink, resolvingAgainstBaseURL: true)?.queryItems
+        
+        let investorId = queryItems?.filter({(item) in item.name == "investor"}).first?.value
         let referredBy = queryItems?.filter({(item) in item.name == "referredBy"}).first?.value
-        // If the user isn't signed in and the app was opened via an invitation
-        // link, sign in the user anonymously and open the website in Safari.
-        let user = Auth.auth().currentUser
 
-        if (user == nil || (user?.isAnonymous ?? false)) && referredBy != nil {
-            Auth.auth().signInAnonymously() { (data, error) in
-                if let user = data?.user {
-                    Database.database().fetchUserByInvite(code: referredBy!) { uid in
-                        let userRecord = Database.database().reference().child("users").child(user.uid)
-                        userRecord.child("referred_by").setValue(uid)
-                        
-                        //add referral points to user
-                        let point = Point(data: ["value" : 15.0, "activity" : LXConstants.REFERRAL, "notes" : "Referred by User", "created_at" : Date().timeIntervalSinceNow])
-                        Database.database().addPoint(withUID: user.uid, point: point) { (error) in
+        if investorId != nil {
+            Database.database().fetchInvestor(withId: investorId!) { (investor) in
+                self.showInvestor(investor: investor)
+            }
+        } else {
+            // If the user isn't signed in and the app was opened via an invitation
+            // link, sign in the user anonymously and open the website in Safari.
+            let user = Auth.auth().currentUser
+            
+            if (user == nil || (user?.isAnonymous ?? false)) && referredBy != nil {
+                Auth.auth().signInAnonymously() { (data, error) in
+                    if let user = data?.user {
+                        Database.database().fetchUserByInvite(code: referredBy!) { uid in
+                            let userRecord = Database.database().reference().child("users").child(user.uid)
+                            userRecord.child("referred_by").setValue(uid)
+                            
+                            //add referral points to user
+                            let point = Point(data: ["value" : 15.0, "activity" : LXConstants.REFERRAL, "notes" : "Referred by User", "created_at" : Date().timeIntervalSinceNow])
+                            Database.database().addPoint(withUID: user.uid, point: point) { (error) in
+                            }
+                            
+                            self.showSignin()
                         }
-                        
-                        self.showSignin()
                     }
                 }
             }
         }
+
         return true
+    }
+    
+    func showInvestor(investor: Investor) {
+        if let controller = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "EmailViewController") as? EmailViewController {
+            controller.investor = investor
+            if let window = self.window, let rootViewController = window.rootViewController {
+                var currentController = rootViewController
+                while let presentedController = currentController.presentedViewController {
+                    currentController = presentedController
+                }
+                currentController.present(controller, animated: true, completion: nil)
+            }
+        }
     }
     
     func showSignin() {

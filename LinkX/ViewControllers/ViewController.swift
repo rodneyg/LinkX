@@ -90,6 +90,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
                 for child in children {
                     if var value = child.value as? [String : Any] {
                         print(value)
+                        value["key"] = child.key
                         newInvestors.append(Investor(data: value))
                     }
                 }
