@@ -60,6 +60,14 @@
 		2AD66CF622CAE53F0004AAD0 /* ActivityTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AD66CF522CAE53F0004AAD0 /* ActivityTableViewController.swift */; };
 		2AD66CF822CAFC5F0004AAD0 /* EarnPointsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AD66CF722CAFC5F0004AAD0 /* EarnPointsViewController.swift */; };
 		2AD66CFB22CC5A3A0004AAD0 /* Transaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AD66CFA22CC5A3A0004AAD0 /* Transaction.swift */; };
+		2AFA0F2922D5307A005A3EA4 /* AppStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AFA0F2822D5307A005A3EA4 /* AppStore.swift */; };
+		2AFA0F2C22D69311005A3EA4 /* funds.json in Resources */ = {isa = PBXBuildFile; fileRef = 2AFA0F2B22D69311005A3EA4 /* funds.json */; };
+		2AFA0F2E22D69591005A3EA4 /* graveyard.txt in Resources */ = {isa = PBXBuildFile; fileRef = 2AFA0F2D22D69591005A3EA4 /* graveyard.txt */; };
+		2AFA0F3122D8130F005A3EA4 /* FundTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AFA0F2F22D8130F005A3EA4 /* FundTableViewCell.swift */; };
+		2AFA0F3222D8130F005A3EA4 /* FundTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2AFA0F3022D8130F005A3EA4 /* FundTableViewCell.xib */; };
+		2AFA0F3422D81B3D005A3EA4 /* FundViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AFA0F3322D81B3D005A3EA4 /* FundViewController.swift */; };
+		2AFA0F3722D96415005A3EA4 /* LXFund+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AFA0F3522D96415005A3EA4 /* LXFund+CoreDataClass.swift */; };
+		2AFA0F3822D96415005A3EA4 /* LXFund+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AFA0F3622D96415005A3EA4 /* LXFund+CoreDataProperties.swift */; };
 		2AFB67672262B09C00AE860C /* LXInvestor+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AFB67652262B09C00AE860C /* LXInvestor+CoreDataClass.swift */; };
 		2AFB67682262B09C00AE860C /* LXInvestor+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AFB67652262B09C00AE860C /* LXInvestor+CoreDataClass.swift */; };
 		2AFB67692262B09C00AE860C /* LXInvestor+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AFB67652262B09C00AE860C /* LXInvestor+CoreDataClass.swift */; };
@@ -146,6 +154,14 @@
 		2AD66CF722CAFC5F0004AAD0 /* EarnPointsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EarnPointsViewController.swift; sourceTree = "<group>"; };
 		2AD66CF922CB15470004AAD0 /* LinkX.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = LinkX.entitlements; sourceTree = "<group>"; };
 		2AD66CFA22CC5A3A0004AAD0 /* Transaction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Transaction.swift; sourceTree = "<group>"; };
+		2AFA0F2822D5307A005A3EA4 /* AppStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppStore.swift; sourceTree = "<group>"; };
+		2AFA0F2B22D69311005A3EA4 /* funds.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = funds.json; sourceTree = "<group>"; };
+		2AFA0F2D22D69591005A3EA4 /* graveyard.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = graveyard.txt; sourceTree = "<group>"; };
+		2AFA0F2F22D8130F005A3EA4 /* FundTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FundTableViewCell.swift; sourceTree = "<group>"; };
+		2AFA0F3022D8130F005A3EA4 /* FundTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = FundTableViewCell.xib; sourceTree = "<group>"; };
+		2AFA0F3322D81B3D005A3EA4 /* FundViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FundViewController.swift; sourceTree = "<group>"; };
+		2AFA0F3522D96415005A3EA4 /* LXFund+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LXFund+CoreDataClass.swift"; sourceTree = "<group>"; };
+		2AFA0F3622D96415005A3EA4 /* LXFund+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LXFund+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		2AFB67652262B09C00AE860C /* LXInvestor+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LXInvestor+CoreDataClass.swift"; sourceTree = "<group>"; };
 		2AFB67662262B09C00AE860C /* LXInvestor+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LXInvestor+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		2AFB67752262B7F800AE860C /* LXBookmarkTableController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LXBookmarkTableController.swift; sourceTree = "<group>"; };
@@ -202,6 +218,7 @@
 				2A49BE6122BCBF3F00C118EA /* UploadViewController.swift */,
 				2AA2408D22C6C8CF000B261F /* InviteViewController.swift */,
 				2AD66CF722CAFC5F0004AAD0 /* EarnPointsViewController.swift */,
+				2AFA0F3322D81B3D005A3EA4 /* FundViewController.swift */,
 			);
 			path = ViewControllers;
 			sourceTree = "<group>";
@@ -219,6 +236,8 @@
 		2A7B9AF822BAFD5900B6CEEC /* CoreData */ = {
 			isa = PBXGroup;
 			children = (
+				2AFA0F3522D96415005A3EA4 /* LXFund+CoreDataClass.swift */,
+				2AFA0F3622D96415005A3EA4 /* LXFund+CoreDataProperties.swift */,
 				2ABA837B22456E52003A4339 /* LinkX.xcdatamodeld */,
 				2AFB67752262B7F800AE860C /* LXBookmarkTableController.swift */,
 				2AFB67652262B09C00AE860C /* LXInvestor+CoreDataClass.swift */,
@@ -268,6 +287,8 @@
 				2A49BE6E22C431FD00C118EA /* ContributionTableViewCell.xib */,
 				2AB3947422CADE9300373F18 /* ActivityTableViewCell.swift */,
 				2AB3947522CADE9300373F18 /* ActivityTableViewCell.xib */,
+				2AFA0F2F22D8130F005A3EA4 /* FundTableViewCell.swift */,
+				2AFA0F3022D8130F005A3EA4 /* FundTableViewCell.xib */,
 			);
 			path = TableCells;
 			sourceTree = "<group>";
@@ -292,6 +313,8 @@
 		2A7B9AFE22BAFE5100B6CEEC /* Defaults */ = {
 			isa = PBXGroup;
 			children = (
+				2AFA0F2D22D69591005A3EA4 /* graveyard.txt */,
+				2AFA0F2B22D69311005A3EA4 /* funds.json */,
 				2ABA837E22456E53003A4339 /* Assets.xcassets */,
 				2ABA837422456E52003A4339 /* AppDelegate.swift */,
 				2ABA838322456E53003A4339 /* Info.plist */,
@@ -339,12 +362,13 @@
 			isa = PBXGroup;
 			children = (
 				2AD66CF922CB15470004AAD0 /* LinkX.entitlements */,
+				2A7B9AF722BAFD5000B6CEEC /* Models */,
 				2A7B9AFE22BAFE5100B6CEEC /* Defaults */,
 				2A7B9AFA22BAFD8300B6CEEC /* Views */,
-				2A7B9AF722BAFD5000B6CEEC /* Models */,
 				2A7B9AF422BAFD1C00B6CEEC /* ViewControllers */,
 				2AB763B722ADBEFE000B9CF5 /* Utilities */,
 				2A7B9AFD22BAFE3100B6CEEC /* Extensions */,
+				2AFA0F2822D5307A005A3EA4 /* AppStore.swift */,
 			);
 			path = LinkX;
 			sourceTree = "<group>";
@@ -518,10 +542,13 @@
 				2ABA83A6224570C5003A4339 /* GoogleService-Info.plist in Resources */,
 				2A49BE6A22BCD27600C118EA /* ReviewTableViewCell.xib in Resources */,
 				2AB3947722CADE9300373F18 /* ActivityTableViewCell.xib in Resources */,
+				2AFA0F2C22D69311005A3EA4 /* funds.json in Resources */,
+				2AFA0F2E22D69591005A3EA4 /* graveyard.txt in Resources */,
 				2AA2408A22C6BE3F000B261F /* eula.html in Resources */,
 				2A21618122473A2700D0ACDA /* InvestorTableViewCell.xib in Resources */,
 				2ABA837F22456E53003A4339 /* Assets.xcassets in Resources */,
 				2ABA837A22456E52003A4339 /* Main.storyboard in Resources */,
+				2AFA0F3222D8130F005A3EA4 /* FundTableViewCell.xib in Resources */,
 				2AA2408C22C6BEDD000B261F /* privacy-policy.html in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -714,23 +741,28 @@
 				2AB763B922ADBF09000B9CF5 /* FirebaseUtilities.swift in Sources */,
 				2AD66CF822CAFC5F0004AAD0 /* EarnPointsViewController.swift in Sources */,
 				2ABA837D22456E52003A4339 /* LinkX.xcdatamodeld in Sources */,
+				2AFA0F3122D8130F005A3EA4 /* FundTableViewCell.swift in Sources */,
 				2ABD3A65229B8CFE00DCA1BE /* EditProfileViewController.swift in Sources */,
+				2AFA0F3822D96415005A3EA4 /* LXFund+CoreDataProperties.swift in Sources */,
 				2ABA837522456E52003A4339 /* AppDelegate.swift in Sources */,
 				2A7B9AEB22BAEA4B00B6CEEC /* Rating.swift in Sources */,
 				2ABEAB51228A2C5B00587B7E /* Comment.swift in Sources */,
 				2AFB67672262B09C00AE860C /* LXInvestor+CoreDataClass.swift in Sources */,
+				2AFA0F3722D96415005A3EA4 /* LXFund+CoreDataClass.swift in Sources */,
 				2AFB676A2262B09C00AE860C /* LXInvestor+CoreDataProperties.swift in Sources */,
 				2AB3947922CAE18800373F18 /* LXConstants.swift in Sources */,
 				2A49BE6022BCBDFE00C118EA /* ContributeViewController.swift in Sources */,
 				2AB3947A22CAE26200373F18 /* ActivityTableViewCell.swift in Sources */,
 				2AB763B422ADA3CE000B9CF5 /* ImagePicker.swift in Sources */,
 				2A49BE6522BCD25E00C118EA /* RateTableViewCell.swift in Sources */,
+				2AFA0F2922D5307A005A3EA4 /* AppStore.swift in Sources */,
 				2A21617B2247271400D0ACDA /* EmailViewController.swift in Sources */,
 				2A7B9AF622BAFD3000B6CEEC /* SigninViewController.swift in Sources */,
 				2AB763B622ADB766000B9CF5 /* CustomImageView.swift in Sources */,
 				2A49BE6922BCD27600C118EA /* ReviewTableViewCell.swift in Sources */,
 				2A49BE5E22BC2E5C00C118EA /* Activity.swift in Sources */,
 				2A7B9AF322BAF66300B6CEEC /* SignupViewController.swift in Sources */,
+				2AFA0F3422D81B3D005A3EA4 /* FundViewController.swift in Sources */,
 				2A21617D22472F3800D0ACDA /* Investor.swift in Sources */,
 				2AD66CF622CAE53F0004AAD0 /* ActivityTableViewController.swift in Sources */,
 			);

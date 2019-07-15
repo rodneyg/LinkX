@@ -11,7 +11,7 @@ import ContactsUI
 import Contacts
 import FirebaseDynamicLinks
 import FirebaseDatabase
-import FirebaseAuth
+import Firebase
 
 class InviteViewController: UIViewController {
     

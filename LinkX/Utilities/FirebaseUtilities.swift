@@ -224,18 +224,71 @@ extension Database {
         })
     }
     
+    func addFunds() {
+        if let path = Bundle.main.path(forResource: "funds", ofType: "json") {
+            do {
+                let data = try Data(contentsOf: URL(fileURLWithPath: path), options: .mappedIfSafe)
+                let jsonResult = try JSONSerialization.jsonObject(with: data, options: .mutableLeaves)
+                if let jsonResult = jsonResult as? [Dictionary<String, AnyObject>] {
+                    for json in jsonResult {
+                        let name = json["Name"]
+                        let city = json["City"]
+                        let state = json["State"]
+                        let site = json["Site"]
+                        let stage = json["Stage"]
+                        let contactMethod = json["Contact Method"]
+                        var sectors = [String]()
+                        if let sectorData = json["Sectors"] as? String {
+                            sectorData.split(separator: ",").forEach { substring in
+                                sectors.append(String(substring))
+                            }
+                        }
+                        
+                        let dictionaryValues = ["name" : name ?? "", "city" : city ?? "", "state" : state ?? "", "site" : site ?? "",
+                                                "stage" : stage ?? "", "contact" : contactMethod ?? "", "sectors" : sectors] as [String : Any]
+                        self.reference().child("funds").childByAutoId().updateChildValues(dictionaryValues, withCompletionBlock: { (err, ref) in
+                            if let error = err {
+                                print("error: " + error.localizedDescription)
+                                return
+                            }
+                            print("added: \(String(describing: ref.key)): \(dictionaryValues)")
+                        })
+                    }
+                }
+            } catch {
+                // handle error
+            }
+        }
+    }
+    
     func canPurchaseInvestor(uid: String, completion: @escaping (Bool) -> ()) {
+        self.canPurchase(uid: uid, points: 25.0, completion: completion)
+    }
+    
+    func canPurchaseFund(uid: String, completion: @escaping (Bool) -> ()) {
+        self.canPurchase(uid: uid, points: 15.0, completion: completion)
+    }
+    
+    func canPurchase(uid: String, points: Double, completion: @escaping (Bool) -> ()) {
         self.fetchUser(withUID: uid) { user in
             guard let points = user.points else {
                 completion(false)
                 return
             }
             
-            completion(points >= 25.0) //investor costs 25.0 points
+            completion(points >= points) //funds costs 15.0 points
         }
     }
     
+    func hasPurchasedFund(uid: String, fundId: String, completion: @escaping (Bool) -> ()) {
+        self.hasPurchasedItem(uid: uid, itemId: fundId, completion: completion)
+    }
+    
     func hasPurchasedInvestor(uid: String, investorId: String, completion: @escaping (Bool) -> ()) {
+        self.hasPurchasedItem(uid: uid, itemId: investorId, completion: completion)
+    }
+
+    func hasPurchasedItem(uid: String, itemId: String, completion: @escaping (Bool) -> ()) {
         Database.database().reference().child("transactions").child(uid).observeSingleEvent(of: .value, with: { (snapshot) in
             guard let children = snapshot.children.allObjects as? [DataSnapshot] else {
                 completion(false)
@@ -246,7 +299,7 @@ extension Database {
             children.forEach { child in
                 if let value = child.value as? [String : Any] {
                     let transaction = Transaction(data: value)
-                    if transaction.itemId == investorId {
+                    if transaction.itemId == itemId {
                         found = true//found ivnestor
                         return
                     }
@@ -260,20 +313,28 @@ extension Database {
     }
     
     func purchaseInvestorContact(uid: String, investorId: String, completion: @escaping (Transaction?, Error?) -> ()) {
+        self.purchase(uid: uid, itemId: investorId, points: 25.0, completion: completion)
+    }
+    
+    func purchaseFundContact(uid: String, fundId: String, completion: @escaping (Transaction?, Error?) -> ()) {
+        self.purchase(uid: uid, itemId: fundId, points: 25.0, completion: completion)
+    }
+    
+    func purchase(uid: String, itemId: String, points: Double, completion: @escaping (Transaction?, Error?) -> ()) {
         canPurchaseInvestor(uid: uid) { canPurchase in
             guard canPurchase else {
                 completion(nil, nil)
                 return
             }
             
-            let dictionaryValues : [String : Any] = ["uid" : uid, "point_cost" : 25.0, "updated_at" : Date().timeIntervalSinceNow, "created_at" : Date().timeIntervalSince1970, "item_id" : investorId]
+            let dictionaryValues : [String : Any] = ["uid" : uid, "point_cost" : points, "updated_at" : Date().timeIntervalSinceNow, "created_at" : Date().timeIntervalSince1970, "item_id" : itemId]
             self.reference().child("transactions").child(uid).childByAutoId().updateChildValues(dictionaryValues, withCompletionBlock: { (err, ref) in
                 if let err = err {
                     completion(nil, err)
                     return
                 }
                 
-                let point = Point(data: ["value" : -25.0, "activity" : LXConstants.PURCHASE_INVESTOR_CONTACT, "notes" : "Referred by User", "created_at" : Date().timeIntervalSinceNow])
+                let point = Point(data: ["value" : -points, "activity" : LXConstants.PURCHASE_INVESTOR_CONTACT, "notes" : "Referred by User", "created_at" : Date().timeIntervalSinceNow])
                 self.runPointTransaction(withUID: uid, point: point)
                 
                 completion(Transaction(data: dictionaryValues), nil)
@@ -328,6 +389,41 @@ extension Database {
     func removeSpecialCharsFromString(text: String) -> String {
         let okayChars = Set("abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLKMNOPQRSTUVWXYZ1234567890+-=().!_")
         return text.filter {okayChars.contains($0) }
+    }
+    
+    func createFundLink(withInvestor fundKey: String,completion: ((String) -> ())?) {
+        guard let link = URL(string: "https://linkx.page.link/?fund=\(fundKey)") else { return }
+        
+        let linkBuilder = DynamicLinkComponents(link: link, domainURIPrefix: "https://linkx.page.link")
+        
+        linkBuilder?.iOSParameters = DynamicLinkIOSParameters(bundleID: "com.ios.codesigned.LinkX")
+        linkBuilder?.iOSParameters?.minimumAppVersion = "1.0"
+        linkBuilder?.iOSParameters?.appStoreID = "1457507501"
+        
+        linkBuilder?.shorten() { url, warnings, error in
+            if let error = error {
+                print("Failed to create fund link:", error)
+                return
+            }
+            
+            guard let urlStr = url?.absoluteString else {
+                print("Failed to create fund link:")
+                return
+            }
+            
+            print("The short URL is: \(url)")
+            
+            var dictionaryValues: [String : Any] = ["public_url" : urlStr]
+            
+            Database.database().reference().child("funds").child(fundKey).updateChildValues(dictionaryValues, withCompletionBlock: { (err, ref) in
+                if let err = err {
+                    print("Failed to create fund link:", err)
+                    return
+                }
+                
+                completion?(urlStr)
+            })
+        }
     }
     
     func createInvestorLink(withInvestor investorKey: String,completion: ((String) -> ())?) {

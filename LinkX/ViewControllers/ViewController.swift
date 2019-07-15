@@ -16,16 +16,20 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var searchBar: UISearchBar!
     @IBOutlet var topBarButton: UIButton!
+    @IBOutlet var filterSegment: UISegmentedControl!
     
     var investors = [Investor]()
     var filteredInvestors = [Investor]()
+    var filteredFunds = [Fund]()
     var selectedInvestor: Investor?
+    var selectedFund: Fund?
     var tableButton = UIButton()
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
         tableView.register(UINib(nibName: "InvestorTableViewCell", bundle: nil), forCellReuseIdentifier: "InvestorTableViewCell")
+        tableView.register(UINib(nibName: "FundTableViewCell", bundle: nil), forCellReuseIdentifier: "FundTableViewCell")
         
         tableView.delegate = self
         tableView.dataSource = self
@@ -40,14 +44,14 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         searchBar.delegate = self
         searchBar.isHidden = false
         
-//        fetchAllInvestors(completion: { investors in
-//            self.investors = investors
-//            self.filterContentForSearchText("")
-//            self.searchBar.isHidden = false
-//        }) { error in
+        AppStore.shared.showReview()
+        
+//        fetchAllFunds(completion: { (funds) in
+//            print("got funds: \(funds.count)")
+//        }) { (error) in
 //            print(error.localizedDescription)
 //        }
-//
+        
         self.filterContentForSearchText("")
     }
     
@@ -65,12 +69,51 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         }
     }
     
+    @IBAction func filterChanged(_ sender: Any) {
+        searchBar.placeholder = filterSegment.selectedSegmentIndex == 0 ? "Search investors by name" : "Search funds by name"
+        self.filterContentForSearchText("")
+    }
+    
     @objc
     public func tableButtonTouched() {
         searchBar.resignFirstResponder()
     }
     
     // MARK: - Private instance methods
+    
+    func fetchFunds(text: String, completion: @escaping ([Fund]) -> (), withCancel cancel: ((Error) -> ())?) {
+        let ref = Database.database().reference().child("funds")
+        
+        Analytics.logEvent("fetch_funds", parameters: ["text" : text])
+        
+        //.queryEnding(atValue: text.lowercased() + "\u{f8ff}")
+        ref.queryOrdered(byChild: "name").queryStarting(atValue: text.lowercased()).queryEnding(atValue: text.lowercased() + "\u{f8ff}").queryLimited(toFirst: 10)
+            .observeSingleEvent(of: .value, with: { snapshot in
+                guard let children = snapshot.children.allObjects as? [DataSnapshot] else {
+                    completion([])
+                    return
+                }
+                
+                var newFunds = [Fund]()
+                
+                for child in children {
+                    if var value = child.value as? [String : Any] {
+                        print(value)
+                        value["key"] = child.key
+                        newFunds.append(Fund(data: value))
+                    }
+                }
+                
+                Analytics.logEvent("fetch_funds_success", parameters: ["text" : text, "result_count" : newFunds.count])
+                completion(newFunds)
+                return
+            }){ (err) in
+                Analytics.logEvent("fetch_funds_error", parameters: ["description" : err.localizedDescription])
+                
+                print("Failed to fetch funds:", err)
+                cancel?(err)
+        }
+    }
     
     func fetchInvestors(text: String, completion: @escaping ([Investor]) -> (), withCancel cancel: ((Error) -> ())?) {
         let ref = Database.database().reference().child("investors")
@@ -106,10 +149,10 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         }
     }
     
-    func fetchAllInvestors(completion: @escaping ([Investor]) -> (), withCancel cancel: ((Error) -> ())?) {
-        let ref = Database.database().reference().child("investors")
+    func fetchAllFunds(completion: @escaping ([Fund]) -> (), withCancel cancel: ((Error) -> ())?) {
+        let ref = Database.database().reference().child("funds")
         
-        Analytics.logEvent("fetch_all_investors", parameters: [:])
+        Analytics.logEvent("fetch_all_funds", parameters: [:])
         
         ref.observeSingleEvent(of: .value, with: { (snapshot) in
             guard let children = snapshot.children.allObjects as? [DataSnapshot] else {
@@ -117,29 +160,53 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
                 return
             }
             
-            var newInvestors = [Investor]()
+            var newFunds = [Fund]()
             for child in children {
                 if var value = child.value as? [String : Any] {
-                    if  value["name_search"] == nil { //let nameSearch = value["name_search"] as? [String] {
-                        guard let first = value["first"] as? String, let last = value["last"] as? String else {
-                            return //first and last name don't exist
+                    if  value["sector_search"] == nil {
+                        guard let sectors = value["sectors"] as? [String] else {
+                            return //sectors doesn't exist
                         }
-
-                        value["name_search"] = "\(first.lowercased()) \(last.lowercased())"
-                        Database.database().reference().child("investors").child(child.key).setValue(value)
+                        
+                        var sectorSearch = ""
+                        sectors.forEach { sector in
+                            sectorSearch.append(" " + sector)
+                        }
+                        value["sector_search"] = sectorSearch
+                        Database.database().reference().child("funds").child(child.key).setValue(value)
                     }
                     
+                    if  value["stage_search"] == nil {
+                        var stages = [String]()
+                        if let stage = value["stage"] as? String {
+                            stage.split(separator: ",").forEach { substring in
+                                stages.append(String(substring))
+                            }
+                            
+                            value["stage"] = stages
+                        }
+                        
+                        var stageSearch = ""
+                        stages.forEach { stage in
+                            stageSearch.append(" " + stage)
+                        }
+                        
+                        value["stage_search"] = stageSearch
+                        Database.database().reference().child("funds").child(child.key).setValue(value)
+                    }
+                    
+                    newFunds.append(Fund(data: value))
                     //newInvestors.append(Investor(data: value))
                 }
             }
             
             Analytics.logEvent("fetch_all_investors_success", parameters: [:])
-
-            completion(newInvestors)
+            
+            completion(newFunds)
         }) { (err) in
             Analytics.logEvent("fetch_all_investors_error", parameters: ["description" : err.localizedDescription])
-
-            print("Failed to fetch investors:", err)
+            
+            print("Failed to fetch funds:", err)
             cancel?(err)
         }
     }
@@ -153,15 +220,28 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     }
     
     func filterContentForSearchText(_ searchText: String) {
-        fetchInvestors(text: searchText, completion: { (investors) in
-            DispatchQueue.main.async {
-                self.filteredInvestors = investors
-                
-                self.updateBackground()
-                self.tableView.reloadData()
+        if filterSegment.selectedSegmentIndex == 0 {
+            fetchInvestors(text: searchText, completion: { (investors) in
+                DispatchQueue.main.async {
+                    self.filteredInvestors = investors
+                    
+                    self.updateBackground()
+                    self.tableView.reloadData()
+                }
+            }) { error in
+                //TODO: handle error
             }
-        }) { error in
-            //TODO: handle error
+        } else if filterSegment.selectedSegmentIndex == 1 {
+            fetchFunds(text: searchText, completion: { (funds) in
+                DispatchQueue.main.async {
+                    self.filteredFunds = funds
+                    
+                    self.updateBackground()
+                    self.tableView.reloadData()
+                }
+            }) { error in
+                //TODO: handle error
+            }
         }
     }
     
@@ -176,16 +256,31 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     
     // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        guard let investor = selectedInvestor else {
-            return
-        }
-        
-        if segue.identifier == "ShowEmailFromDiscover" {
-            let evc = segue.destination as! EmailViewController
-            evc.investor = investor
-            evc.onSigninTouched = { vc in
-                self.tabBarController?.selectedIndex = 2
-                vc.dismiss(animated: true, completion: nil)
+        if filterSegment.selectedSegmentIndex == 0 {
+            guard let investor = selectedInvestor else {
+                return
+            }
+            
+            if segue.identifier == "ShowEmailFromDiscover" {
+                let evc = segue.destination as! EmailViewController
+                evc.investor = investor
+                evc.onSigninTouched = { vc in
+                    self.tabBarController?.selectedIndex = 2
+                    vc.dismiss(animated: true, completion: nil)
+                }
+            }
+        } else if filterSegment.selectedSegmentIndex == 1 {
+            guard let fund = selectedFund else {
+                return
+            }
+            
+            if segue.identifier == "ShowFundFromDiscover" {
+                let evc = segue.destination as! FundViewController
+                evc.fund = fund
+                evc.onSigninTouched = { vc in
+                    self.tabBarController?.selectedIndex = 2
+                    vc.dismiss(animated: true, completion: nil)
+                }
             }
         }
     }
@@ -202,35 +297,56 @@ extension ViewController {
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 104.0
+        return filterSegment.selectedSegmentIndex == 0 ? 104.0 : 81.0
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return filteredInvestors.count
+        return filterSegment.selectedSegmentIndex == 0 ? filteredInvestors.count : filteredFunds.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell =
-            tableView.dequeueReusableCell(withIdentifier: "InvestorTableViewCell", for: indexPath) as? InvestorTableViewCell else {
-            return UITableViewCell()
+        if filterSegment.selectedSegmentIndex == 0 {
+            guard let cell =
+                tableView.dequeueReusableCell(withIdentifier: "InvestorTableViewCell", for: indexPath) as? InvestorTableViewCell else {
+                    return UITableViewCell()
+            }
+            
+            cell.configure(investor: filteredInvestors[indexPath.row])
+            return cell
+        } else {
+            guard let cell =
+                tableView.dequeueReusableCell(withIdentifier: "FundTableViewCell", for: indexPath) as? FundTableViewCell else {
+                    return UITableViewCell()
+            }
+            
+            cell.configure(fund: filteredFunds[indexPath.row])
+            return cell
         }
-        
-        cell.configure(investor: filteredInvestors[indexPath.row])
-        return cell
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        guard indexPath.row < filteredInvestors.count else {
-            return
-        }
-        
-        selectedInvestor = filteredInvestors[indexPath.row]
-        
-        Analytics.logEvent("selected_investor", parameters: ["id" : selectedInvestor?.id ?? "", "name" : selectedInvestor?.fullName() ?? "", "firm" : selectedInvestor?.firm ?? ""])
-        
         tableView.deselectRow(at: indexPath, animated: false)
-        
-        performSegue(withIdentifier: "ShowEmailFromDiscover", sender: self)
+
+        if filterSegment.selectedSegmentIndex == 0 {
+            guard indexPath.row < filteredInvestors.count else {
+                return
+            }
+            
+            selectedInvestor = filteredInvestors[indexPath.row]
+            
+            Analytics.logEvent("selected_investor", parameters: ["id" : selectedInvestor?.id ?? "", "name" : selectedInvestor?.fullName() ?? "", "firm" : selectedInvestor?.firm ?? ""])
+            
+            performSegue(withIdentifier: "ShowEmailFromDiscover", sender: self)
+        } else {
+            guard indexPath.row < filteredFunds.count else {
+                return
+            }
+            
+            selectedFund = filteredFunds[indexPath.row]
+            
+            Analytics.logEvent("selected_investor", parameters: ["id" : selectedFund?.id ?? "", "name" : selectedFund?.name ?? ""])
+            performSegue(withIdentifier: "ShowFundFromDiscover", sender: self)
+        }
     }
 }
 

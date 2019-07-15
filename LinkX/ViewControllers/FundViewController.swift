@@ -1,8 +1,8 @@
 //
-//  EmailViewController.swift
+//  FundViewController.swift
 //  LinkX
 //
-//  Created by Rodney Gainous Jr on 3/23/19.
+//  Created by Rodney Gainous Jr on 7/11/19.
 //  Copyright © 2019 CodeSigned. All rights reserved.
 //
 
@@ -17,10 +17,9 @@ import FirebaseUI
 import FirebaseAnalytics
 import PKHUD
 
-class EmailViewController: UIViewController, MFMailComposeViewControllerDelegate, FUIAuthDelegate {
+class FundViewController: UIViewController, MFMailComposeViewControllerDelegate, FUIAuthDelegate {
     
-    public var investor: Investor!
-    public var fund: Fund?
+    public var fund: Fund!
     public var loggedIn: Bool = false
     public var purchased: Bool = false
     public var canPurchase: Bool = false
@@ -33,11 +32,9 @@ class EmailViewController: UIViewController, MFMailComposeViewControllerDelegate
     
     @IBOutlet var contactView: UIStackView!
         
-    @IBOutlet var profileImage: CustomImageView!
-    
     public var onSigninTouched: ((UIViewController) -> ())?
     
-    private var storedInvestor: LXInvestor?
+    private var storedFund: LXFund?
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     
@@ -49,19 +46,15 @@ class EmailViewController: UIViewController, MFMailComposeViewControllerDelegate
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        profileImage.layer.cornerRadius = 10.0
-        profileImage.layer.borderColor = UIColor(white: 0, alpha: 0.2).cgColor
-        profileImage.layer.borderWidth = 0.5
-        
-        if investor.publicUrl == nil && investor.key != nil {
-            Database.database().createInvestorLink(withInvestor: investor.key!) { url in
-                self.investor.publicUrl = url
-            }
-        }
+
+//        if fund.publicUrl == nil && fund.id != nil {
+//            Database.database().createInvestorLink(withInvestor: fund.id) { url in
+//                self.fund.publicUrl = url
+//            }
+//        }
         
         checkUser()
-        fetchInvestor()
+        fetchFund()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -69,8 +62,8 @@ class EmailViewController: UIViewController, MFMailComposeViewControllerDelegate
         
         checkUser()
         
-        nameLabel.text = investor.fullName()
-        titleLabel.text = "\(investor.title) at \(investor.firm)"
+        nameLabel.text = fund.name
+        titleLabel.text = "\(fund.stage)"
     }
     
     @IBAction func loginTouched(_ sender: Any) {
@@ -85,13 +78,13 @@ class EmailViewController: UIViewController, MFMailComposeViewControllerDelegate
         
         //hasPurchased, canPurchased
         if canPurchase { //show prompt to accept purchase
-
-            let purchaseAlert = UIAlertController(title: "Confirm Purchase", message: "Access to this contact is 25 points. Are you sure you want to continue?", preferredStyle: .alert)
+            
+            let purchaseAlert = UIAlertController(title: "Confirm Purchase", message: "Access to this contact is 15 points. Are you sure you want to continue?", preferredStyle: .alert)
             
             purchaseAlert.addAction(UIAlertAction(title: "Yes, Purchase", style: .default, handler: { (action: UIAlertAction!) in
                 HUD.flash(.progress, onView: self.view, delay: 60.0, completion: nil)
                 
-                Database.database().purchaseInvestorContact(uid: uid, investorId: self.investor.id, completion: { (transaction, error) in
+                Database.database().purchaseFundContact(uid: uid, fundId: self.fund.id, completion: { (transaction, error) in
                     if let error = error {
                         print(error.localizedDescription)
                         HUD.flash(.labeledError(title: "Error", subtitle: error.localizedDescription), delay: 4.5)
@@ -106,7 +99,7 @@ class EmailViewController: UIViewController, MFMailComposeViewControllerDelegate
                     self.bookmarkTouched(self)
                     self.loginButton.isHidden = true
                     self.contactView.isHidden = false
-                    self.sendLabel.text = self.investor.contactInfo.email
+                    self.sendLabel.text = self.fund.contact
                     HUD.flash(.success, delay: 2.5)
                     HUD.flash(.success, onView: nil, delay: 2.5, completion: { success in
                         AppStore.shared.setAppRuns(5)
@@ -139,32 +132,32 @@ class EmailViewController: UIViewController, MFMailComposeViewControllerDelegate
             self.contactView.isHidden = true
             self.loginButton.isHidden = false
             self.loginButton.setTitle("Login To See Contact Details", for: .normal)
-            self.sendLabel.text = self.splitEmail(email: self.investor.contactInfo.email)
+            self.sendLabel.text = self.splitEmail(email: self.fund.contact)
             return // no user
         }
         
-        Database.database().hasPurchasedInvestor(uid: user.uid, investorId: investor.id) { hasPurchasedInvestor in
-            self.purchased = hasPurchasedInvestor
+        Database.database().hasPurchasedFund(uid: user.uid, fundId: fund.id) { hasPurchasedFund in
+            self.purchased = hasPurchasedFund
             
-            if hasPurchasedInvestor {
+            if hasPurchasedFund {
                 self.contactView.isHidden = false
                 self.loginButton.isHidden = true
-                self.sendLabel.text = self.investor.contactInfo.email
+                self.sendLabel.text = self.fund.contact
             } else {
-                Database.database().canPurchaseInvestor(uid: user.uid, completion: { canPurchase in
+                Database.database().canPurchaseFund(uid: user.uid, completion: { canPurchase in
                     self.canPurchase = canPurchase
                     
                     if canPurchase {
                         self.loginButton.isHidden = false
                         self.contactView.isHidden = false
-                        self.loginButton.setTitle("Access for 25 Points", for: .normal)
-                        self.sendLabel.text = self.splitEmail(email: self.investor.contactInfo.email)
+                        self.loginButton.setTitle("Access for 15 Points", for: .normal)
+                        self.sendLabel.text = self.splitEmail(email: self.fund.contact)
                         return // no user
                     } else {
                         self.loginButton.isHidden = false
                         self.contactView.isHidden = true
                         self.loginButton.setTitle("Earn Points To Access", for: .normal)
-                        self.sendLabel.text = self.splitEmail(email: self.investor.contactInfo.email)
+                        self.sendLabel.text = self.splitEmail(email: self.fund.contact)
                         return // no user
                     }
                 })
@@ -172,35 +165,35 @@ class EmailViewController: UIViewController, MFMailComposeViewControllerDelegate
         }
     }
     
-    public func fetchInvestor() {
+    public func fetchFund() {
         let context = appDelegate.persistentContainer.viewContext
-
-        let request = NSFetchRequest<NSFetchRequestResult>(entityName: "LXInvestor")
-        request.predicate = NSPredicate(format: "id = %@", investor.id)
+        
+        let request = NSFetchRequest<NSFetchRequestResult>(entityName: "LXFund")
+        request.predicate = NSPredicate(format: "id = %@", fund.id)
         request.returnsObjectsAsFaults = false
         
         do {
             let result = try context.fetch(request)
-            guard let investors = result as? [LXInvestor], let fetchedInvestor = investors.first else {
+            guard let funds = result as? [LXFund], let fetchedFund = funds.first else {
                 return //investor selected is not stored locally
             }
             
-            self.storedInvestor = fetchedInvestor
+            self.storedFund = fetchedFund
             self.bookmarkButton.isSelected = true //stored investors are bookmarked
         } catch {
             print("Failed")
         }
     }
-
+    
     @IBAction func shareTouched(_ sender: Any) {
-        guard let uid = Auth.auth().currentUser?.uid, let publicUrl = investor.publicUrl else {
+        guard let uid = Auth.auth().currentUser?.uid, let publicUrl = fund.publicUrl else {
             return
         }
         
-        Analytics.logEvent("share_touched", parameters: ["uid" : uid, "investor_id" : investor.id, "investor_name" : investor.fullName()])
-
+        Analytics.logEvent("share_touched", parameters: ["uid" : uid, "fund_id" : fund.id, "fund_name" : fund.name])
+        
         // text to share
-        let text = "Hey. Check out \(investor.first) \(investor.last) on LinkX on iOS! \(publicUrl)"
+        let text = "Hey. Check out \(fund.name) on LinkX on iOS! \(publicUrl)"
         
         // set up activity view controller
         let textToShare = [ text ]
@@ -216,8 +209,8 @@ class EmailViewController: UIViewController, MFMailComposeViewControllerDelegate
             return
         }
         
-        Analytics.logEvent("clipboard_touched", parameters: ["uid" : uid, "investor_id" : investor.id, "investor_name" : investor.fullName()])
-        UIPasteboard.general.string = investor.contactInfo.email
+        Analytics.logEvent("clipboard_touched", parameters: ["uid" : uid, "fund_id" : fund.id, "fund_name" : fund.name])
+        UIPasteboard.general.string = self.fund.contact
         //TODO: add show alert
     }
     
@@ -228,36 +221,32 @@ class EmailViewController: UIViewController, MFMailComposeViewControllerDelegate
         
         let context = appDelegate.persistentContainer.viewContext
         
-        Analytics.logEvent("bookmark_touched", parameters: ["uid" : uid, "investor_id" : investor.id, "investor_name" : investor.fullName()])
-
-        guard storedInvestor == nil else { //investor already stored locally, delete bookmark
-            Analytics.logEvent("delete_bookmark", parameters: ["uid" : uid, "investor_id" : investor.id, "investor_name" : investor.fullName()])
-            context.delete(storedInvestor!)
+        Analytics.logEvent("bookmark_touched", parameters: ["uid" : uid, "fund_id" : fund.id, "fund_name" : fund.name])
+        
+        guard storedFund == nil else { //investor already stored locally, delete bookmark
+            Analytics.logEvent("delete_bookmark", parameters: ["uid" : uid, "fund_id" : fund.id, "fund_name" : fund.name])
+            context.delete(storedFund!)
             bookmarkButton.isSelected = false
-            storedInvestor = nil
+            storedFund = nil
             return
         }
         
-        let entity = NSEntityDescription.entity(forEntityName: "LXInvestor", in: context)
-        let newInvestor = NSManagedObject(entity: entity!, insertInto: context)
+        let entity = NSEntityDescription.entity(forEntityName: "LXFund", in: context)
+        let newFund = NSManagedObject(entity: entity!, insertInto: context)
         
-        newInvestor.setValue(investor.id, forKey: "id")
-        newInvestor.setValue(investor.first, forKey: "first")
-        newInvestor.setValue(investor.last, forKey: "last")
-        newInvestor.setValue(investor.firm, forKey: "firm")
-        newInvestor.setValue(investor.title, forKey: "title")
-        newInvestor.setValue(investor.metadata, forKey: "metadata")
-        newInvestor.setValue(investor.contactInfo.city, forKey: "city")
-        newInvestor.setValue(investor.contactInfo.email, forKey: "email")
-        newInvestor.setValue(investor.contactInfo.state, forKey: "state")
+        newFund.setValue(fund.id, forKey: "id")
+        newFund.setValue(fund.name, forKey: "name")
+        newFund.setValue(fund.city, forKey: "city")
+        newFund.setValue(fund.state, forKey: "state")
+        newFund.setValue(fund.stage, forKey: "stage")
         
         do {
-            Analytics.logEvent("bookmark_saved", parameters: ["uid" : uid, "investor_id" : investor.id, "investor_name" : investor.fullName()])
+            Analytics.logEvent("bookmark_saved", parameters: ["uid" : uid, "fund_id" : fund.id, "fund_name" : fund.name])
             try context.save()
-            storedInvestor = newInvestor as? LXInvestor
+            storedFund = newFund as? LXFund
             bookmarkButton.isSelected = true
         } catch {
-            Analytics.logEvent("bookmark_failed", parameters: ["uid" : uid, "investor_id" : investor.id, "investor_name" : investor.fullName()])
+            Analytics.logEvent("bookmark_failed", parameters: ["uid" : uid, "fund_id" : fund.id, "fund_name" : fund.name])
             print("Failed saving") //TODO: add failed to bookmark
         }
     }
@@ -267,19 +256,19 @@ class EmailViewController: UIViewController, MFMailComposeViewControllerDelegate
             return
         }
         
-        Analytics.logEvent("email_touched", parameters: ["uid" : uid, "investor_id" : investor.id, "investor_name" : investor.fullName()])
+        Analytics.logEvent("email_touched", parameters: ["uid" : uid, "fund_id" : fund.id, "fund_name" : fund.name])
         let composeVC = MFMailComposeViewController()
-
+        
         composeVC.mailComposeDelegate = self
-        composeVC.setToRecipients([investor.contactInfo.email])
-        composeVC.setSubject("Put Your Subject Here - \(investor.first)")
+        composeVC.setToRecipients([fund.contact])
+        composeVC.setSubject("Put Your Subject Here - \(fund.name)")
         
         guard MFMailComposeViewController.canSendMail() else { //TODO: show mail error alert
-            Analytics.logEvent("email_failed", parameters: ["uid" : uid, "investor_id" : investor.id, "investor_name" : investor.fullName()])
+            Analytics.logEvent("email_failed", parameters: ["uid" : uid, "fund_id" : fund.id, "fund_name" : fund.name])
             return
         }
         
-        composeVC.setMessageBody("Hey \(investor.first), \n How are you? I hope all is well! \n", isHTML: false)
+        composeVC.setMessageBody("Hey \(fund.name), \n How are you? I hope all is well! \n", isHTML: false)
         
         self.present(composeVC, animated: true, completion: nil)
     }
