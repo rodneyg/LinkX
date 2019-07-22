@@ -134,6 +134,10 @@ class ProfileViewController: UIViewController, UITextFieldDelegate {
         }
     }
     
+    @IBAction func earnTouched(_ sender: Any) {
+        performSegue(withIdentifier: "ShowEarnPointsFromProfile", sender: self)
+    }
+    
     @IBAction func logoutTouched(_ sender: Any) {
         Analytics.logEvent("logout_touched", parameters: [:])
 

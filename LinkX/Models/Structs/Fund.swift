@@ -14,8 +14,8 @@ public struct Fund {
     public var contact: String
     public var city: String
     public var state: String
-    public var stage: String
     public var email: String?
+    public var stages = [Stage]()
     public var sectors = [Sector]()
     public var publicUrl: String?
     public var metadata: [String : Any]
@@ -26,10 +26,15 @@ public struct Fund {
         self.contact = (data["contact"] as? String) ?? ""
         self.city = (data["city"] as? String) ?? ""
         self.state = (data["state"] as? String) ?? ""
-        self.stage = (data["stage"] as? String) ?? ""
         self.email = (data["email"] as? String) ?? ""
         self.publicUrl = (data["public_url"] as? String)
         self.metadata = data
+        
+        if let stageData = data["stage"] as? [String] {
+            for stage in stageData {
+                self.stages.append(Stage(data: [stage : stage]))
+            }
+        }
         
         if let sectorData = data["sectors"] as? [String] {
             for sector in sectorData {

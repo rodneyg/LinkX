@@ -131,7 +131,7 @@ class EditProfileViewController: UIViewController {
     }
     
     @IBAction func closeTouched(_ sender: Any) {
-        Analytics.logEvent("close_touched", parameters: [:])
+        Analytics.logEvent("close_touched_edit", parameters: [:])
 
         self.dismiss(animated: true, completion: nil)
     }

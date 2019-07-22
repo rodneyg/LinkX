@@ -29,6 +29,7 @@ class FundViewController: UIViewController, MFMailComposeViewControllerDelegate,
     @IBOutlet var sendLabel: UILabel!
     @IBOutlet var loginButton: UIButton!
     @IBOutlet var bookmarkButton: UIButton!
+    @IBOutlet var stageLabel: UILabel!
     
     @IBOutlet var contactView: UIStackView!
         
@@ -63,7 +64,14 @@ class FundViewController: UIViewController, MFMailComposeViewControllerDelegate,
         checkUser()
         
         nameLabel.text = fund.name
-        titleLabel.text = "\(fund.stage)"
+        
+        if let sectors = fund.metadata["sectors"] as? [String] {
+            titleLabel.text = sectors.joined(separator:",")
+        }
+        
+        if let stages = fund.metadata["stage"] as? [String] {
+            stageLabel.text = stages.joined(separator:",")
+        }
     }
     
     @IBAction func loginTouched(_ sender: Any) {
@@ -238,7 +246,6 @@ class FundViewController: UIViewController, MFMailComposeViewControllerDelegate,
         newFund.setValue(fund.name, forKey: "name")
         newFund.setValue(fund.city, forKey: "city")
         newFund.setValue(fund.state, forKey: "state")
-        newFund.setValue(fund.stage, forKey: "stage")
         
         do {
             Analytics.logEvent("bookmark_saved", parameters: ["uid" : uid, "fund_id" : fund.id, "fund_name" : fund.name])
@@ -274,7 +281,7 @@ class FundViewController: UIViewController, MFMailComposeViewControllerDelegate,
     }
     
     @IBAction func closeTouched(_ sender: Any) {
-        Analytics.logEvent("close_touched", parameters: [:])
+        Analytics.logEvent("close_touched_fund", parameters: [:])
         dismiss()
     }
     

@@ -189,6 +189,7 @@ PODS:
     - SDWebImage/Core (= 4.4.5)
   - SDWebImage/Core (4.4.5)
   - swift_qrcodejs (1.1.1)
+  - SwiftLinkPreview (3.0.1)
   - TwitterCore (3.2.0)
   - TwitterKit (3.4.2):
     - TwitterCore (>= 3.2.0)
@@ -204,6 +205,7 @@ DEPENDENCIES:
   - Firebase/Firestore
   - FirebaseUI
   - PKHUD (~> 5.0)
+  - SwiftLinkPreview (~> 3.0.1)
 
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
@@ -238,6 +240,7 @@ SPEC REPOS:
     - Protobuf
     - SDWebImage
     - swift_qrcodejs
+    - SwiftLinkPreview
     - TwitterCore
     - TwitterKit
 
@@ -273,9 +276,10 @@ SPEC CHECKSUMS:
   Protobuf: 1eb9700044745f00181c136ef21b8ff3ad5a0fd5
   SDWebImage: ecc03494e973b93b80213649d32175f8d2d17d4d
   swift_qrcodejs: 0bacbfe321a99954c7b8e04c75562007ea4e4f7c
+  SwiftLinkPreview: 7524438c43bf63a5041615713777c3d8f19a9a31
   TwitterCore: 8cbc9ad34d91c63a0035ea05bfbfc0d7ca72a28c
   TwitterKit: 5e4f41d70b9abdb41df5467f52d7aa2c0fd26ebb
 
-PODFILE CHECKSUM: 5c7fb8860391296316ab4adc911a535191d178b3
+PODFILE CHECKSUM: 8252cc41b641d6ccac74159fae872e8a69262eb2
 
 COCOAPODS: 1.6.1

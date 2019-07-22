@@ -285,7 +285,7 @@ class EmailViewController: UIViewController, MFMailComposeViewControllerDelegate
     }
     
     @IBAction func closeTouched(_ sender: Any) {
-        Analytics.logEvent("close_touched", parameters: [:])
+        Analytics.logEvent("close_touched_investor", parameters: [:])
         dismiss()
     }
     

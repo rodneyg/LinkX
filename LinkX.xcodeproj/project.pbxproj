@@ -13,6 +13,7 @@
 		2A21617D22472F3800D0ACDA /* Investor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A21617C22472F3800D0ACDA /* Investor.swift */; };
 		2A21618022473A2700D0ACDA /* InvestorTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A21617E22473A2700D0ACDA /* InvestorTableViewCell.swift */; };
 		2A21618122473A2700D0ACDA /* InvestorTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2A21617F22473A2700D0ACDA /* InvestorTableViewCell.xib */; };
+		2A3C690A22DC1D5F00E24319 /* Stage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A3C690922DC1D5F00E24319 /* Stage.swift */; };
 		2A49BE5C22BC2D3800C118EA /* Point.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A49BE5B22BC2D3800C118EA /* Point.swift */; };
 		2A49BE5E22BC2E5C00C118EA /* Activity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A49BE5D22BC2E5C00C118EA /* Activity.swift */; };
 		2A49BE6022BCBDFE00C118EA /* ContributeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A49BE5F22BCBDFE00C118EA /* ContributeViewController.swift */; };
@@ -25,7 +26,8 @@
 		2A49BE6F22C431FD00C118EA /* ContributionTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A49BE6D22C431FD00C118EA /* ContributionTableViewCell.swift */; };
 		2A49BE7022C431FD00C118EA /* ContributionTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2A49BE6E22C431FD00C118EA /* ContributionTableViewCell.xib */; };
 		2A5C9FB6224748EC0072CC2F /* IAPHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A5C9FB5224748EC0072CC2F /* IAPHandler.swift */; };
-		2A5C9FB82247499B0072CC2F /* Date+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A5C9FB72247499B0072CC2F /* Date+Ext.swift */; };
+		2A763AB222E55DDF00769044 /* UIView+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A763AB122E55DDF00769044 /* UIView+Ext.swift */; };
+		2A763AB722E55E9800769044 /* Date+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A763AB622E55E9800769044 /* Date+Ext.swift */; };
 		2A7B9AEB22BAEA4B00B6CEEC /* Rating.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A7B9AEA22BAEA4B00B6CEEC /* Rating.swift */; };
 		2A7B9AED22BAEB6100B6CEEC /* Review.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A7B9AEC22BAEB6100B6CEEC /* Review.swift */; };
 		2A7B9AEF22BAEC1800B6CEEC /* Fund.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A7B9AEE22BAEC1800B6CEEC /* Fund.swift */; };
@@ -60,6 +62,11 @@
 		2AD66CF622CAE53F0004AAD0 /* ActivityTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AD66CF522CAE53F0004AAD0 /* ActivityTableViewController.swift */; };
 		2AD66CF822CAFC5F0004AAD0 /* EarnPointsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AD66CF722CAFC5F0004AAD0 /* EarnPointsViewController.swift */; };
 		2AD66CFB22CC5A3A0004AAD0 /* Transaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AD66CFA22CC5A3A0004AAD0 /* Transaction.swift */; };
+		2AE8B9EE22E2AC900044CD80 /* Post.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AE8B9ED22E2AC900044CD80 /* Post.swift */; };
+		2AE8B9F122E2AF910044CD80 /* PostTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AE8B9EF22E2AF910044CD80 /* PostTableViewCell.swift */; };
+		2AE8B9F222E2AF910044CD80 /* PostTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2AE8B9F022E2AF910044CD80 /* PostTableViewCell.xib */; };
+		2AE8B9F422E2D6650044CD80 /* AddPostViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AE8B9F322E2D6650044CD80 /* AddPostViewController.swift */; };
+		2AE8B9F622E2D7090044CD80 /* PostsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AE8B9F522E2D7090044CD80 /* PostsViewController.swift */; };
 		2AFA0F2922D5307A005A3EA4 /* AppStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AFA0F2822D5307A005A3EA4 /* AppStore.swift */; };
 		2AFA0F2C22D69311005A3EA4 /* funds.json in Resources */ = {isa = PBXBuildFile; fileRef = 2AFA0F2B22D69311005A3EA4 /* funds.json */; };
 		2AFA0F2E22D69591005A3EA4 /* graveyard.txt in Resources */ = {isa = PBXBuildFile; fileRef = 2AFA0F2D22D69591005A3EA4 /* graveyard.txt */; };
@@ -102,6 +109,7 @@
 		2A21617C22472F3800D0ACDA /* Investor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Investor.swift; sourceTree = "<group>"; };
 		2A21617E22473A2700D0ACDA /* InvestorTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InvestorTableViewCell.swift; sourceTree = "<group>"; };
 		2A21617F22473A2700D0ACDA /* InvestorTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = InvestorTableViewCell.xib; sourceTree = "<group>"; };
+		2A3C690922DC1D5F00E24319 /* Stage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Stage.swift; sourceTree = "<group>"; };
 		2A49BE5B22BC2D3800C118EA /* Point.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Point.swift; sourceTree = "<group>"; };
 		2A49BE5D22BC2E5C00C118EA /* Activity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Activity.swift; sourceTree = "<group>"; };
 		2A49BE5F22BCBDFE00C118EA /* ContributeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContributeViewController.swift; sourceTree = "<group>"; };
@@ -114,7 +122,8 @@
 		2A49BE6D22C431FD00C118EA /* ContributionTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContributionTableViewCell.swift; sourceTree = "<group>"; };
 		2A49BE6E22C431FD00C118EA /* ContributionTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ContributionTableViewCell.xib; sourceTree = "<group>"; };
 		2A5C9FB5224748EC0072CC2F /* IAPHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IAPHandler.swift; sourceTree = "<group>"; };
-		2A5C9FB72247499B0072CC2F /* Date+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+Ext.swift"; sourceTree = "<group>"; };
+		2A763AB122E55DDF00769044 /* UIView+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "UIView+Ext.swift"; path = "LinkX/Extensions/UIView+Ext.swift"; sourceTree = SOURCE_ROOT; };
+		2A763AB622E55E9800769044 /* Date+Ext.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Date+Ext.swift"; path = "LinkX/New Group/Extensions/Date+Ext.swift"; sourceTree = SOURCE_ROOT; };
 		2A7B9AEA22BAEA4B00B6CEEC /* Rating.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Rating.swift; sourceTree = "<group>"; };
 		2A7B9AEC22BAEB6100B6CEEC /* Review.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Review.swift; sourceTree = "<group>"; };
 		2A7B9AEE22BAEC1800B6CEEC /* Fund.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Fund.swift; sourceTree = "<group>"; };
@@ -154,6 +163,11 @@
 		2AD66CF722CAFC5F0004AAD0 /* EarnPointsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EarnPointsViewController.swift; sourceTree = "<group>"; };
 		2AD66CF922CB15470004AAD0 /* LinkX.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = LinkX.entitlements; sourceTree = "<group>"; };
 		2AD66CFA22CC5A3A0004AAD0 /* Transaction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Transaction.swift; sourceTree = "<group>"; };
+		2AE8B9ED22E2AC900044CD80 /* Post.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Post.swift; sourceTree = "<group>"; };
+		2AE8B9EF22E2AF910044CD80 /* PostTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostTableViewCell.swift; sourceTree = "<group>"; };
+		2AE8B9F022E2AF910044CD80 /* PostTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PostTableViewCell.xib; sourceTree = "<group>"; };
+		2AE8B9F322E2D6650044CD80 /* AddPostViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddPostViewController.swift; sourceTree = "<group>"; };
+		2AE8B9F522E2D7090044CD80 /* PostsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostsViewController.swift; sourceTree = "<group>"; };
 		2AFA0F2822D5307A005A3EA4 /* AppStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppStore.swift; sourceTree = "<group>"; };
 		2AFA0F2B22D69311005A3EA4 /* funds.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = funds.json; sourceTree = "<group>"; };
 		2AFA0F2D22D69591005A3EA4 /* graveyard.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = graveyard.txt; sourceTree = "<group>"; };
@@ -204,6 +218,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		2A763AB322E55E1B00769044 /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				2A763AB622E55E9800769044 /* Date+Ext.swift */,
+				2A763AB122E55DDF00769044 /* UIView+Ext.swift */,
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
 		2A7B9AF422BAFD1C00B6CEEC /* ViewControllers */ = {
 			isa = PBXGroup;
 			children = (
@@ -219,6 +242,8 @@
 				2AA2408D22C6C8CF000B261F /* InviteViewController.swift */,
 				2AD66CF722CAFC5F0004AAD0 /* EarnPointsViewController.swift */,
 				2AFA0F3322D81B3D005A3EA4 /* FundViewController.swift */,
+				2AE8B9F322E2D6650044CD80 /* AddPostViewController.swift */,
+				2AE8B9F522E2D7090044CD80 /* PostsViewController.swift */,
 			);
 			path = ViewControllers;
 			sourceTree = "<group>";
@@ -260,6 +285,8 @@
 				2A49BE5B22BC2D3800C118EA /* Point.swift */,
 				2A49BE5D22BC2E5C00C118EA /* Activity.swift */,
 				2A49BE6B22C2C44900C118EA /* Contribution.swift */,
+				2A3C690922DC1D5F00E24319 /* Stage.swift */,
+				2AE8B9ED22E2AC900044CD80 /* Post.swift */,
 			);
 			path = Structs;
 			sourceTree = "<group>";
@@ -289,6 +316,8 @@
 				2AB3947522CADE9300373F18 /* ActivityTableViewCell.xib */,
 				2AFA0F2F22D8130F005A3EA4 /* FundTableViewCell.swift */,
 				2AFA0F3022D8130F005A3EA4 /* FundTableViewCell.xib */,
+				2AE8B9EF22E2AF910044CD80 /* PostTableViewCell.swift */,
+				2AE8B9F022E2AF910044CD80 /* PostTableViewCell.xib */,
 			);
 			path = TableCells;
 			sourceTree = "<group>";
@@ -300,14 +329,6 @@
 				2ABA838022456E53003A4339 /* LaunchScreen.storyboard */,
 			);
 			path = Storyboards;
-			sourceTree = "<group>";
-		};
-		2A7B9AFD22BAFE3100B6CEEC /* Extensions */ = {
-			isa = PBXGroup;
-			children = (
-				2A5C9FB72247499B0072CC2F /* Date+Ext.swift */,
-			);
-			path = Extensions;
 			sourceTree = "<group>";
 		};
 		2A7B9AFE22BAFE5100B6CEEC /* Defaults */ = {
@@ -367,8 +388,8 @@
 				2A7B9AFA22BAFD8300B6CEEC /* Views */,
 				2A7B9AF422BAFD1C00B6CEEC /* ViewControllers */,
 				2AB763B722ADBEFE000B9CF5 /* Utilities */,
-				2A7B9AFD22BAFE3100B6CEEC /* Extensions */,
 				2AFA0F2822D5307A005A3EA4 /* AppStore.swift */,
+				2A763AB322E55E1B00769044 /* Extensions */,
 			);
 			path = LinkX;
 			sourceTree = "<group>";
@@ -542,6 +563,7 @@
 				2ABA83A6224570C5003A4339 /* GoogleService-Info.plist in Resources */,
 				2A49BE6A22BCD27600C118EA /* ReviewTableViewCell.xib in Resources */,
 				2AB3947722CADE9300373F18 /* ActivityTableViewCell.xib in Resources */,
+				2AE8B9F222E2AF910044CD80 /* PostTableViewCell.xib in Resources */,
 				2AFA0F2C22D69311005A3EA4 /* funds.json in Resources */,
 				2AFA0F2E22D69591005A3EA4 /* graveyard.txt in Resources */,
 				2AA2408A22C6BE3F000B261F /* eula.html in Resources */,
@@ -661,6 +683,7 @@
 				"${BUILT_PRODUCTS_DIR}/PKHUD/PKHUD.framework",
 				"${BUILT_PRODUCTS_DIR}/Protobuf/Protobuf.framework",
 				"${BUILT_PRODUCTS_DIR}/SDWebImage/SDWebImage.framework",
+				"${BUILT_PRODUCTS_DIR}/SwiftLinkPreview/SwiftLinkPreview.framework",
 				"${PODS_ROOT}/TwitterCore/iOS/TwitterCore.framework",
 				"${PODS_ROOT}/TwitterKit/iOS/TwitterKit.framework",
 				"${BUILT_PRODUCTS_DIR}/gRPC-C++/grpcpp.framework",
@@ -683,6 +706,7 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/PKHUD.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Protobuf.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SDWebImage.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftLinkPreview.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/TwitterCore.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/TwitterKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/grpcpp.framework",
@@ -721,21 +745,25 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2AE8B9F622E2D7090044CD80 /* PostsViewController.swift in Sources */,
 				2ABEAB53228A2D9F00587B7E /* User.swift in Sources */,
 				2AA2408E22C6C8CF000B261F /* InviteViewController.swift in Sources */,
 				2ABA837722456E52003A4339 /* ViewController.swift in Sources */,
 				2A5C9FB6224748EC0072CC2F /* IAPHandler.swift in Sources */,
+				2AE8B9F422E2D6650044CD80 /* AddPostViewController.swift in Sources */,
 				2A49BE6F22C431FD00C118EA /* ContributionTableViewCell.swift in Sources */,
 				2AD66CFB22CC5A3A0004AAD0 /* Transaction.swift in Sources */,
 				2A21618022473A2700D0ACDA /* InvestorTableViewCell.swift in Sources */,
+				2A763AB722E55E9800769044 /* Date+Ext.swift in Sources */,
 				2A49BE5C22BC2D3800C118EA /* Point.swift in Sources */,
 				2ABD3A63229B8CF400DCA1BE /* ProfileViewController.swift in Sources */,
 				2A7B9AED22BAEB6100B6CEEC /* Review.swift in Sources */,
+				2A763AB222E55DDF00769044 /* UIView+Ext.swift in Sources */,
 				2A49BE6222BCBF3F00C118EA /* UploadViewController.swift in Sources */,
 				2A7B9AEF22BAEC1800B6CEEC /* Fund.swift in Sources */,
+				2AE8B9F122E2AF910044CD80 /* PostTableViewCell.swift in Sources */,
 				2A7B9B0022BAFED000B6CEEC /* Segues.swift in Sources */,
 				2A7B9AF122BAECE900B6CEEC /* Sector.swift in Sources */,
-				2A5C9FB82247499B0072CC2F /* Date+Ext.swift in Sources */,
 				2AFB67762262B7F800AE860C /* LXBookmarkTableController.swift in Sources */,
 				2A49BE6C22C2C44900C118EA /* Contribution.swift in Sources */,
 				2AB763B922ADBF09000B9CF5 /* FirebaseUtilities.swift in Sources */,
@@ -756,10 +784,12 @@
 				2AB763B422ADA3CE000B9CF5 /* ImagePicker.swift in Sources */,
 				2A49BE6522BCD25E00C118EA /* RateTableViewCell.swift in Sources */,
 				2AFA0F2922D5307A005A3EA4 /* AppStore.swift in Sources */,
+				2AE8B9EE22E2AC900044CD80 /* Post.swift in Sources */,
 				2A21617B2247271400D0ACDA /* EmailViewController.swift in Sources */,
 				2A7B9AF622BAFD3000B6CEEC /* SigninViewController.swift in Sources */,
 				2AB763B622ADB766000B9CF5 /* CustomImageView.swift in Sources */,
 				2A49BE6922BCD27600C118EA /* ReviewTableViewCell.swift in Sources */,
+				2A3C690A22DC1D5F00E24319 /* Stage.swift in Sources */,
 				2A49BE5E22BC2E5C00C118EA /* Activity.swift in Sources */,
 				2A7B9AF322BAF66300B6CEEC /* SignupViewController.swift in Sources */,
 				2AFA0F3422D81B3D005A3EA4 /* FundViewController.swift in Sources */,

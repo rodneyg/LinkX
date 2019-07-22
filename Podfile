@@ -16,6 +16,7 @@ target 'LinkX' do
   pod 'Cosmos', '~> 18.0'
   pod 'EFQRCode', '~> 5.0.0'
   pod 'PKHUD', '~> 5.0'
+  pod 'SwiftLinkPreview', '~> 3.0.1'
 
   target 'LinkXTests' do
     inherit! :search_paths

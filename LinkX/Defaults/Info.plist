@@ -17,7 +17,7 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.05</string>
+	<string>1.09</string>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
@@ -30,13 +30,20 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>12</string>
+	<string>16</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<true/>
+	</dict>
 	<key>NSCameraUsageDescription</key>
 	<string>We need access to your camera to take photos for your profile.</string>
 	<key>NSContactsUsageDescription</key>
 	<string>We need access to your contacts so that we can invite your friends.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>We need access to your library to save images for you to share.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>We need access to your library to upload profile photos.</string>
 	<key>UILaunchStoryboardName</key>

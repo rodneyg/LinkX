@@ -87,7 +87,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         Analytics.logEvent("fetch_funds", parameters: ["text" : text])
         
         //.queryEnding(atValue: text.lowercased() + "\u{f8ff}")
-        ref.queryOrdered(byChild: "name").queryStarting(atValue: text.lowercased()).queryEnding(atValue: text.lowercased() + "\u{f8ff}").queryLimited(toFirst: 10)
+        ref.queryOrdered(byChild: "name_search").queryStarting(atValue: text.lowercased()).queryEnding(atValue: text.lowercased() + "\u{f8ff}").queryLimited(toFirst: 10)
             .observeSingleEvent(of: .value, with: { snapshot in
                 guard let children = snapshot.children.allObjects as? [DataSnapshot] else {
                     completion([])
@@ -170,29 +170,39 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
                         
                         var sectorSearch = ""
                         sectors.forEach { sector in
-                            sectorSearch.append(" " + sector)
+                            if sector != sectors.first {
+                                sectorSearch.append(" ")
+                            }
+                            
+                            sectorSearch.append(sector.lowercased())
                         }
                         value["sector_search"] = sectorSearch
                         Database.database().reference().child("funds").child(child.key).setValue(value)
                     }
                     
-                    if  value["stage_search"] == nil {
-                        var stages = [String]()
-                        if let stage = value["stage"] as? String {
-                            stage.split(separator: ",").forEach { substring in
-                                stages.append(String(substring))
-                            }
-                            
-                            value["stage"] = stages
+                    if  value["stage_search"] != nil {
+                        guard let stages = value["stage"] as? [String] else {
+                            return
                         }
                         
                         var stageSearch = ""
                         stages.forEach { stage in
-                            stageSearch.append(" " + stage)
+                            if stage != stages.first {
+                                stageSearch.append(" ")
+                            }
+                            
+                            stageSearch.append(stage.lowercased())
                         }
                         
                         value["stage_search"] = stageSearch
                         Database.database().reference().child("funds").child(child.key).setValue(value)
+                    }
+                    
+                    if value["name_search"] == nil {
+                        if let name = value["name"] as? String {
+                            value["name_search"] = name.lowercased()
+                            Database.database().reference().child("funds").child(child.key).setValue(value)
+                        }
                     }
                     
                     newFunds.append(Fund(data: value))
@@ -297,7 +307,7 @@ extension ViewController {
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return filterSegment.selectedSegmentIndex == 0 ? 104.0 : 81.0
+        return filterSegment.selectedSegmentIndex == 0 ? 104.0 : 100.0
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
