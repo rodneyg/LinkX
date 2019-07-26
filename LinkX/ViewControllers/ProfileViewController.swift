@@ -20,6 +20,10 @@ class ProfileViewController: UIViewController, UITextFieldDelegate {
     @IBOutlet var profileImage: CustomImageView!
     @IBOutlet var pointsLabel: UILabel!
     @IBOutlet var titleHeight: NSLayoutConstraint!
+    @IBOutlet var stackView: UIStackView!
+    @IBOutlet var postsButton: UIButton!
+    @IBOutlet var bookmarksButton: UIButton!
+    @IBOutlet var pointsButton: UIButton!
     
     var fetchedUser: User?
     
@@ -132,6 +136,15 @@ class ProfileViewController: UIViewController, UITextFieldDelegate {
             print("Failed to fetch user:", err)
             cancel?(err)
         }
+    }
+    
+    @IBAction func postsTouched(_ sender: Any) {
+    }
+    
+    @IBAction func bookmarksTouched(_ sender: Any) {
+    }
+    
+    @IBAction func pointsTouched(_ sender: Any) {
     }
     
     @IBAction func earnTouched(_ sender: Any) {

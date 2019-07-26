@@ -248,7 +248,7 @@ class PostsViewController: UIViewController, UITableViewDelegate, UITableViewDat
         
         tableView.refreshControl?.beginRefreshing()
         
-        Database.database().fetchAllPosts(withUID: currentLoggedInUserId, completion: { (posts) in
+        Database.database().fetchAllPostFromToday(completion: { (posts) in
             self.posts.removeAll()
             self.posts.append(contentsOf: posts)
             

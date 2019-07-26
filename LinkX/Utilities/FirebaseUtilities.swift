@@ -29,7 +29,7 @@ extension Auth {
                     return
                 }
                 guard let uid = user?.user.uid else { return }
-
+                
                 self.setupUser(uid: uid, firstName: firstName, lastName: lastName, image: image, completion: completion)
             })
         }
@@ -202,7 +202,7 @@ extension Database {
             
             completion(newContributions, nil)
         }) { (err) in
-           completion(nil, err)
+            completion(nil, err)
         }
     }
     
@@ -308,7 +308,7 @@ extension Database {
     func hasPurchasedInvestor(uid: String, investorId: String, completion: @escaping (Bool) -> ()) {
         self.hasPurchasedItem(uid: uid, itemId: investorId, completion: completion)
     }
-
+    
     func hasPurchasedItem(uid: String, itemId: String, completion: @escaping (Bool) -> ()) {
         Database.database().reference().child("transactions").child(uid).observeSingleEvent(of: .value, with: { (snapshot) in
             guard let children = snapshot.children.allObjects as? [DataSnapshot] else {
@@ -362,7 +362,7 @@ extension Database {
             })
         }
     }
-
+    
     func fetchUserPoints(withUID uid: String, completion: @escaping ([Point]) -> ()) {
         Database.database().reference().child("points").child(uid).observeSingleEvent(of: .value, with: { (snapshot) in
             guard let children = snapshot.children.allObjects as? [DataSnapshot] else {
@@ -373,7 +373,7 @@ extension Database {
             var newPoints = [Point]()
             for child in children {
                 if var value = child.value as? [String : Any] {
-                   newPoints.append(Point(data: value))
+                    newPoints.append(Point(data: value))
                 }
             }
             
@@ -385,16 +385,16 @@ extension Database {
     
     private func runPointTransaction(withUID uid: String, point: Point) {
         let userRef = reference().child("users").child(uid)
-
+        
         userRef.runTransactionBlock({ (currentData: MutableData) -> TransactionResult in
             if var user = currentData.value as? [String : AnyObject] {
                 let pointsCount : Double = user["points"] as? Double ?? 0.0
                 let totalPoints = pointsCount + point.value
                 user["points"] = NSNumber(value: totalPoints) as AnyObject
-
+                
                 // Set value and report transaction success
                 currentData.value = user
-
+                
                 return TransactionResult.success(withValue: currentData)
             }
             return TransactionResult.success(withValue: currentData)
@@ -447,14 +447,22 @@ extension Database {
         }
     }
     
-    func createPostLink(withPost postId: String, uid: String, completion: ((String) -> ())?) {
-        guard let link = URL(string: "https://linkx.page.link/?post=\(postId)") else { return }
+    func createPostLink(withPost post: Post, postId: String, uid: String, completion: ((String) -> ())?) {
+        guard let pUrl = post.url, let link = URL(string: "https://linkx.page.link/?post=\(postId)") else { return }
         
         let linkBuilder = DynamicLinkComponents(link: link, domainURIPrefix: "https://linkx.page.link")
         
         linkBuilder?.iOSParameters = DynamicLinkIOSParameters(bundleID: "com.ios.codesigned.LinkX")
         linkBuilder?.iOSParameters?.minimumAppVersion = "1.0"
         linkBuilder?.iOSParameters?.appStoreID = "1457507501"
+        linkBuilder?.iOSParameters?.fallbackURL = URL(string: pUrl)
+        
+        linkBuilder?.socialMetaTagParameters = DynamicLinkSocialMetaTagParameters()
+        linkBuilder?.socialMetaTagParameters?.descriptionText = "LinkX News"
+        linkBuilder?.socialMetaTagParameters?.descriptionText = post.title
+        linkBuilder?.socialMetaTagParameters?.imageURL = URL(string: post.image ?? "")
+        
+        linkBuilder?.otherPlatformParameters?.fallbackUrl = URL(string: pUrl)
         
         linkBuilder?.shorten() { url, warnings, error in
             if let error = error {
@@ -505,7 +513,7 @@ extension Database {
             print("The short URL is: \(url)")
             
             var dictionaryValues: [String : Any] = ["public_url" : urlStr]
-
+            
             Database.database().reference().child("investors").child(investorKey).updateChildValues(dictionaryValues, withCompletionBlock: { (err, ref) in
                 if let err = err {
                     print("Failed to upload user to database:", err)
@@ -555,7 +563,7 @@ extension Database {
     func fetchUserByInvite(code: String, completion: @escaping (String) -> ()) {
         Database.database().reference().child("users").queryOrdered(byChild: "invite_code").queryEqual(toValue: code.lowercased()).observeSingleEvent(of: .value, with: { (snapshot) in
             guard let value = snapshot.value as? [String : Any], let first = value.keys.first else { return }
-
+            
             completion(first)
         }) { (err) in
             print("Failed to fetch user from database:", err)
@@ -582,7 +590,23 @@ extension Database {
             print("Failed to fetch user from database:", err)
         }
     }
-
+    
+    func createPostRef(withPost postId: String, uid: String, completion: @escaping (Error?) -> ()) {
+        guard let uid = Auth.auth().currentUser?.uid else { return }
+        
+        let userPostRef = Database.database().reference().child("all_posts").childByAutoId()
+        
+        let values = ["id" : postId, "created_at" : Date().timeIntervalSince1970, "uid" : uid] as [String : Any]
+        
+        userPostRef.updateChildValues(values) { (err, ref) in
+            if let err = err {
+                print("Failed to save post to database", err)
+                completion(err)
+                return
+            }
+        }
+    }
+    
     func createPost(withPost post: Post, completion: @escaping (Error?) -> ()) {
         guard let uid = Auth.auth().currentUser?.uid else { return }
         
@@ -600,10 +624,62 @@ extension Database {
                 return
             }
             
-            self.createPostLink(withPost: postId, uid: uid, completion: { link in
+            self.createPostRef(withPost: postId, uid: uid, completion: completion)
+            
+            self.createPostLink(withPost: post, postId: postId, uid: uid, completion: { link in
                 completion(nil)
             })
         }
+    }
+    
+    func fetchAllPostFromToday(completion: @escaping ([Post]) -> (), withCancel cancel: ((Error) -> ())? = nil) {
+        guard let currentLoggedInUser = Auth.auth().currentUser?.uid else { return }
+        
+        let ref = Database.database().reference().child("all_posts").queryOrdered(byChild: "created_at").queryStarting(atValue: Date().startOfDay.timeIntervalSince1970).queryEnding(atValue: Date().tomorrow!.timeIntervalSince1970)
+        
+        ref.observeSingleEvent(of: .value, with: { (snapshot) in
+            guard let dictionaries = snapshot.value as? [String: Any] else {
+                completion([])
+                return
+            }
+            
+            var posts = [Post]()
+            
+            dictionaries.forEach({ (arg) in
+                let (postId, value) = arg
+                guard let dict = value as? [String : Any], let id = dict["id"] as? String,
+                    let uid = dict["uid"] as? String else { return }
+                
+                Database.database().fetchPost(withUID: uid, postId: id, completion: { (post) in
+                    posts.append(post)
+                    
+                    if posts.count == dictionaries.count {
+                        completion(posts)
+                    }
+                })
+            })
+        }) { (err) in
+            print("Failed to fetch posts:", err)
+            cancel?(err)
+        }
+    }
+    
+    func fetchPost(postId: String, completion: @escaping (Post) -> ()) {
+        let ref = Database.database().reference().child("all_posts")
+        
+        ref.queryOrdered(byChild: "id").queryEqual(toValue: postId)
+            .observeSingleEvent(of: .value, with: { snapshot in
+                guard let data = snapshot.children.allObjects.first as? DataSnapshot else { return }
+                
+                guard let postRefDictionary = data.value as? [String : Any] else { return }
+                
+                guard let id = postRefDictionary["id"] as? String,
+                    let uid = postRefDictionary["uid"] as? String else { return }
+                
+                Database.database().fetchPost(withUID: uid, postId: id, completion: { (post) in
+                    completion(post)
+                })
+            })
     }
     
     func fetchPost(withUID uid: String, postId: String, completion: @escaping (Post) -> (), withCancel cancel: ((Error) -> ())? = nil) {
@@ -619,8 +695,12 @@ extension Database {
                 var post = Post(user: user, data: postDictionary)
                 post.id = postId
                 
-                //check likes
-                Database.database().reference().child("claps").child(postId).child(currentLoggedInUser).observeSingleEvent(of: .value, with: { (snapshot) in
+                //check skeptical and shocked
+                //create reactions object to lower the amount of calls
+                //you can do up to three reactions total per post
+                //create reaction animation
+                // reactions : { "claps" : 1, "skeptical" : 2, "shocked" : 2 }
+                Database.database().reference().child("claps").child(postId).child(uid).observeSingleEvent(of: .value, with: { (snapshot) in
                     if let value = snapshot.value as? Int, value == 1 {
                         post.clappedByCurrentUser = true
                     } else {
@@ -674,32 +754,48 @@ extension Database {
                 return
             }
             
-            Database.database().reference().child("comments").child(postId).removeValue(completionBlock: { (err, _) in
+            self.deleteComments(postId: postId)
+            self.deleteReactions(postId: postId)
+        }
+    }
+    
+    func deleteComments(postId: String, completion: ((Error?) -> ())? = nil) {
+        Database.database().reference().child("comments").child(postId).removeValue(completionBlock: { (err, _) in
+            if let err = err {
+                print("Failed to delete comments on post:", err)
+                completion?(err)
+                return
+            }
+            
+            completion?(nil)
+        })
+    }
+    
+    func deleteReactions(postId: String, completion: ((Error?) -> ())? = nil) {
+        self.deleteReaction(reaction: "claps", postId: postId)
+        self.deleteReaction(reaction: "skeptical", postId: postId)
+        self.deleteReaction(reaction: "shocked", postId: postId)
+    }
+    
+    //claps // skeptical // shocked
+    func deleteReaction(reaction: String, postId: String, completion: ((Error?) -> ())? = nil) {
+        Database.database().reference().child(reaction).child(postId).removeValue(completionBlock: { (err, _) in
+            if let err = err {
+                print("Failed to delete likes on post:", err)
+                completion?(err)
+                return
+            }
+            
+            Storage.storage().reference().child("post_images").child(postId).delete(completion: { (err) in
                 if let err = err {
-                    print("Failed to delete comments on post:", err)
+                    print("Failed to delete post image from storage:", err)
                     completion?(err)
                     return
                 }
-                
-                Database.database().reference().child("claps").child(postId).removeValue(completionBlock: { (err, _) in
-                    if let err = err {
-                        print("Failed to delete likes on post:", err)
-                        completion?(err)
-                        return
-                    }
-                    
-                    Storage.storage().reference().child("post_images").child(postId).delete(completion: { (err) in
-                        if let err = err {
-                            print("Failed to delete post image from storage:", err)
-                            completion?(err)
-                            return
-                        }
-                    })
-                    
-                    completion?(nil)
-                })
             })
-        }
+            
+            completion?(nil)
+        })
     }
     
     func isPostReported(withId postId: String, completion: @escaping (Bool) -> (), withCancel cancel: ((Error) -> ())?) {

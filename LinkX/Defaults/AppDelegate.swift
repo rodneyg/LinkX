@@ -61,8 +61,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         let investorId = queryItems?.filter({(item) in item.name == "investor"}).first?.value
         let referredBy = queryItems?.filter({(item) in item.name == "referredBy"}).first?.value
+        let postId = queryItems?.filter({(item) in item.name == "post"}).first?.value
 
-        if investorId != nil {
+        if postId != nil {
+            Database.database().fetchPost(postId: postId!) { post in
+                guard let urlStr = post.url, let url = URL(string: urlStr) else { return }
+                UIApplication.shared.open(url, options: [:], completionHandler: nil)
+            }
+        } else if investorId != nil {
             Database.database().fetchInvestor(withId: investorId!) { (investor) in
                 self.showInvestor(investor: investor)
             }

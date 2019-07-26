@@ -62,7 +62,9 @@ class EarnPointsViewController: UIViewController {
         if segue.identifier == "EmbedActivityTable" {
             let avc = segue.destination as! ActivityTableViewController
             avc.activitySelected = { activity in
-                if LXConstants.CONTRIBUTE_INVESTOR.id == activity.id {
+                if LXConstants.POST.id == activity.id {
+                    self.performSegue(withIdentifier: "ShowAddFromEarnPoints", sender: self)
+                } else if LXConstants.CONTRIBUTE_INVESTOR.id == activity.id {
                     self.performSegue(withIdentifier: "ShowContributeFromEarnPoints", sender: self)
                 } else if LXConstants.REFERRAL.id == activity.id {
                     guard self.user != nil else {

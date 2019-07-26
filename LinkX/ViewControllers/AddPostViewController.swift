@@ -83,6 +83,11 @@ class AddPostViewController: UIViewController, UITableViewDelegate, UITableViewD
                 HUD.flash(.labeledError(title: "Error Posting", subtitle: error.localizedDescription), delay: 3.5)
                 return
             }
+            
+            //add post points to user
+            let point = Point(data: ["value" : 2.5, "activity" : LXConstants.POST, "notes" : "Created a post", "created_at" : Date().timeIntervalSinceNow])
+            Database.database().addPoint(withUID: Auth.auth().currentUser?.uid ?? "", point: point) { (error) in
+            }
                         
             HUD.hide()
             self.navigationController?.popViewController(animated: true)

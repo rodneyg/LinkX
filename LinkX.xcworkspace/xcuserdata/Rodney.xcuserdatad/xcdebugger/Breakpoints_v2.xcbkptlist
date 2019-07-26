@@ -234,7 +234,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "LinkX/Utilities/FirebaseUtilities.swift"
-            timestampString = "585451303.44534"
+            timestampString = "585856071.898941"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "82"
@@ -298,11 +298,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "LinkX/Defaults/AppDelegate.swift"
-            timestampString = "585382610.430145"
+            timestampString = "585855846.567942"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "96"
-            endingLineNumber = "96"
+            startingLineNumber = "102"
+            endingLineNumber = "102"
             landmarkName = "showInvestor(investor:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -314,28 +314,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "LinkX/Utilities/FirebaseUtilities.swift"
-            timestampString = "585451303.445733"
+            timestampString = "585856071.899062"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "421"
             endingLineNumber = "421"
             landmarkName = "createFundLink(withInvestor:completion:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "LinkX/Defaults/AppDelegate.swift"
-            timestampString = "585382610.430234"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "64"
-            endingLineNumber = "64"
-            landmarkName = "handleDynamicLink(_:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -362,7 +346,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "LinkX/Utilities/FirebaseUtilities.swift"
-            timestampString = "585451303.446699"
+            timestampString = "585856071.899138"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "324"
@@ -378,7 +362,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "LinkX/ViewControllers/PostsViewController.swift"
-            timestampString = "585472940.543412"
+            timestampString = "585856071.899199"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "107"
@@ -394,7 +378,7 @@
                   moduleName = "LinkX"
                   usesParentBreakpointCondition = "Yes"
                   urlString = "file:///Users/Rodney/Documents/iOS/LinkX/LinkX/ViewControllers/PostsViewController.swift"
-                  timestampString = "585472941.117815"
+                  timestampString = "585855847.069394"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "107"
@@ -409,7 +393,7 @@
                   moduleName = "LinkX"
                   usesParentBreakpointCondition = "Yes"
                   urlString = "file:///Users/Rodney/Documents/iOS/LinkX/LinkX/ViewControllers/PostsViewController.swift"
-                  timestampString = "585472941.119194"
+                  timestampString = "585855847.070707"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "108"

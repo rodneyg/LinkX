@@ -27,6 +27,12 @@ extension Date {
         return Calendar.current.date(byAdding: components, to: startOfDay)
     }
     
+    var tomorrow: Date? {
+        var components = DateComponents()
+        components.day = 1
+        return Calendar.current.date(byAdding: components, to: startOfDay)
+    }
+    
     func timeAgoDisplay() -> String {
         let secondsAgo = Int(Date().timeIntervalSince(self))
         

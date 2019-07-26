@@ -177,13 +177,11 @@
                                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <nil key="highlightedColor"/>
                                     </label>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="top" horizontalHuggingPriority="251" verticalHuggingPriority="251" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" minimumFontSize="11" translatesAutoresizingMaskIntoConstraints="NO" id="n7S-pf-QZa">
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="top" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" minimumFontSize="11" translatesAutoresizingMaskIntoConstraints="NO" id="n7S-pf-QZa">
                                         <rect key="frame" x="138" y="56" width="223" height="33"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="33" id="EYM-Se-AFD"/>
                                         </constraints>
-                                        <string key="text">Founder, CEO, and Product Architect
-CodeSigned</string>
                                         <fontDescription key="fontDescription" type="system" weight="medium" pointSize="13"/>
                                         <color key="textColor" cocoaTouchSystemColor="lightTextColor"/>
                                         <nil key="highlightedColor"/>
@@ -232,7 +230,7 @@ CodeSigned</string>
                                 </constraints>
                             </view>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="cWE-sN-j0X">
-                                <rect key="frame" x="0.0" y="282" width="375" height="336"/>
+                                <rect key="frame" x="0.0" y="321" width="375" height="297"/>
                                 <color key="backgroundColor" red="0.87925177809999999" green="0.35766321420000002" blue="0.2882355452" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <color key="sectionIndexBackgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <sections/>
@@ -273,20 +271,58 @@ CodeSigned</string>
                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <stackView hidden="YES" opaque="NO" contentMode="scaleToFill" distribution="fillEqually" translatesAutoresizingMaskIntoConstraints="NO" id="T4m-48-nan">
+                                <rect key="frame" x="0.0" y="281" width="375" height="40"/>
+                                <subviews>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="O3P-V9-PDt">
+                                        <rect key="frame" x="0.0" y="0.0" width="125" height="40"/>
+                                        <state key="normal" title="Posts">
+                                            <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        </state>
+                                        <connections>
+                                            <action selector="postsTouched:" destination="Fg6-Gm-gY2" eventType="touchUpInside" id="X59-F4-iaP"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Gnc-fb-dFB">
+                                        <rect key="frame" x="125" y="0.0" width="125" height="40"/>
+                                        <state key="normal" title="Bookmarks">
+                                            <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        </state>
+                                        <connections>
+                                            <action selector="bookmarksTouched:" destination="Fg6-Gm-gY2" eventType="touchUpInside" id="rp3-Mh-bIt"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Z8Q-gG-Qib">
+                                        <rect key="frame" x="250" y="0.0" width="125" height="40"/>
+                                        <state key="normal" title="Points">
+                                            <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        </state>
+                                        <connections>
+                                            <action selector="pointsTouched:" destination="Fg6-Gm-gY2" eventType="touchUpInside" id="R7t-wA-nF3"/>
+                                        </connections>
+                                    </button>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="40" id="5QY-m7-gAe"/>
+                                </constraints>
+                            </stackView>
                         </subviews>
                         <color key="backgroundColor" red="0.87925177809999999" green="0.35766321420000002" blue="0.2882355452" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
                             <constraint firstItem="P6d-Jm-8xc" firstAttribute="bottom" secondItem="cWE-sN-j0X" secondAttribute="bottom" id="Ath-g5-H1o"/>
                             <constraint firstItem="AMp-Jh-XIa" firstAttribute="centerX" secondItem="P6d-Jm-8xc" secondAttribute="centerX" id="E21-3I-NL9"/>
+                            <constraint firstItem="T4m-48-nan" firstAttribute="width" secondItem="dBy-Xm-S4h" secondAttribute="width" id="EwB-7u-vh4"/>
+                            <constraint firstItem="cWE-sN-j0X" firstAttribute="top" secondItem="T4m-48-nan" secondAttribute="bottom" id="GUh-XM-IBN"/>
                             <constraint firstItem="AMp-Jh-XIa" firstAttribute="width" secondItem="dBy-Xm-S4h" secondAttribute="width" id="IE1-0m-fPx"/>
                             <constraint firstItem="h3X-yl-JrA" firstAttribute="top" secondItem="P6d-Jm-8xc" secondAttribute="top" constant="19" id="IgS-Oz-lvl"/>
-                            <constraint firstItem="cWE-sN-j0X" firstAttribute="top" secondItem="AMp-Jh-XIa" secondAttribute="bottom" id="Mvz-3u-NMV"/>
+                            <constraint firstItem="T4m-48-nan" firstAttribute="top" secondItem="AMp-Jh-XIa" secondAttribute="bottom" constant="-1" id="OjM-em-uNs"/>
                             <constraint firstItem="P6d-Jm-8xc" firstAttribute="trailing" secondItem="8ep-mC-Aex" secondAttribute="trailing" constant="16" id="QE7-la-L1a"/>
                             <constraint firstItem="cWE-sN-j0X" firstAttribute="width" secondItem="dBy-Xm-S4h" secondAttribute="width" id="TeW-Fm-gZg"/>
                             <constraint firstItem="cWE-sN-j0X" firstAttribute="centerX" secondItem="P6d-Jm-8xc" secondAttribute="centerX" id="TrT-k1-74C"/>
                             <constraint firstItem="AMp-Jh-XIa" firstAttribute="top" secondItem="h3X-yl-JrA" secondAttribute="bottom" constant="26" id="UFR-PK-7eA"/>
                             <constraint firstItem="TfU-Dy-JUN" firstAttribute="leading" secondItem="P6d-Jm-8xc" secondAttribute="leading" constant="16" id="arT-ZN-iUc"/>
                             <constraint firstItem="8ep-mC-Aex" firstAttribute="top" secondItem="P6d-Jm-8xc" secondAttribute="top" constant="15" id="gHO-xc-jEo"/>
+                            <constraint firstItem="T4m-48-nan" firstAttribute="centerX" secondItem="P6d-Jm-8xc" secondAttribute="centerX" id="had-75-ycx"/>
                             <constraint firstItem="TfU-Dy-JUN" firstAttribute="top" secondItem="P6d-Jm-8xc" secondAttribute="top" constant="15" id="uoy-Hx-EkY"/>
                             <constraint firstItem="h3X-yl-JrA" firstAttribute="centerX" secondItem="P6d-Jm-8xc" secondAttribute="centerX" id="xch-Nn-1ev"/>
                         </constraints>
@@ -294,11 +330,15 @@ CodeSigned</string>
                     </view>
                     <tabBarItem key="tabBarItem" title="" image="smiley-smile" id="ecf-lB-gdV"/>
                     <connections>
+                        <outlet property="bookmarksButton" destination="Gnc-fb-dFB" id="IoX-Lj-6j9"/>
                         <outlet property="headlineLabel" destination="DZH-Su-QLj" id="SPW-Ac-kQS"/>
                         <outlet property="nameLabel" destination="Xx8-xG-nVQ" id="xif-eX-S8r"/>
+                        <outlet property="pointsButton" destination="Z8Q-gG-Qib" id="ymh-ql-IcL"/>
                         <outlet property="pointsLabel" destination="fnJ-gd-gki" id="uHW-g1-mtR"/>
+                        <outlet property="postsButton" destination="O3P-V9-PDt" id="byP-nr-yU0"/>
                         <outlet property="profileImage" destination="QWG-Wm-Ry7" id="SeD-Of-ZLH"/>
                         <outlet property="profileView" destination="AMp-Jh-XIa" id="zzW-Gs-NBf"/>
+                        <outlet property="stackView" destination="T4m-48-nan" id="rnv-Ln-GsL"/>
                         <outlet property="tableView" destination="cWE-sN-j0X" id="TnS-h8-TI4"/>
                         <outlet property="titleHeight" destination="EYM-Se-AFD" id="Rmz-ra-7Fw"/>
                         <outlet property="titleLabel" destination="n7S-pf-QZa" id="Iee-1T-8AK"/>
@@ -310,7 +350,7 @@ CodeSigned</string>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Q2Q-lu-K1h" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-967" y="-1049"/>
+            <point key="canvasLocation" x="-967.20000000000005" y="-1049.3253373313344"/>
         </scene>
         <!--View Controller-->
         <scene sceneID="tne-QT-ifu">
@@ -447,7 +487,7 @@ CodeSigned</string>
                                                     <constraint firstAttribute="width" constant="106" id="sx2-lO-S8R"/>
                                                 </constraints>
                                             </imageView>
-                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Rodney &quot;RJ&quot; Gainous Jr XXX" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="15" translatesAutoresizingMaskIntoConstraints="NO" id="UJr-KZ-Oej">
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="15" translatesAutoresizingMaskIntoConstraints="NO" id="UJr-KZ-Oej">
                                                 <rect key="frame" x="136" y="28" width="217" height="26"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="26" id="ykZ-wD-xww"/>
@@ -456,15 +496,13 @@ CodeSigned</string>
                                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
-                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="top" horizontalHuggingPriority="251" verticalHuggingPriority="251" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" minimumFontSize="11" translatesAutoresizingMaskIntoConstraints="NO" id="ex0-4d-Oap">
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="top" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" minimumFontSize="11" translatesAutoresizingMaskIntoConstraints="NO" id="ex0-4d-Oap">
                                                 <rect key="frame" x="138" y="56" width="215" height="33"/>
-                                                <string key="text">Founder, CEO, and Product Architect
-CodeSigned</string>
                                                 <fontDescription key="fontDescription" type="system" weight="medium" pointSize="13"/>
                                                 <color key="textColor" cocoaTouchSystemColor="lightTextColor"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
-                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="rj@clout.capital" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="URa-Gp-asj">
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="URa-Gp-asj">
                                                 <rect key="frame" x="138" y="97" width="215" height="23"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="23" id="SVG-0P-HHq"/>
@@ -1599,6 +1637,7 @@ CodeSigned</string>
                         <segue destination="dj7-Fz-jna" kind="presentation" identifier="ShowInviteFromEarnPoints" id="Fdk-x5-HTW"/>
                         <segue destination="Ael-1o-w8g" kind="presentation" identifier="ShowContributeFromEarnPoints" id="lVm-DN-TEI"/>
                         <segue destination="h1e-qo-w7V" kind="presentation" identifier="ShowSignupFromEarnPoints" id="IKs-QZ-G6m"/>
+                        <segue destination="APm-nT-GJ5" kind="presentation" identifier="ShowAddFromEarnPoints" id="MSc-LE-mkI"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="qI4-Ql-KjN" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -2020,6 +2059,7 @@ CodeSigned</string>
         <image name="star" width="30" height="30"/>
     </resources>
     <inferredMetricsTieBreakers>
+        <segue reference="MSc-LE-mkI"/>
         <segue reference="0k0-la-VTi"/>
         <segue reference="Ure-YX-N1m"/>
         <segue reference="7OJ-zo-fEI"/>
