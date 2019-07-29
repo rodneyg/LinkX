@@ -10,6 +10,8 @@ import UIKit
 import Firebase
 import FirebaseDatabase
 import NotificationCenter
+import UserNotifications
+import BLTNBoard
 
 class PostsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, PostCellDelegate {
 
@@ -26,7 +28,39 @@ class PostsViewController: UIViewController, UITableViewDelegate, UITableViewDat
         }
     }
     
+    var postIDs = [String]() {
+        didSet {
+            if postIDs.count > 0 {
+                DispatchQueue.main.async {
+                    self.tableView.reloadData()
+                }
+            }
+        }
+    }
+    
     var fetchedUser: User?
+    var selectedUser: User?
+    
+    lazy var bulletinManager: BLTNItemManager = {
+        let page = BLTNPageItem(title: "Push Notifications")
+        page.image = UIImage(named: "...")
+        
+        page.descriptionText = "Receive push notifications when important news is available."
+        page.actionButtonTitle = "Subscribe"
+        page.alternativeButtonTitle = "Not now"
+        page.actionHandler = { (item: BLTNActionItem) in
+            let center = UNUserNotificationCenter.current()
+            center.requestAuthorization(options:[.badge, .alert, .sound]) { (granted, error) in
+                // Enable or disable features based on authorization.
+            }
+            UIApplication.shared.registerForRemoteNotifications()
+            page.manager?.dismissBulletin()
+        }
+        page.alternativeHandler = { (item: BLTNActionItem) in
+            page.manager?.dismissBulletin()
+        }
+        return BLTNItemManager(rootItem: page)
+    }()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -48,10 +82,28 @@ class PostsViewController: UIViewController, UITableViewDelegate, UITableViewDat
         super.viewWillAppear(animated)
         
         fetchPostsForCurrentUser()
+        
+        showPushNotifications()
+    }
+    
+    func showPushNotifications() {
+        self.checkPushNotification {  (enable) in
+            if enable {
+                DispatchQueue.main.async {
+                    self.bulletinManager.showBulletin(above: self)
+                }
+            }
+            // you know notification status.
+        }
     }
     
     @objc private func handleRefresh() {
         fetchPostsForCurrentUser()
+    }
+    
+    func profileTouched(user: User) {
+        selectedUser = user
+        performSegue(withIdentifier: "ShowUserProfileFromPosts", sender: self)
     }
     
     func shareTouched(post: Post, image: UIImage) {
@@ -62,7 +114,7 @@ class PostsViewController: UIViewController, UITableViewDelegate, UITableViewDat
         }
         
         // set up activity view controller
-        let itemsToShare : [Any] = [ finalImage, "\(title) - \(link) #LinkX" ]
+        let itemsToShare : [Any] = [ finalImage, "\(title) - \(link) #LinkX #Startup #Tech" ]
         let activityViewController = UIActivityViewController(activityItems: itemsToShare, applicationActivities: nil)
         activityViewController.popoverPresentationController?.sourceView = self.view // so that iPads won't crash
         
@@ -100,6 +152,16 @@ class PostsViewController: UIViewController, UITableViewDelegate, UITableViewDat
         return nil
     }
     
+    func postFor(postId: String) -> Post? {
+        for i in 0..<posts.count {
+            if postId == posts[i].id {
+                return posts[i]
+            }
+        }
+        
+        return nil
+    }
+    
     func clapTouched(post: Post) {
         guard let uid = Auth.auth().currentUser?.uid, let pid = post.id else { return }
         
@@ -110,9 +172,13 @@ class PostsViewController: UIViewController, UITableViewDelegate, UITableViewDat
                     return
                 }
 
-                var newPost = self.updatePost(post: post)
-                newPost?.clappedByCurrentUser = false
-                newPost?.claps = post.claps - 1
+                var oldPost = self.postFor(postId: pid)
+                oldPost?.clappedByCurrentUser = false
+                oldPost?.claps = post.claps > 0 ? (post.claps - 1) : 0
+                
+                guard oldPost != nil else { return }
+                
+                var newPost = self.updatePost(post: oldPost!)
                 UIView.performWithoutAnimation {
                     self.tableView.reloadData()
                 }
@@ -125,9 +191,13 @@ class PostsViewController: UIViewController, UITableViewDelegate, UITableViewDat
                     return
                 }
 
-                var newPost = self.updatePost(post: post)
-                newPost?.clappedByCurrentUser = true
-                newPost?.claps = post.claps + 1
+                var oldPost = self.postFor(postId: pid)
+                oldPost?.clappedByCurrentUser = true
+                oldPost?.claps = post.claps + 1
+                
+                guard oldPost != nil else { return }
+                
+                var newPost = self.updatePost(post: oldPost!)
                 UIView.performWithoutAnimation {
                     self.tableView.reloadData()
                 }
@@ -214,12 +284,36 @@ class PostsViewController: UIViewController, UITableViewDelegate, UITableViewDat
         performSegue(withIdentifier: "ShowAddPost", sender: self)
     }
     
+    func checkPushNotification(checkNotificationStatus shouldEnable: ((Bool) -> ())? = nil) {
+        if #available(iOS 10.0, *) {
+            UNUserNotificationCenter.current().getNotificationSettings(){ (setttings) in
+                switch setttings.authorizationStatus {
+                case .authorized:
+                    shouldEnable?(false)
+                case .denied:
+                    shouldEnable?(false)
+                case .notDetermined:
+                    shouldEnable?(true)
+                case .provisional:
+                    shouldEnable?(false)
+                }
+            }
+        } else {
+            let isNotificationEnabled = UIApplication.shared.currentUserNotificationSettings?.types.contains(UIUserNotificationType.alert)
+            if isNotificationEnabled == true {
+                shouldEnable?(false)
+            } else {
+                shouldEnable?(true)
+            }
+        }
+    }
+    
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 321.0
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return posts.count
+        return postIDs.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -228,7 +322,7 @@ class PostsViewController: UIViewController, UITableViewDelegate, UITableViewDat
                 return UITableViewCell()
         }
         
-        cell.configure(post: posts[indexPath.row])
+        cell.configure(postId: postIDs[indexPath.row])
         cell.delegate = self
         return cell
     }
@@ -248,13 +342,9 @@ class PostsViewController: UIViewController, UITableViewDelegate, UITableViewDat
         
         tableView.refreshControl?.beginRefreshing()
         
-        Database.database().fetchAllPostFromToday(completion: { (posts) in
-            self.posts.removeAll()
-            self.posts.append(contentsOf: posts)
-            
-            self.posts.sort(by: { (p1, p2) -> Bool in
-                return p1.createdAt ?? 0.0 > p2.createdAt ?? 0.0
-            })
+        Database.database().fetchAllPostIDsFromToday(completion: { (posts) in
+            self.postIDs.removeAll()
+            self.postIDs.append(contentsOf: posts)
             
             self.tableView.refreshControl?.endRefreshing()
             self.tableView.reloadData()
@@ -263,15 +353,14 @@ class PostsViewController: UIViewController, UITableViewDelegate, UITableViewDat
         }
     }
     
-    /*
-    // MARK: - Navigation
-
     // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
+        if segue.identifier == "ShowUserProfileFromPosts" {
+            let pvc = segue.destination as! ProfileViewController
+            pvc.isModal = true
+            pvc.fetchedUser = selectedUser
+        }
     }
-    */
 
 }
 

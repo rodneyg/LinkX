@@ -230,7 +230,7 @@
                                 </constraints>
                             </view>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="cWE-sN-j0X">
-                                <rect key="frame" x="0.0" y="321" width="375" height="297"/>
+                                <rect key="frame" x="0.0" y="321" width="375" height="346"/>
                                 <color key="backgroundColor" red="0.87925177809999999" green="0.35766321420000002" blue="0.2882355452" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <color key="sectionIndexBackgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <sections/>
@@ -331,7 +331,9 @@
                     <tabBarItem key="tabBarItem" title="" image="smiley-smile" id="ecf-lB-gdV"/>
                     <connections>
                         <outlet property="bookmarksButton" destination="Gnc-fb-dFB" id="IoX-Lj-6j9"/>
+                        <outlet property="earnButton" destination="iAm-oT-nUf" id="ss7-gm-RJc"/>
                         <outlet property="headlineLabel" destination="DZH-Su-QLj" id="SPW-Ac-kQS"/>
+                        <outlet property="logoutButton" destination="TfU-Dy-JUN" id="8Gx-cy-162"/>
                         <outlet property="nameLabel" destination="Xx8-xG-nVQ" id="xif-eX-S8r"/>
                         <outlet property="pointsButton" destination="Z8Q-gG-Qib" id="ymh-ql-IcL"/>
                         <outlet property="pointsLabel" destination="fnJ-gd-gki" id="uHW-g1-mtR"/>
@@ -2029,6 +2031,7 @@
                         <outlet property="searchDisplayController" destination="rjY-mN-nrt" id="Kmz-PG-cDO"/>
                         <outlet property="tableView" destination="Mhf-SW-jQC" id="23g-KS-Zmb"/>
                         <segue destination="APm-nT-GJ5" kind="show" identifier="ShowAddPost" id="lA9-Mr-Naj"/>
+                        <segue destination="Fg6-Gm-gY2" kind="presentation" identifier="ShowUserProfileFromPosts" id="Lga-tq-4ay"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="N5S-oL-Vnl" sceneMemberID="firstResponder"/>
@@ -2059,9 +2062,10 @@
         <image name="star" width="30" height="30"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="MSc-LE-mkI"/>
+        <segue reference="lA9-Mr-Naj"/>
         <segue reference="0k0-la-VTi"/>
         <segue reference="Ure-YX-N1m"/>
+        <segue reference="Lga-tq-4ay"/>
         <segue reference="7OJ-zo-fEI"/>
     </inferredMetricsTieBreakers>
 </document>

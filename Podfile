@@ -12,11 +12,14 @@ target 'LinkX' do
   pod 'Firebase/Database'
   pod 'Firebase/Auth'
   pod 'Firebase/DynamicLinks'
+  pod 'Firebase/Messaging'
   pod 'Firebase/Analytics'
   pod 'Cosmos', '~> 18.0'
   pod 'EFQRCode', '~> 5.0.0'
   pod 'PKHUD', '~> 5.0'
   pod 'SwiftLinkPreview', '~> 3.0.1'
+  pod 'BulletinBoard'
+  pod "ConfettiView"
 
   target 'LinkXTests' do
     inherit! :search_paths

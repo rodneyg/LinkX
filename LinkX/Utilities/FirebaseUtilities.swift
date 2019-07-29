@@ -632,6 +632,36 @@ extension Database {
         }
     }
     
+    func fetchAllPostIDsFromToday(completion: @escaping ([String]) -> (), withCancel cancel: ((Error) -> ())? = nil) {
+        guard let currentLoggedInUser = Auth.auth().currentUser?.uid else { return }
+        
+        let ref = Database.database().reference().child("all_posts").queryOrdered(byChild: "created_at").queryStarting(atValue: Date().startOfDay.timeIntervalSince1970).queryEnding(atValue: Date().tomorrow!.timeIntervalSince1970)
+        
+        ref.observeSingleEvent(of: .value, with: { (snapshot) in
+            guard let dictionaries = snapshot.value as? [String: Any] else {
+                completion([])
+                return
+            }
+            
+            var posts = [String]()
+            
+            dictionaries.forEach({ (arg) in
+                let (postId, value) = arg
+                guard let dict = value as? [String : Any], let id = dict["id"] as? String,
+                    let uid = dict["uid"] as? String else { return }
+                
+                posts.append(id)
+                
+                if posts.count == dictionaries.count {
+                    completion(posts)
+                }
+            })
+        }) { (err) in
+            print("Failed to fetch posts:", err)
+            cancel?(err)
+        }
+    }
+    
     func fetchAllPostFromToday(completion: @escaping ([Post]) -> (), withCancel cancel: ((Error) -> ())? = nil) {
         guard let currentLoggedInUser = Auth.auth().currentUser?.uid else { return }
         

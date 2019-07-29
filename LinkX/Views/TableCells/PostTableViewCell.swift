@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import FirebaseDatabase
 
 protocol PostCellDelegate {
     func shareTouched(post: Post, image: UIImage)
@@ -15,6 +16,7 @@ protocol PostCellDelegate {
     func clapTouched(post: Post)
     func bookmarkTouched(post: Post)
     func optionsTouched(post: Post)
+    func profileTouched(user: User)
 }
 
 class PostTableViewCell: UITableViewCell {
@@ -54,6 +56,21 @@ class PostTableViewCell: UITableViewCell {
         bookmarkButton.addTarget(self, action: #selector(handleBookmark), for: .touchUpInside)
         shareButton.addTarget(self, action: #selector(handleShare), for: .touchUpInside)
         optionsButton.addTarget(self, action: #selector(handleOptions), for: .touchUpInside)
+        
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleProfile))
+        titleLabel.isUserInteractionEnabled = true
+        titleLabel.addGestureRecognizer(tapGesture)
+        
+        usernameLabel.addGestureRecognizer(tapGesture)
+        usernameLabel.isUserInteractionEnabled = true
+        
+        profileImage.addGestureRecognizer(tapGesture)
+        profileImage.isUserInteractionEnabled = true
+    }
+    
+    @objc func handleProfile() {
+        guard let post = post, let user = post.user else { return }
+        delegate?.profileTouched(user: user)
     }
     
     @objc func handleOptions() {
@@ -86,6 +103,12 @@ class PostTableViewCell: UITableViewCell {
         delegate?.clapTouched(post: post)
     }
     
+    public func configure(postId: String) {
+        Database.database().fetchPost(postId: postId, completion: { (post) in
+            self.configure(post: post)
+        })
+    }
+    
     public func configure(post: Post) {
         sharedInit()
 
@@ -111,7 +134,9 @@ class PostTableViewCell: UITableViewCell {
         }
         
         if let image = post.image, !image.isEmpty {
-            postImage.loadImage(urlString: image)
+            DispatchQueue.main.async {
+                self.postImage.loadImage(urlString: image)
+            }
         } else {
             postImageHeight.constant = 0
         }
@@ -125,7 +150,9 @@ class PostTableViewCell: UITableViewCell {
         }
         
         if let icon = post.icon, !icon.isEmpty {
-            iconImage.loadImage(urlString: icon)
+            DispatchQueue.main.async {
+                self.iconImage.loadImage(urlString: icon)
+            }
         } else {
             iconWidth.constant = 0
         }
