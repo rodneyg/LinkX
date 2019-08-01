@@ -28,15 +28,15 @@ class PostsViewController: UIViewController, UITableViewDelegate, UITableViewDat
         }
     }
     
-    var postIDs = [String]() {
-        didSet {
-            if postIDs.count > 0 {
-                DispatchQueue.main.async {
-                    self.tableView.reloadData()
-                }
-            }
-        }
-    }
+//    var postIDs = [String]() {
+//        didSet {
+//            if postIDs.count > 0 {
+//                DispatchQueue.main.async {
+//                    self.tableView.reloadData()
+//                }
+//            }
+//        }
+//    }
     
     var fetchedUser: User?
     var selectedUser: User?
@@ -313,7 +313,7 @@ class PostsViewController: UIViewController, UITableViewDelegate, UITableViewDat
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return postIDs.count
+        return posts.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -322,7 +322,7 @@ class PostsViewController: UIViewController, UITableViewDelegate, UITableViewDat
                 return UITableViewCell()
         }
         
-        cell.configure(postId: postIDs[indexPath.row])
+        cell.configure(post: posts[indexPath.row])
         cell.delegate = self
         return cell
     }
@@ -340,11 +340,15 @@ class PostsViewController: UIViewController, UITableViewDelegate, UITableViewDat
     private func fetchPostsForCurrentUser() {
         guard let currentLoggedInUserId = Auth.auth().currentUser?.uid else { return }
         
+        self.posts.removeAll()
+        tableView.reloadData()
         tableView.refreshControl?.beginRefreshing()
         
-        Database.database().fetchAllPostIDsFromToday(completion: { (posts) in
-            self.postIDs.removeAll()
-            self.postIDs.append(contentsOf: posts)
+        Database.database().fetchAllPostsFromPastWeek(completion: { (post) in
+            self.posts.append(post)
+            self.posts.sort(by: { (p1, p2) -> Bool in
+                return Date(timeIntervalSince1970: p1.createdAt!).compare(Date(timeIntervalSince1970: p2.createdAt!)) == .orderedDescending
+            })
             
             self.tableView.refreshControl?.endRefreshing()
             self.tableView.reloadData()

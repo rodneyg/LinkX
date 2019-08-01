@@ -343,12 +343,13 @@ extension Database {
     
     func purchase(uid: String, itemId: String, points: Double, completion: @escaping (Transaction?, Error?) -> ()) {
         canPurchaseInvestor(uid: uid) { canPurchase in
-            guard canPurchase else {
+            let moneyMonday: Bool = (Date().dayNumberOfWeek() == 1)
+            guard canPurchase || moneyMonday else {
                 completion(nil, nil)
                 return
             }
             
-            let dictionaryValues : [String : Any] = ["uid" : uid, "point_cost" : points, "updated_at" : Date().timeIntervalSinceNow, "created_at" : Date().timeIntervalSince1970, "item_id" : itemId]
+            let dictionaryValues : [String : Any] = ["uid" : uid, "point_cost" : moneyMonday ? 0 : points, "updated_at" : Date().timeIntervalSinceNow, "created_at" : Date().timeIntervalSince1970, "item_id" : itemId]
             self.reference().child("transactions").child(uid).childByAutoId().updateChildValues(dictionaryValues, withCompletionBlock: { (err, ref) in
                 if let err = err {
                     completion(nil, err)
@@ -662,18 +663,15 @@ extension Database {
         }
     }
     
-    func fetchAllPostFromToday(completion: @escaping ([Post]) -> (), withCancel cancel: ((Error) -> ())? = nil) {
+    func fetchAllPostsFromPastWeek(completion: @escaping (Post) -> (), withCancel cancel: ((Error) -> ())? = nil) {
         guard let currentLoggedInUser = Auth.auth().currentUser?.uid else { return }
         
-        let ref = Database.database().reference().child("all_posts").queryOrdered(byChild: "created_at").queryStarting(atValue: Date().startOfDay.timeIntervalSince1970).queryEnding(atValue: Date().tomorrow!.timeIntervalSince1970)
+        let ref = Database.database().reference().child("all_posts").queryOrdered(byChild: "created_at").queryStarting(atValue: Date().lastWeek!.timeIntervalSince1970).queryEnding(atValue: Date().tomorrow!.timeIntervalSince1970)
         
         ref.observeSingleEvent(of: .value, with: { (snapshot) in
             guard let dictionaries = snapshot.value as? [String: Any] else {
-                completion([])
                 return
             }
-            
-            var posts = [Post]()
             
             dictionaries.forEach({ (arg) in
                 let (postId, value) = arg
@@ -681,11 +679,12 @@ extension Database {
                     let uid = dict["uid"] as? String else { return }
                 
                 Database.database().fetchPost(withUID: uid, postId: id, completion: { (post) in
-                    posts.append(post)
-                    
-                    if posts.count == dictionaries.count {
-                        completion(posts)
-                    }
+                    //posts.append(post)
+                    completion(post)
+//
+//                    if posts.count == dictionaries.count {
+//                        completion(posts)
+//                    }
                 })
             })
         }) { (err) in

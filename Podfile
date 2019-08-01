@@ -19,7 +19,8 @@ target 'LinkX' do
   pod 'PKHUD', '~> 5.0'
   pod 'SwiftLinkPreview', '~> 3.0.1'
   pod 'BulletinBoard'
-  pod "ConfettiView"
+  pod 'ConfettiView'
+  pod 'Siren'
 
   target 'LinkXTests' do
     inherit! :search_paths

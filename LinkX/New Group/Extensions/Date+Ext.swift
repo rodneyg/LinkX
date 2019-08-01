@@ -9,6 +9,11 @@
 import Foundation
 
 extension Date {
+    
+    func dayNumberOfWeek() -> Int? {
+        return Calendar.current.dateComponents([.weekday], from: self).weekday
+    }
+    
     var startOfDay: Date {
         return Calendar.current.startOfDay(for: self)
     }
@@ -30,6 +35,13 @@ extension Date {
     var tomorrow: Date? {
         var components = DateComponents()
         components.day = 1
+        return Calendar.current.date(byAdding: components, to: startOfDay)
+    }
+    
+    var lastWeek: Date? {
+        var components = DateComponents()
+        components.day = -7
+        components.second = -1
         return Calendar.current.date(byAdding: components, to: startOfDay)
     }
     

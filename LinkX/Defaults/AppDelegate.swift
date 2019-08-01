@@ -8,6 +8,7 @@
 
 import UIKit
 import CoreData
+import Siren
 import Firebase
 import FirebaseMessaging
 import NotificationCenter
@@ -21,8 +22,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MessagingDelegate, UNUser
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         FirebaseApp.configure()
         Messaging.messaging().delegate = self
-
+        
+        Siren.shared.wail()
         AppStore.shared.incrementAppRuns()
+        
+        UIApplication.shared.registerForRemoteNotifications()
         
         return true
     }
@@ -128,6 +132,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MessagingDelegate, UNUser
     }
     
     func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+        Messaging.messaging().shouldEstablishDirectChannel = true
+        Messaging.messaging().apnsToken = deviceToken
+        
         if #available(iOS 10.0, *) {
             // For iOS 10 display notification (sent via APNS)
             UNUserNotificationCenter.current().delegate = self
@@ -141,8 +148,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MessagingDelegate, UNUser
                 UIUserNotificationSettings(types: [.alert, .badge, .sound], categories: nil)
             application.registerUserNotificationSettings(settings)
         }
-        
-        application.registerForRemoteNotifications()
+        //application.registerForRemoteNotifications()
     }
     
     func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String) {

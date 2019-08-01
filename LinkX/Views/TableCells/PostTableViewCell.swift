@@ -130,15 +130,16 @@ class PostTableViewCell: UITableViewCell {
         }
         
         if let user = post.user, let profileImageUrl = user.profileImageUrl {
-            profileImage.loadImage(urlString: profileImageUrl)
+            //profileImage.loadImage(urlString: profileImageUrl)
+            profileImage.sd_setImage(with: URL(string: profileImageUrl), completed: nil)
         }
         
         if let image = post.image, !image.isEmpty {
             DispatchQueue.main.async {
-                self.postImage.loadImage(urlString: image)
+                self.postImage.sd_setImage(with: URL(string: image), completed: nil)
             }
         } else {
-            postImageHeight.constant = 0
+            //postImageHeight.constant = 0
         }
         
         if let title = post.title {

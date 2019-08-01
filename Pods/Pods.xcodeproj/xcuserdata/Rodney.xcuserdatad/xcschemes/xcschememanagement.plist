@@ -284,26 +284,33 @@
 			<key>orderHint</key>
 			<integer>44</integer>
 		</dict>
-		<key>SwiftLinkPreview.xcscheme</key>
+		<key>Siren.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
 			<key>orderHint</key>
-			<integer>46</integer>
+			<integer>45</integer>
 		</dict>
-		<key>TwitterCore.xcscheme</key>
+		<key>SwiftLinkPreview.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
 			<key>orderHint</key>
 			<integer>47</integer>
 		</dict>
-		<key>TwitterKit.xcscheme</key>
+		<key>TwitterCore.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
 			<key>orderHint</key>
 			<integer>48</integer>
+		</dict>
+		<key>TwitterKit.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+			<key>orderHint</key>
+			<integer>49</integer>
 		</dict>
 		<key>gRPC-C++-gRPCCertificates.xcscheme</key>
 		<dict>
@@ -345,7 +352,7 @@
 			<key>isShown</key>
 			<false/>
 			<key>orderHint</key>
-			<integer>45</integer>
+			<integer>46</integer>
 		</dict>
 	</dict>
 	<key>SuppressBuildableAutocreation</key>

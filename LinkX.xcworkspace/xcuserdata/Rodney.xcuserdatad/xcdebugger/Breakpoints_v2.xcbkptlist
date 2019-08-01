@@ -234,7 +234,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "LinkX/Utilities/FirebaseUtilities.swift"
-            timestampString = "586122835.3053989"
+            timestampString = "586317419.248921"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "82"
@@ -298,13 +298,13 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "LinkX/Defaults/AppDelegate.swift"
-            timestampString = "586054283.375273"
+            timestampString = "586317419.249042"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "102"
-            endingLineNumber = "102"
-            landmarkName = "unknown"
-            landmarkType = "0">
+            startingLineNumber = "106"
+            endingLineNumber = "106"
+            landmarkName = "handleDynamicLink(_:)"
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -314,11 +314,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "LinkX/Utilities/FirebaseUtilities.swift"
-            timestampString = "586122835.305535"
+            timestampString = "586317419.249101"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "421"
-            endingLineNumber = "421"
+            startingLineNumber = "422"
+            endingLineNumber = "422"
             landmarkName = "createFundLink(withInvestor:completion:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -346,7 +346,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "LinkX/Utilities/FirebaseUtilities.swift"
-            timestampString = "586122835.305602"
+            timestampString = "586317419.249159"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "324"
@@ -362,7 +362,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "LinkX/ViewControllers/PostsViewController.swift"
-            timestampString = "586122835.3056509"
+            timestampString = "586317419.2492059"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "169"
@@ -378,7 +378,7 @@
                   moduleName = "LinkX"
                   usesParentBreakpointCondition = "Yes"
                   urlString = "file:///Users/Rodney/Documents/iOS/LinkX/LinkX/ViewControllers/PostsViewController.swift"
-                  timestampString = "586122735.1738859"
+                  timestampString = "586315991.864309"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "169"
@@ -393,7 +393,7 @@
                   moduleName = "LinkX"
                   usesParentBreakpointCondition = "Yes"
                   urlString = "file:///Users/Rodney/Documents/iOS/LinkX/LinkX/ViewControllers/PostsViewController.swift"
-                  timestampString = "586122735.175128"
+                  timestampString = "586315991.8656811"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "170"
@@ -410,7 +410,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "LinkX/ViewControllers/PostsViewController.swift"
-            timestampString = "586122835.305697"
+            timestampString = "586317419.2492501"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "187"
@@ -426,7 +426,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "LinkX/Views/TableCells/PostTableViewCell.swift"
-            timestampString = "586122835.305745"
+            timestampString = "586317419.249294"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "72"
@@ -449,6 +449,54 @@
             endingLineNumber = "116"
             landmarkName = "loadUser(user:)"
             landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "LinkX/Utilities/FirebaseUtilities.swift"
+            timestampString = "586317419.249702"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "681"
+            endingLineNumber = "681"
+            landmarkName = "fetchAllPostsFromPastWeek(completion:withCancel:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #1 ((key: Swift.String, value: Any)) -&gt; () in closure #1 (__C.FIRDataSnapshot) -&gt; () in (extension in LinkX):__C.FIRDatabase.fetchAllPostsFromPastWeek(completion: (Swift.Array&lt;LinkX.Post&gt;) -&gt; (), withCancel: Swift.Optional&lt;(Swift.Error) -&gt; ()&gt;) -&gt; ()"
+                  moduleName = "LinkX"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Rodney/Documents/iOS/LinkX/LinkX/Utilities/FirebaseUtilities.swift"
+                  timestampString = "586315991.874956"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "684"
+                  endingLineNumber = "684"
+                  offsetFromSymbolStart = "1148">
+               </Location>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #1 (LinkX.Post) -&gt; () in closure #1 ((key: Swift.String, value: Any)) -&gt; () in closure #1 (__C.FIRDataSnapshot) -&gt; () in (extension in LinkX):__C.FIRDatabase.fetchAllPostsFromPastWeek(completion: (Swift.Array&lt;LinkX.Post&gt;) -&gt; (), withCancel: Swift.Optional&lt;(Swift.Error) -&gt; ()&gt;) -&gt; ()"
+                  moduleName = "LinkX"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Rodney/Documents/iOS/LinkX/LinkX/Utilities/FirebaseUtilities.swift"
+                  timestampString = "586315991.8763241"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "686"
+                  endingLineNumber = "686"
+                  offsetFromSymbolStart = "112">
+               </Location>
+            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>
