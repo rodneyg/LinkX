@@ -66,6 +66,7 @@ class AddPostViewController: UIViewController, UITableViewDelegate, UITableViewD
             post.uid = Auth.auth().currentUser?.uid
             self.posts = [post]
             
+            Analytics.logEvent("link_preview_generated", parameters: ["uid" : post.uid ?? ""])
             self.submitPost()
         }) { error in
             HUD.flash(.labeledError(title: "Error Generating", subtitle: error.localizedDescription))
@@ -80,10 +81,12 @@ class AddPostViewController: UIViewController, UITableViewDelegate, UITableViewD
         
         Database.database().createPost(withPost: post) { error in
             if let error = error {
+                Analytics.logEvent("post_error", parameters: ["error" : error.localizedDescription])
                 HUD.flash(.labeledError(title: "Error Posting", subtitle: error.localizedDescription), delay: 3.5)
                 return
             }
             
+            Analytics.logEvent("post_created", parameters: ["uid" : post.uid ?? ""])
             //add post points to user
             let point = Point(data: ["value" : 2.5, "activity" : LXConstants.POST, "notes" : "Created a post", "created_at" : Date().timeIntervalSinceNow])
             Database.database().addPoint(withUID: Auth.auth().currentUser?.uid ?? "", point: point) { (error) in
@@ -107,6 +110,8 @@ class AddPostViewController: UIViewController, UITableViewDelegate, UITableViewD
             post.canonicalUrl = data["canonicalUrl"] as? String
             post.uid = Auth.auth().currentUser?.uid
             self.posts = [post]
+            
+            Analytics.logEvent("link_preview_generated", parameters: ["uid" : post.uid ?? ""])
         }) { error in
             HUD.flash(.labeledError(title: "Error Generating", subtitle: error.localizedDescription))
             print(error)

@@ -62,6 +62,8 @@ class InviteViewController: UIViewController {
             return
         }
         
+        Analytics.logEvent("share_invite", parameters: ["uid" : user.uid])
+        
         // text to share
 
         // set up activity view controller

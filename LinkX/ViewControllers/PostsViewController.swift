@@ -12,6 +12,7 @@ import FirebaseDatabase
 import NotificationCenter
 import UserNotifications
 import BLTNBoard
+import FirebaseAnalytics
 
 class PostsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, PostCellDelegate {
 
@@ -49,6 +50,8 @@ class PostsViewController: UIViewController, UITableViewDelegate, UITableViewDat
         page.actionButtonTitle = "Subscribe"
         page.alternativeButtonTitle = "Not now"
         page.actionHandler = { (item: BLTNActionItem) in
+            Analytics.logEvent("notifications_subscribed", parameters: nil)
+
             let center = UNUserNotificationCenter.current()
             center.requestAuthorization(options:[.badge, .alert, .sound]) { (granted, error) in
                 // Enable or disable features based on authorization.
@@ -57,6 +60,7 @@ class PostsViewController: UIViewController, UITableViewDelegate, UITableViewDat
             page.manager?.dismissBulletin()
         }
         page.alternativeHandler = { (item: BLTNActionItem) in
+            Analytics.logEvent("notifications_dialog_closed", parameters: nil)
             page.manager?.dismissBulletin()
         }
         return BLTNItemManager(rootItem: page)
@@ -90,6 +94,7 @@ class PostsViewController: UIViewController, UITableViewDelegate, UITableViewDat
         self.checkPushNotification {  (enable) in
             if enable {
                 DispatchQueue.main.async {
+                    Analytics.logEvent("show_notifications_dialog", parameters: nil)
                     self.bulletinManager.showBulletin(above: self)
                 }
             }
@@ -107,11 +112,13 @@ class PostsViewController: UIViewController, UITableViewDelegate, UITableViewDat
     }
     
     func shareTouched(post: Post, image: UIImage) {
-        guard let link = post.publicUrl else { return }
+        guard let link = post.publicUrl, let id = post.id else { return }
         
         guard let watermark = UIImage(named: "link-icon-small"), let finalImage = addWatermark(image: image, watermark: watermark), let title = post.title else {
             return
         }
+        
+        Analytics.logEvent("share_post", parameters: ["id" : id])
         
         // set up activity view controller
         let itemsToShare : [Any] = [ finalImage, "\(title) - \(link) #LinkX #Startup #Tech" ]
@@ -235,6 +242,8 @@ class PostsViewController: UIViewController, UITableViewDelegate, UITableViewDat
     private func deleteAction(forPost post: Post) -> UIAlertAction? {
         guard let currentLoggedInUserId = Auth.auth().currentUser?.uid else { return nil }
         
+        Analytics.logEvent("delete_post", parameters: ["uid" : currentLoggedInUserId])
+        
         let action = UIAlertAction(title: "Delete", style: .destructive, handler: { (_) in
             
             let alert = UIAlertController(title: "Delete Post?", message: nil, preferredStyle: .alert)
@@ -330,9 +339,11 @@ class PostsViewController: UIViewController, UITableViewDelegate, UITableViewDat
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         
-        guard posts.count > indexPath.row, let url = URL(string: posts[indexPath.row].url ?? "") else {
+        guard posts.count > indexPath.row, let url = URL(string: posts[indexPath.row].url ?? ""), let id = posts[indexPath.row].id else {
             return
         }
+        
+        Analytics.logEvent("post_touched", parameters: ["id" : id])
         
         UIApplication.shared.open(url, options: [:], completionHandler: nil)
     }
