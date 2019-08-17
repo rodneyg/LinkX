@@ -29,6 +29,7 @@ class PostTableViewCell: UITableViewCell {
     @IBOutlet var sourceLabel: UILabel!
     @IBOutlet var iconImage: CustomImageView!
     @IBOutlet var iconWidth: NSLayoutConstraint!
+    @IBOutlet var viewLabel: UILabel!
     
     @IBOutlet var postImageHeight: NSLayoutConstraint!
     @IBOutlet var clapButton: UIButton!
@@ -123,6 +124,8 @@ class PostTableViewCell: UITableViewCell {
         clapButton.setTitle("👏 \(post.claps)", for: .normal)
         shockedButton.setTitle("🤯 \(post.shocked)", for: .normal)
         skepticalButton.setTitle("🤔 \(post.skeptical)", for: .normal)
+
+        viewLabel.text = "👁‍🗨  \(post.views)"
         
         if let createdAt = post.createdAt {
             let timeAgo = Date(timeIntervalSince1970: createdAt).timeAgoDisplay()

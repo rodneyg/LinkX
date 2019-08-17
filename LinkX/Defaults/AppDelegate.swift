@@ -26,7 +26,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MessagingDelegate, UNUser
         Siren.shared.wail()
         AppStore.shared.incrementAppRuns()
         
-        UIApplication.shared.registerForRemoteNotifications()
+        UIApplication.shared.applicationIconBadgeNumber = 0
         
         return true
     }

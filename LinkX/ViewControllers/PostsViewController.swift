@@ -317,6 +317,10 @@ class PostsViewController: UIViewController, UITableViewDelegate, UITableViewDat
         }
     }
     
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        Database.database().runViewTransaction(post: posts[indexPath.row])
+    }
+    
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 321.0
     }

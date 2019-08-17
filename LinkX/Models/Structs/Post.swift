@@ -8,10 +8,11 @@
 
 import Foundation
 
-struct Post {
+public struct Post {
     
     var user: User?
     
+    var ref: String?
     var id: String?
     var image: String?
     var icon: String?
@@ -26,6 +27,7 @@ struct Post {
     var claps: Int = 0
     var shocked: Int = 0
     var skeptical: Int = 0
+    var views: Int = 2
     
     var clappedByCurrentUser = false
     var shockedByCurrentUser = false
@@ -44,6 +46,7 @@ struct Post {
         self.canonicalUrl = data["canonical_url"] as? String
         self.title = data["title"] as? String
         self.finalUrl = data["final_url"] as? String
+        self.views = (data["views"] as? Int) ?? 2
         self.publicUrl = data["public_url"] as? String
         self.uid = data["uid"] as? String
         self.createdAt = data["created_at"] as? Double

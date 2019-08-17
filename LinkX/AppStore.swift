@@ -25,7 +25,7 @@ class AppStore {
     static let shared = AppStore()
     
     let runIncrementerSetting = "numberOfRuns"  // UserDefauls dictionary key where we store number of runs
-    let minimumRunCount = 5                     // Minimum number of runs that we should have until we ask for review
+    let minimumRunCount = 7                     // Minimum number of runs that we should have until we ask for review
     
     func incrementAppRuns() { // counter for number of runs for the app. You can call this from App Delegate
         setAppRuns(getRunCounts() + 1)

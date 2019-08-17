@@ -406,6 +406,33 @@ extension Database {
         }
     }
     
+    public func runViewTransaction(post: Post) {
+        guard let postId = post.id, let uid = post.uid else { return }
+        
+        let postRef = Database.database().reference().child("posts").child(uid).child(postId)
+        
+        postRef.runTransactionBlock({ (currentData: MutableData) -> TransactionResult in
+            if var postData = currentData.value as? [String : AnyObject] {
+                var viewCount : Int? = postData["views"] as? Int
+
+                if viewCount == nil {
+                    viewCount = 1
+                } else {
+                    viewCount = viewCount! + 1
+                }
+                
+                postData["views"] = viewCount as? AnyObject
+                currentData.value = postData
+                return TransactionResult.success(withValue: currentData)
+            }
+            return TransactionResult.success(withValue: currentData)
+        }) { (error, committed, snapshot) in
+            if let error = error {
+                print(error.localizedDescription)
+            }
+        }
+    }
+    
     //MARK: Users
     
     func removeSpecialCharsFromString(text: String) -> String {
@@ -616,7 +643,7 @@ extension Database {
         guard let postId = userPostRef.key else { return }
         
         let values = ["image" : post.image ?? "", "icon" : post.icon ?? "", "url" : post.url ?? "", "canonical_url" : post.canonicalUrl ?? "", "title" : post.title ?? "",
-                      "final_url" : post.finalUrl ?? "", "uid" : uid, "id" : postId, "created_at" : Date().timeIntervalSince1970] as [String : Any]
+                      "final_url" : post.finalUrl ?? "", "uid" : uid, "views" : 1, "id" : postId, "created_at" : Date().timeIntervalSince1970] as [String : Any]
         
         userPostRef.updateChildValues(values) { (err, ref) in
             if let err = err {
