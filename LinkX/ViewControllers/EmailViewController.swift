@@ -20,6 +20,7 @@ import PKHUD
 class EmailViewController: UIViewController, MFMailComposeViewControllerDelegate, FUIAuthDelegate {
     
     public var investor: Investor!
+    public var fund: Fund?
     public var loggedIn: Bool = false
     public var purchased: Bool = false
     public var canPurchase: Bool = false
@@ -53,6 +54,12 @@ class EmailViewController: UIViewController, MFMailComposeViewControllerDelegate
         profileImage.layer.borderColor = UIColor(white: 0, alpha: 0.2).cgColor
         profileImage.layer.borderWidth = 0.5
         
+        if investor.publicUrl == nil && investor.key != nil {
+            Database.database().createInvestorLink(withInvestor: investor.key!) { url in
+                self.investor.publicUrl = url
+            }
+        }
+        
         checkUser()
         fetchInvestor()
     }
@@ -68,7 +75,11 @@ class EmailViewController: UIViewController, MFMailComposeViewControllerDelegate
     
     @IBAction func loginTouched(_ sender: Any) {
         guard let uid = Auth.auth().currentUser?.uid else {
-            onSigninTouched?(self)
+            if onSigninTouched == nil {
+                self.tabBarController?.selectedIndex = 2
+            } else {
+                onSigninTouched?(self)
+            }
             return // no user
         }
         
@@ -94,9 +105,13 @@ class EmailViewController: UIViewController, MFMailComposeViewControllerDelegate
                     
                     self.bookmarkTouched(self)
                     self.loginButton.isHidden = true
-                    self.contactView.isUserInteractionEnabled = true
+                    self.contactView.isHidden = false
                     self.sendLabel.text = self.investor.contactInfo.email
                     HUD.flash(.success, delay: 2.5)
+                    HUD.flash(.success, onView: nil, delay: 2.5, completion: { success in
+                        AppStore.shared.setAppRuns(5)
+                        AppStore.shared.showReview()
+                    })
                 })
             }))
             
@@ -121,7 +136,7 @@ class EmailViewController: UIViewController, MFMailComposeViewControllerDelegate
     
     func checkUser() {
         guard let user = Auth.auth().currentUser else {
-            self.contactView.isUserInteractionEnabled = false
+            self.contactView.isHidden = true
             self.loginButton.isHidden = false
             self.loginButton.setTitle("Login To See Contact Details", for: .normal)
             self.sendLabel.text = self.splitEmail(email: self.investor.contactInfo.email)
@@ -132,7 +147,7 @@ class EmailViewController: UIViewController, MFMailComposeViewControllerDelegate
             self.purchased = hasPurchasedInvestor
             
             if hasPurchasedInvestor {
-                self.contactView.isUserInteractionEnabled = true
+                self.contactView.isHidden = false
                 self.loginButton.isHidden = true
                 self.sendLabel.text = self.investor.contactInfo.email
             } else {
@@ -141,13 +156,13 @@ class EmailViewController: UIViewController, MFMailComposeViewControllerDelegate
                     
                     if canPurchase {
                         self.loginButton.isHidden = false
-                        self.contactView.isUserInteractionEnabled = true
+                        self.contactView.isHidden = false
                         self.loginButton.setTitle("Access for 25 Points", for: .normal)
                         self.sendLabel.text = self.splitEmail(email: self.investor.contactInfo.email)
                         return // no user
                     } else {
                         self.loginButton.isHidden = false
-                        self.contactView.isUserInteractionEnabled = false
+                        self.contactView.isHidden = true
                         self.loginButton.setTitle("Earn Points To Access", for: .normal)
                         self.sendLabel.text = self.splitEmail(email: self.investor.contactInfo.email)
                         return // no user
@@ -178,14 +193,14 @@ class EmailViewController: UIViewController, MFMailComposeViewControllerDelegate
     }
 
     @IBAction func shareTouched(_ sender: Any) {
-        guard let uid = Auth.auth().currentUser?.uid else {
+        guard let uid = Auth.auth().currentUser?.uid, let publicUrl = investor.publicUrl else {
             return
         }
         
         Analytics.logEvent("share_touched", parameters: ["uid" : uid, "investor_id" : investor.id, "investor_name" : investor.fullName()])
 
         // text to share
-        let text = "Hey. Here is the e-mail for \(investor.first) \(investor.last): \(investor.contactInfo.email) \n I found it using LinkX on iOS!"
+        let text = "Hey. Check out \(investor.first) \(investor.last) on LinkX on iOS! \(publicUrl)"
         
         // set up activity view controller
         let textToShare = [ text ]
@@ -270,7 +285,7 @@ class EmailViewController: UIViewController, MFMailComposeViewControllerDelegate
     }
     
     @IBAction func closeTouched(_ sender: Any) {
-        Analytics.logEvent("close_touched", parameters: [:])
+        Analytics.logEvent("close_touched_investor", parameters: [:])
         dismiss()
     }
     

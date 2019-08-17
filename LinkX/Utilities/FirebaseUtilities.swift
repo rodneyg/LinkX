@@ -29,7 +29,7 @@ extension Auth {
                     return
                 }
                 guard let uid = user?.user.uid else { return }
-
+                
                 self.setupUser(uid: uid, firstName: firstName, lastName: lastName, image: image, completion: completion)
             })
         }
@@ -130,6 +130,27 @@ extension Auth {
 
 extension Storage {
     
+    fileprivate func uploadPostImage(image: UIImage, filename: String, completion: @escaping (String) -> ()) {
+        guard let uploadData = image.jpegData(compressionQuality: 1) else { return } //changed from 0.5
+        
+        let storageRef = Storage.storage().reference().child("post_images").child(filename)
+        storageRef.putData(uploadData, metadata: nil, completion: { (_, err) in
+            if let err = err {
+                print("Failed to upload post image:", err)
+                return
+            }
+            
+            storageRef.downloadURL(completion: { (downloadURL, err) in
+                if let err = err {
+                    print("Failed to obtain download url for post image:", err)
+                    return
+                }
+                guard let postImageUrl = downloadURL?.absoluteString else { return }
+                completion(postImageUrl)
+            })
+        })
+    }
+    
     public func uploadUserProfileImage(image: UIImage, completion: @escaping (String) -> ()) {
         self.uploadProfileImage(directory: "profile_images", image: image, completion: completion)
     }
@@ -181,7 +202,7 @@ extension Database {
             
             completion(newContributions, nil)
         }) { (err) in
-           completion(nil, err)
+            completion(nil, err)
         }
     }
     
@@ -224,18 +245,71 @@ extension Database {
         })
     }
     
+    func addFunds() {
+        if let path = Bundle.main.path(forResource: "funds", ofType: "json") {
+            do {
+                let data = try Data(contentsOf: URL(fileURLWithPath: path), options: .mappedIfSafe)
+                let jsonResult = try JSONSerialization.jsonObject(with: data, options: .mutableLeaves)
+                if let jsonResult = jsonResult as? [Dictionary<String, AnyObject>] {
+                    for json in jsonResult {
+                        let name = json["Name"]
+                        let city = json["City"]
+                        let state = json["State"]
+                        let site = json["Site"]
+                        let stage = json["Stage"]
+                        let contactMethod = json["Contact Method"]
+                        var sectors = [String]()
+                        if let sectorData = json["Sectors"] as? String {
+                            sectorData.split(separator: ",").forEach { substring in
+                                sectors.append(String(substring))
+                            }
+                        }
+                        
+                        let dictionaryValues = ["name" : name ?? "", "city" : city ?? "", "state" : state ?? "", "site" : site ?? "",
+                                                "stage" : stage ?? "", "contact" : contactMethod ?? "", "sectors" : sectors] as [String : Any]
+                        self.reference().child("funds").childByAutoId().updateChildValues(dictionaryValues, withCompletionBlock: { (err, ref) in
+                            if let error = err {
+                                print("error: " + error.localizedDescription)
+                                return
+                            }
+                            print("added: \(String(describing: ref.key)): \(dictionaryValues)")
+                        })
+                    }
+                }
+            } catch {
+                // handle error
+            }
+        }
+    }
+    
     func canPurchaseInvestor(uid: String, completion: @escaping (Bool) -> ()) {
+        self.canPurchase(uid: uid, points: 25.0, completion: completion)
+    }
+    
+    func canPurchaseFund(uid: String, completion: @escaping (Bool) -> ()) {
+        self.canPurchase(uid: uid, points: 15.0, completion: completion)
+    }
+    
+    func canPurchase(uid: String, points: Double, completion: @escaping (Bool) -> ()) {
         self.fetchUser(withUID: uid) { user in
             guard let points = user.points else {
                 completion(false)
                 return
             }
             
-            completion(points >= 25.0) //investor costs 25.0 points
+            completion(points >= points) //funds costs 15.0 points
         }
     }
     
+    func hasPurchasedFund(uid: String, fundId: String, completion: @escaping (Bool) -> ()) {
+        self.hasPurchasedItem(uid: uid, itemId: fundId, completion: completion)
+    }
+    
     func hasPurchasedInvestor(uid: String, investorId: String, completion: @escaping (Bool) -> ()) {
+        self.hasPurchasedItem(uid: uid, itemId: investorId, completion: completion)
+    }
+    
+    func hasPurchasedItem(uid: String, itemId: String, completion: @escaping (Bool) -> ()) {
         Database.database().reference().child("transactions").child(uid).observeSingleEvent(of: .value, with: { (snapshot) in
             guard let children = snapshot.children.allObjects as? [DataSnapshot] else {
                 completion(false)
@@ -246,7 +320,7 @@ extension Database {
             children.forEach { child in
                 if let value = child.value as? [String : Any] {
                     let transaction = Transaction(data: value)
-                    if transaction.itemId == investorId {
+                    if !itemId.isEmpty && transaction.itemId == itemId {
                         found = true//found ivnestor
                         return
                     }
@@ -260,27 +334,36 @@ extension Database {
     }
     
     func purchaseInvestorContact(uid: String, investorId: String, completion: @escaping (Transaction?, Error?) -> ()) {
+        self.purchase(uid: uid, itemId: investorId, points: 25.0, completion: completion)
+    }
+    
+    func purchaseFundContact(uid: String, fundId: String, completion: @escaping (Transaction?, Error?) -> ()) {
+        self.purchase(uid: uid, itemId: fundId, points: 25.0, completion: completion)
+    }
+    
+    func purchase(uid: String, itemId: String, points: Double, completion: @escaping (Transaction?, Error?) -> ()) {
         canPurchaseInvestor(uid: uid) { canPurchase in
-            guard canPurchase else {
+            let moneyMonday: Bool = (Date().dayNumberOfWeek() == 1)
+            guard canPurchase || moneyMonday else {
                 completion(nil, nil)
                 return
             }
             
-            let dictionaryValues : [String : Any] = ["uid" : uid, "point_cost" : 25.0, "updated_at" : Date().timeIntervalSinceNow, "created_at" : Date().timeIntervalSince1970, "item_id" : investorId]
+            let dictionaryValues : [String : Any] = ["uid" : uid, "point_cost" : moneyMonday ? 0 : points, "updated_at" : Date().timeIntervalSinceNow, "created_at" : Date().timeIntervalSince1970, "item_id" : itemId]
             self.reference().child("transactions").child(uid).childByAutoId().updateChildValues(dictionaryValues, withCompletionBlock: { (err, ref) in
                 if let err = err {
                     completion(nil, err)
                     return
                 }
                 
-                let point = Point(data: ["value" : -25.0, "activity" : LXConstants.PURCHASE_INVESTOR_CONTACT, "notes" : "Referred by User", "created_at" : Date().timeIntervalSinceNow])
+                let point = Point(data: ["value" : -points, "activity" : LXConstants.PURCHASE_INVESTOR_CONTACT, "notes" : "Referred by User", "created_at" : Date().timeIntervalSinceNow])
                 self.runPointTransaction(withUID: uid, point: point)
                 
                 completion(Transaction(data: dictionaryValues), nil)
             })
         }
     }
-
+    
     func fetchUserPoints(withUID uid: String, completion: @escaping ([Point]) -> ()) {
         Database.database().reference().child("points").child(uid).observeSingleEvent(of: .value, with: { (snapshot) in
             guard let children = snapshot.children.allObjects as? [DataSnapshot] else {
@@ -291,7 +374,7 @@ extension Database {
             var newPoints = [Point]()
             for child in children {
                 if var value = child.value as? [String : Any] {
-                   newPoints.append(Point(data: value))
+                    newPoints.append(Point(data: value))
                 }
             }
             
@@ -303,16 +386,43 @@ extension Database {
     
     private func runPointTransaction(withUID uid: String, point: Point) {
         let userRef = reference().child("users").child(uid)
-
+        
         userRef.runTransactionBlock({ (currentData: MutableData) -> TransactionResult in
             if var user = currentData.value as? [String : AnyObject] {
                 let pointsCount : Double = user["points"] as? Double ?? 0.0
                 let totalPoints = pointsCount + point.value
                 user["points"] = NSNumber(value: totalPoints) as AnyObject
-
+                
                 // Set value and report transaction success
                 currentData.value = user
+                
+                return TransactionResult.success(withValue: currentData)
+            }
+            return TransactionResult.success(withValue: currentData)
+        }) { (error, committed, snapshot) in
+            if let error = error {
+                print(error.localizedDescription)
+            }
+        }
+    }
+    
+    public func runViewTransaction(post: Post) {
+        guard let postId = post.id, let uid = post.uid else { return }
+        
+        let postRef = Database.database().reference().child("posts").child(uid).child(postId)
+        
+        postRef.runTransactionBlock({ (currentData: MutableData) -> TransactionResult in
+            if var postData = currentData.value as? [String : AnyObject] {
+                var viewCount : Int? = postData["views"] as? Int
 
+                if viewCount == nil {
+                    viewCount = 1
+                } else {
+                    viewCount = viewCount! + 1
+                }
+                
+                postData["views"] = viewCount as? AnyObject
+                currentData.value = postData
                 return TransactionResult.success(withValue: currentData)
             }
             return TransactionResult.success(withValue: currentData)
@@ -328,6 +438,119 @@ extension Database {
     func removeSpecialCharsFromString(text: String) -> String {
         let okayChars = Set("abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLKMNOPQRSTUVWXYZ1234567890+-=().!_")
         return text.filter {okayChars.contains($0) }
+    }
+    
+    func createFundLink(withInvestor fundKey: String,completion: ((String) -> ())?) {
+        guard let link = URL(string: "https://linkx.page.link/?fund=\(fundKey)") else { return }
+        
+        let linkBuilder = DynamicLinkComponents(link: link, domainURIPrefix: "https://linkx.page.link")
+        
+        linkBuilder?.iOSParameters = DynamicLinkIOSParameters(bundleID: "com.ios.codesigned.LinkX")
+        linkBuilder?.iOSParameters?.minimumAppVersion = "1.0"
+        linkBuilder?.iOSParameters?.appStoreID = "1457507501"
+        
+        linkBuilder?.shorten() { url, warnings, error in
+            if let error = error {
+                print("Failed to create fund link:", error)
+                return
+            }
+            
+            guard let urlStr = url?.absoluteString else {
+                print("Failed to create fund link:")
+                return
+            }
+            
+            print("The short URL is: \(url)")
+            
+            var dictionaryValues: [String : Any] = ["public_url" : urlStr]
+            
+            Database.database().reference().child("funds").child(fundKey).updateChildValues(dictionaryValues, withCompletionBlock: { (err, ref) in
+                if let err = err {
+                    print("Failed to create fund link:", err)
+                    return
+                }
+                
+                completion?(urlStr)
+            })
+        }
+    }
+    
+    func createPostLink(withPost post: Post, postId: String, uid: String, completion: ((String) -> ())?) {
+        guard let pUrl = post.url, let link = URL(string: "https://linkx.page.link/?post=\(postId)") else { return }
+        
+        let linkBuilder = DynamicLinkComponents(link: link, domainURIPrefix: "https://linkx.page.link")
+        
+        linkBuilder?.iOSParameters = DynamicLinkIOSParameters(bundleID: "com.ios.codesigned.LinkX")
+        linkBuilder?.iOSParameters?.minimumAppVersion = "1.0"
+        linkBuilder?.iOSParameters?.appStoreID = "1457507501"
+        linkBuilder?.iOSParameters?.fallbackURL = URL(string: pUrl)
+        
+        linkBuilder?.socialMetaTagParameters = DynamicLinkSocialMetaTagParameters()
+        linkBuilder?.socialMetaTagParameters?.descriptionText = "LinkX News"
+        linkBuilder?.socialMetaTagParameters?.descriptionText = post.title
+        linkBuilder?.socialMetaTagParameters?.imageURL = URL(string: post.image ?? "")
+        
+        linkBuilder?.otherPlatformParameters?.fallbackUrl = URL(string: pUrl)
+        
+        linkBuilder?.shorten() { url, warnings, error in
+            if let error = error {
+                print("Failed to create post link:", error)
+                return
+            }
+            
+            guard let urlStr = url?.absoluteString else {
+                print("Failed to create post link:")
+                return
+            }
+            
+            print("The short URL is: \(url)")
+            
+            let dictionaryValues: [String : Any] = ["public_url" : urlStr]
+            
+            Database.database().reference().child("posts").child(uid).child(postId).updateChildValues(dictionaryValues, withCompletionBlock: { (err, ref) in
+                if let err = err {
+                    print("Failed to upload user to database:", err)
+                    return
+                }
+                
+                completion?(urlStr)
+            })
+        }
+    }
+    
+    func createInvestorLink(withInvestor investorKey: String,completion: ((String) -> ())?) {
+        guard let link = URL(string: "https://linkx.page.link/?investor=\(investorKey)") else { return }
+        
+        let linkBuilder = DynamicLinkComponents(link: link, domainURIPrefix: "https://linkx.page.link")
+        
+        linkBuilder?.iOSParameters = DynamicLinkIOSParameters(bundleID: "com.ios.codesigned.LinkX")
+        linkBuilder?.iOSParameters?.minimumAppVersion = "1.0"
+        linkBuilder?.iOSParameters?.appStoreID = "1457507501"
+        
+        linkBuilder?.shorten() { url, warnings, error in
+            if let error = error {
+                print("Failed to create investor link:", error)
+                return
+            }
+            
+            guard let urlStr = url?.absoluteString else {
+                print("Failed to create investor link:")
+                return
+            }
+            
+            print("The short URL is: \(url)")
+            
+            var dictionaryValues: [String : Any] = ["public_url" : urlStr]
+            
+            Database.database().reference().child("investors").child(investorKey).updateChildValues(dictionaryValues, withCompletionBlock: { (err, ref) in
+                if let err = err {
+                    print("Failed to upload user to database:", err)
+                    return
+                }
+                
+                completion?(urlStr)
+            })
+        }
     }
     
     func createInviteCode(withUser uid: String, firstName: String, lastName: String, completion: ((String) -> ())?) {
@@ -368,8 +591,19 @@ extension Database {
     func fetchUserByInvite(code: String, completion: @escaping (String) -> ()) {
         Database.database().reference().child("users").queryOrdered(byChild: "invite_code").queryEqual(toValue: code.lowercased()).observeSingleEvent(of: .value, with: { (snapshot) in
             guard let value = snapshot.value as? [String : Any], let first = value.keys.first else { return }
-
+            
             completion(first)
+        }) { (err) in
+            print("Failed to fetch user from database:", err)
+        }
+    }
+    
+    func fetchInvestor(withId investorKey: String, completion: @escaping (Investor) -> ()) {
+        Database.database().reference().child("investors").child(investorKey).observeSingleEvent(of: .value, with: { (snapshot) in
+            guard var userDictionary = snapshot.value as? [String: Any] else { return }
+            userDictionary["key"] = snapshot.key
+            let investor = Investor(data: userDictionary)
+            completion(investor)
         }) { (err) in
             print("Failed to fetch user from database:", err)
         }
@@ -382,6 +616,307 @@ extension Database {
             completion(user)
         }) { (err) in
             print("Failed to fetch user from database:", err)
+        }
+    }
+    
+    func createPostRef(withPost postId: String, uid: String, completion: @escaping (Error?) -> ()) {
+        guard let uid = Auth.auth().currentUser?.uid else { return }
+        
+        let userPostRef = Database.database().reference().child("all_posts").childByAutoId()
+        
+        let values = ["id" : postId, "created_at" : Date().timeIntervalSince1970, "uid" : uid] as [String : Any]
+        
+        userPostRef.updateChildValues(values) { (err, ref) in
+            if let err = err {
+                print("Failed to save post to database", err)
+                completion(err)
+                return
+            }
+        }
+    }
+    
+    func createPost(withPost post: Post, completion: @escaping (Error?) -> ()) {
+        guard let uid = Auth.auth().currentUser?.uid else { return }
+        
+        let userPostRef = Database.database().reference().child("posts").child(uid).childByAutoId()
+        
+        guard let postId = userPostRef.key else { return }
+        
+        let values = ["image" : post.image ?? "", "icon" : post.icon ?? "", "url" : post.url ?? "", "canonical_url" : post.canonicalUrl ?? "", "title" : post.title ?? "",
+                      "final_url" : post.finalUrl ?? "", "uid" : uid, "views" : 1, "id" : postId, "created_at" : Date().timeIntervalSince1970] as [String : Any]
+        
+        userPostRef.updateChildValues(values) { (err, ref) in
+            if let err = err {
+                print("Failed to save post to database", err)
+                completion(err)
+                return
+            }
+            
+            self.createPostRef(withPost: postId, uid: uid, completion: completion)
+            
+            self.createPostLink(withPost: post, postId: postId, uid: uid, completion: { link in
+                completion(nil)
+            })
+        }
+    }
+    
+    func fetchAllPostIDsFromToday(completion: @escaping ([String]) -> (), withCancel cancel: ((Error) -> ())? = nil) {
+        guard let currentLoggedInUser = Auth.auth().currentUser?.uid else { return }
+        
+        let ref = Database.database().reference().child("all_posts").queryOrdered(byChild: "created_at").queryStarting(atValue: Date().startOfDay.timeIntervalSince1970).queryEnding(atValue: Date().tomorrow!.timeIntervalSince1970)
+        
+        ref.observeSingleEvent(of: .value, with: { (snapshot) in
+            guard let dictionaries = snapshot.value as? [String: Any] else {
+                completion([])
+                return
+            }
+            
+            var posts = [String]()
+            
+            dictionaries.forEach({ (arg) in
+                let (postId, value) = arg
+                guard let dict = value as? [String : Any], let id = dict["id"] as? String,
+                    let uid = dict["uid"] as? String else { return }
+                
+                posts.append(id)
+                
+                if posts.count == dictionaries.count {
+                    completion(posts)
+                }
+            })
+        }) { (err) in
+            print("Failed to fetch posts:", err)
+            cancel?(err)
+        }
+    }
+    
+    func fetchAllPostsFromPastWeek(completion: @escaping (Post) -> (), withCancel cancel: ((Error) -> ())? = nil) {
+        guard let currentLoggedInUser = Auth.auth().currentUser?.uid else { return }
+        
+        let ref = Database.database().reference().child("all_posts").queryOrdered(byChild: "created_at").queryStarting(atValue: Date().lastWeek!.timeIntervalSince1970).queryEnding(atValue: Date().tomorrow!.timeIntervalSince1970)
+        
+        ref.observeSingleEvent(of: .value, with: { (snapshot) in
+            guard let dictionaries = snapshot.value as? [String: Any] else {
+                return
+            }
+            
+            dictionaries.forEach({ (arg) in
+                let (postId, value) = arg
+                guard let dict = value as? [String : Any], let id = dict["id"] as? String,
+                    let uid = dict["uid"] as? String else { return }
+                
+                Database.database().fetchPost(withUID: uid, postId: id, completion: { (post) in
+                    //posts.append(post)
+                    completion(post)
+//
+//                    if posts.count == dictionaries.count {
+//                        completion(posts)
+//                    }
+                })
+            })
+        }) { (err) in
+            print("Failed to fetch posts:", err)
+            cancel?(err)
+        }
+    }
+    
+    func fetchPost(postId: String, completion: @escaping (Post) -> ()) {
+        let ref = Database.database().reference().child("all_posts")
+        
+        ref.queryOrdered(byChild: "id").queryEqual(toValue: postId)
+            .observeSingleEvent(of: .value, with: { snapshot in
+                guard let data = snapshot.children.allObjects.first as? DataSnapshot else { return }
+                
+                guard let postRefDictionary = data.value as? [String : Any] else { return }
+                
+                guard let id = postRefDictionary["id"] as? String,
+                    let uid = postRefDictionary["uid"] as? String else { return }
+                
+                Database.database().fetchPost(withUID: uid, postId: id, completion: { (post) in
+                    completion(post)
+                })
+            })
+    }
+    
+    func fetchPost(withUID uid: String, postId: String, completion: @escaping (Post) -> (), withCancel cancel: ((Error) -> ())? = nil) {
+        guard let currentLoggedInUser = Auth.auth().currentUser?.uid else { return }
+        
+        let ref = Database.database().reference().child("posts").child(uid).child(postId)
+        
+        ref.observeSingleEvent(of: .value, with: { (snapshot) in
+            
+            guard let postDictionary = snapshot.value as? [String: Any] else { return }
+            
+            Database.database().fetchUser(withUID: uid, completion: { (user) in
+                var post = Post(user: user, data: postDictionary)
+                post.id = postId
+                
+                //check skeptical and shocked
+                //create reactions object to lower the amount of calls
+                //you can do up to three reactions total per post
+                //create reaction animation
+                // reactions : { "claps" : 1, "skeptical" : 2, "shocked" : 2 }
+                Database.database().reference().child("claps").child(postId).child(uid).observeSingleEvent(of: .value, with: { (snapshot) in
+                    if let value = snapshot.value as? Int, value == 1 {
+                        post.clappedByCurrentUser = true
+                    } else {
+                        post.clappedByCurrentUser = false
+                    }
+                    
+                    Database.database().numberOfClapsForPost(withPostId: postId, completion: { (count) in
+                        post.claps = count
+                        completion(post)
+                    })
+                }, withCancel: { (err) in
+                    print("Failed to fetch like info for post:", err)
+                    cancel?(err)
+                })
+            })
+        })
+    }
+    
+    func fetchAllPosts(withUID uid: String, completion: @escaping ([Post]) -> (), withCancel cancel: ((Error) -> ())?) {
+        let ref = Database.database().reference().child("posts").child(uid)
+        
+        ref.observeSingleEvent(of: .value, with: { (snapshot) in
+            guard let dictionaries = snapshot.value as? [String: Any] else {
+                completion([])
+                return
+            }
+            
+            var posts = [Post]()
+            
+            dictionaries.forEach({ (arg) in
+                let (postId, value) = arg
+                Database.database().fetchPost(withUID: uid, postId: postId, completion: { (post) in
+                    posts.append(post)
+                    
+                    if posts.count == dictionaries.count {
+                        completion(posts)
+                    }
+                })
+            })
+        }) { (err) in
+            print("Failed to fetch posts:", err)
+            cancel?(err)
+        }
+    }
+    
+    func deletePost(withUID uid: String, postId: String, completion: ((Error?) -> ())? = nil) {
+        Database.database().reference().child("posts").child(uid).child(postId).removeValue { (err, _) in
+            if let err = err {
+                print("Failed to delete post:", err)
+                completion?(err)
+                return
+            }
+            
+            self.deleteComments(postId: postId)
+            self.deleteReactions(postId: postId)
+        }
+    }
+    
+    func deleteComments(postId: String, completion: ((Error?) -> ())? = nil) {
+        Database.database().reference().child("comments").child(postId).removeValue(completionBlock: { (err, _) in
+            if let err = err {
+                print("Failed to delete comments on post:", err)
+                completion?(err)
+                return
+            }
+            
+            completion?(nil)
+        })
+    }
+    
+    func deleteReactions(postId: String, completion: ((Error?) -> ())? = nil) {
+        self.deleteReaction(reaction: "claps", postId: postId)
+        self.deleteReaction(reaction: "skeptical", postId: postId)
+        self.deleteReaction(reaction: "shocked", postId: postId)
+    }
+    
+    //claps // skeptical // shocked
+    func deleteReaction(reaction: String, postId: String, completion: ((Error?) -> ())? = nil) {
+        Database.database().reference().child(reaction).child(postId).removeValue(completionBlock: { (err, _) in
+            if let err = err {
+                print("Failed to delete likes on post:", err)
+                completion?(err)
+                return
+            }
+            
+            Storage.storage().reference().child("post_images").child(postId).delete(completion: { (err) in
+                if let err = err {
+                    print("Failed to delete post image from storage:", err)
+                    completion?(err)
+                    return
+                }
+            })
+            
+            completion?(nil)
+        })
+    }
+    
+    func isPostReported(withId postId: String, completion: @escaping (Bool) -> (), withCancel cancel: ((Error) -> ())?) {
+        guard let currentLoggedInUserId = Auth.auth().currentUser?.uid else { return }
+        
+        Database.database().reference().child("reports").child(currentLoggedInUserId).child("posts").observeSingleEvent(of: .value, with: { (snapshot) in
+            if let isBlocked = snapshot.value as? Int, isBlocked == 1 {
+                completion(true)
+            } else {
+                completion(false)
+            }
+            
+        }) { (err) in
+            print("Failed to check if following:", err)
+            cancel?(err)
+        }
+    }
+    
+    func reportPost(withId postId: String, postCreatorId: String, reason: String, completion: @escaping (Error?) -> ()) {
+        guard let uid = Auth.auth().currentUser?.uid else { return }
+        
+        let values = ["reason": reason, "creationDate": Date().timeIntervalSince1970, "uid": uid, "postCreatorId" : postCreatorId] as [String: Any]
+        
+        let commentsRef = Database.database().reference().child("reports").child(uid).child("posts").child(postId).childByAutoId()
+        commentsRef.updateChildValues(values) { (err, _) in
+            if let err = err {
+                print("Failed to add comment:", err)
+                completion(err)
+                return
+            }
+            completion(nil)
+        }
+    }
+    
+    //MARK: Utilities
+    
+    func numberOfPostsForUser(withUID uid: String, completion: @escaping (Int) -> ()) {
+        Database.database().reference().child("posts").child(uid).observeSingleEvent(of: .value) { (snapshot) in
+            if let dictionaries = snapshot.value as? [String: Any] {
+                completion(dictionaries.count)
+            } else {
+                completion(0)
+            }
+        }
+    }
+    
+    func numberOfClapsForPost(withPostId postId: String, completion: @escaping (Int) -> ()) {
+        self.numberOfForPost(withName: "claps", postId: postId, completion: completion)
+    }
+    
+    func numberOfSkepticalForPost(withPostId postId: String, completion: @escaping (Int) -> ()) {
+        self.numberOfForPost(withName: "skeptical", postId: postId, completion: completion)
+    }
+    
+    func numberOfShockedForPost(withPostId postId: String, completion: @escaping (Int) -> ()) {
+        self.numberOfForPost(withName: "shock", postId: postId, completion: completion)
+    }
+    
+    func numberOfForPost(withName name: String, postId: String, completion: @escaping (Int) -> ()) {
+        Database.database().reference().child(name).child(postId).observeSingleEvent(of: .value) { (snapshot) in
+            if let dictionaries = snapshot.value as? [String: Any] {
+                completion(dictionaries.count)
+            } else {
+                completion(0)
+            }
         }
     }
 }

@@ -11,7 +11,7 @@ import ContactsUI
 import Contacts
 import FirebaseDynamicLinks
 import FirebaseDatabase
-import FirebaseAuth
+import Firebase
 
 class InviteViewController: UIViewController {
     
@@ -61,6 +61,8 @@ class InviteViewController: UIViewController {
         guard let link = user.inviteCodeUrl else {
             return
         }
+        
+        Analytics.logEvent("share_invite", parameters: ["uid" : user.uid])
         
         // text to share
 

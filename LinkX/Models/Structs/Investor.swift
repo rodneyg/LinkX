@@ -10,10 +10,12 @@ import Foundation
 
 public struct Investor {
     public var id: String
+    public var key: String?
     public var first: String
     public var last: String
     public var title: String
     public var firm: String
+    public var publicUrl: String?
     public var contactInfo: ContactInfo
     public var rating: Rating
     public var metadata: [String : Any]
@@ -42,10 +44,12 @@ public struct Investor {
     
     public init(data: [String : Any]) {
         self.id = (data["id"] as? String) ?? ""
+        self.key = (data["key"] as? String)
         self.first = (data["first"] as? String) ?? ""
         self.last = (data["last"] as? String) ?? ""
         self.title = (data["title"] as? String) ?? ""
         self.firm = (data["firm"] as? String) ?? ""
+        self.publicUrl = (data["public_url"] as? String)
         self.metadata = data
         
         if let contactData = data["contact_info"] as? [String : Any] {

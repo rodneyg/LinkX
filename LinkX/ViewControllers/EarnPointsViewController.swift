@@ -16,12 +16,16 @@ class EarnPointsViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
         
         guard let uid = Auth.auth().currentUser?.uid else {
             self.performSegue(withIdentifier: "ShowSignupFromEarnPoints", sender: self)
             return // no signed in user re-direct to login page
         }
-
+        
         fetchUserProfile(uid: uid, completion: { user in
             guard let user = user else {
                 return //user profile could not be fetched
@@ -49,12 +53,18 @@ class EarnPointsViewController: UIViewController {
         }
     }
 
+    @IBAction func closeTouched(_ sender: Any) {
+        dismiss(animated: true, completion: nil)
+    }
+    
     // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "EmbedActivityTable" {
             let avc = segue.destination as! ActivityTableViewController
             avc.activitySelected = { activity in
-                if LXConstants.CONTRIBUTE_INVESTOR.id == activity.id {
+                if LXConstants.POST.id == activity.id {
+                    self.performSegue(withIdentifier: "ShowAddFromEarnPoints", sender: self)
+                } else if LXConstants.CONTRIBUTE_INVESTOR.id == activity.id {
                     self.performSegue(withIdentifier: "ShowContributeFromEarnPoints", sender: self)
                 } else if LXConstants.REFERRAL.id == activity.id {
                     guard self.user != nil else {

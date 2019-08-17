@@ -20,8 +20,15 @@ class ProfileViewController: UIViewController, UITextFieldDelegate {
     @IBOutlet var profileImage: CustomImageView!
     @IBOutlet var pointsLabel: UILabel!
     @IBOutlet var titleHeight: NSLayoutConstraint!
+    @IBOutlet var stackView: UIStackView!
+    @IBOutlet var postsButton: UIButton!
+    @IBOutlet var bookmarksButton: UIButton!
+    @IBOutlet var pointsButton: UIButton!
+    @IBOutlet var logoutButton: UIButton!
+    @IBOutlet var earnButton: UIButton!
     
     var fetchedUser: User?
+    var isModal = false
     
     public var contributions = [Contribution]()
     
@@ -48,12 +55,25 @@ class ProfileViewController: UIViewController, UITextFieldDelegate {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
+        earnButton.isHidden = isModal
+        
+        if isModal {
+            logoutButton.setTitle("Close", for: .normal)
+        }
+        
         guard let uid = Auth.auth().currentUser?.uid else {
             self.performSegue(withIdentifier: "ShowSignupFromProfile", sender: self)
             return // no signed in user re-direct to login page
         }
         
         profileView.isHidden = false
+        
+        guard fetchedUser == nil else {
+            DispatchQueue.main.async {
+                self.loadUser(user: self.fetchedUser!)
+            }
+            return
+        }
         
         fetchUserProfile(uid: uid, completion: { user in
             guard let user = user else {
@@ -75,8 +95,10 @@ class ProfileViewController: UIViewController, UITextFieldDelegate {
 //            allPoints.forEach { total += $0 }
 //            self.pointsLabel.text = "\(Int(total)) points"
 //        }
-        
-        Database.database().fetchContributions(withUID: uid) { (contributions, error) in
+    }
+    
+    func loadUser(user: User) {
+        Database.database().fetchContributions(withUID: user.uid) { (contributions, error) in
             if let _ = error {
                 return
             }
@@ -90,9 +112,7 @@ class ProfileViewController: UIViewController, UITextFieldDelegate {
                 self.tableView.reloadData()
             }
         }
-    }
-    
-    func loadUser(user: User) {
+        
         if let points = user.points {
             self.pointsLabel.text = "\(Int(points)) points"
         }
@@ -134,7 +154,25 @@ class ProfileViewController: UIViewController, UITextFieldDelegate {
         }
     }
     
+    @IBAction func postsTouched(_ sender: Any) {
+    }
+    
+    @IBAction func bookmarksTouched(_ sender: Any) {
+    }
+    
+    @IBAction func pointsTouched(_ sender: Any) {
+    }
+    
+    @IBAction func earnTouched(_ sender: Any) {
+        performSegue(withIdentifier: "ShowEarnPointsFromProfile", sender: self)
+    }
+    
     @IBAction func logoutTouched(_ sender: Any) {
+        guard !isModal else {
+            dismiss(animated: true, completion: nil)
+            return
+        }
+        
         Analytics.logEvent("logout_touched", parameters: [:])
 
         let logoutAlert = UIAlertController(title: "Logout", message: "Are you sure you want to logout?", preferredStyle: .alert)

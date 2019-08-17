@@ -8,16 +8,25 @@
 
 import UIKit
 import CoreData
+import Siren
 import Firebase
+import FirebaseMessaging
+import NotificationCenter
+import UserNotifications
 
 @UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate {
+class AppDelegate: UIResponder, UIApplicationDelegate, MessagingDelegate, UNUserNotificationCenterDelegate {
 
     var window: UIWindow?
 
-
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         FirebaseApp.configure()
+        Messaging.messaging().delegate = self
+        
+        Siren.shared.wail()
+        AppStore.shared.incrementAppRuns()
+        
+        UIApplication.shared.applicationIconBadgeNumber = 0
         
         return true
     }
@@ -56,29 +65,58 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         guard let dynamicLink = dynamicLink else { return false }
         guard let deepLink = dynamicLink.url else { return false }
         let queryItems = URLComponents(url: deepLink, resolvingAgainstBaseURL: true)?.queryItems
+        
+        let investorId = queryItems?.filter({(item) in item.name == "investor"}).first?.value
         let referredBy = queryItems?.filter({(item) in item.name == "referredBy"}).first?.value
-        // If the user isn't signed in and the app was opened via an invitation
-        // link, sign in the user anonymously and open the website in Safari.
-        let user = Auth.auth().currentUser
+        let postId = queryItems?.filter({(item) in item.name == "post"}).first?.value
 
-        if (user == nil || (user?.isAnonymous ?? false)) && referredBy != nil {
-            Auth.auth().signInAnonymously() { (data, error) in
-                if let user = data?.user {
-                    Database.database().fetchUserByInvite(code: referredBy!) { uid in
-                        let userRecord = Database.database().reference().child("users").child(user.uid)
-                        userRecord.child("referred_by").setValue(uid)
-                        
-                        //add referral points to user
-                        let point = Point(data: ["value" : 15.0, "activity" : LXConstants.REFERRAL, "notes" : "Referred by User", "created_at" : Date().timeIntervalSinceNow])
-                        Database.database().addPoint(withUID: user.uid, point: point) { (error) in
+        if postId != nil {
+            Database.database().fetchPost(postId: postId!) { post in
+                guard let urlStr = post.url, let url = URL(string: urlStr) else { return }
+                UIApplication.shared.open(url, options: [:], completionHandler: nil)
+            }
+        } else if investorId != nil {
+            Database.database().fetchInvestor(withId: investorId!) { (investor) in
+                self.showInvestor(investor: investor)
+            }
+        } else {
+            // If the user isn't signed in and the app was opened via an invitation
+            // link, sign in the user anonymously and open the website in Safari.
+            let user = Auth.auth().currentUser
+            
+            if (user == nil || (user?.isAnonymous ?? false)) && referredBy != nil {
+                Auth.auth().signInAnonymously() { (data, error) in
+                    if let user = data?.user {
+                        Database.database().fetchUserByInvite(code: referredBy!) { uid in
+                            let userRecord = Database.database().reference().child("users").child(user.uid)
+                            userRecord.child("referred_by").setValue(uid)
+                            
+                            //add referral points to user
+                            let point = Point(data: ["value" : 15.0, "activity" : LXConstants.REFERRAL, "notes" : "Referred by User", "created_at" : Date().timeIntervalSinceNow])
+                            Database.database().addPoint(withUID: user.uid, point: point) { (error) in
+                            }
+                            
+                            self.showSignin()
                         }
-                        
-                        self.showSignin()
                     }
                 }
             }
         }
+
         return true
+    }
+    
+    func showInvestor(investor: Investor) {
+        if let controller = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "EmailViewController") as? EmailViewController {
+            controller.investor = investor
+            if let window = self.window, let rootViewController = window.rootViewController {
+                var currentController = rootViewController
+                while let presentedController = currentController.presentedViewController {
+                    currentController = presentedController
+                }
+                currentController.present(controller, animated: true, completion: nil)
+            }
+        }
     }
     
     func showSignin() {
@@ -91,6 +129,44 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 currentController.present(controller, animated: true, completion: nil)
             }
         }
+    }
+    
+    func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+        Messaging.messaging().shouldEstablishDirectChannel = true
+        Messaging.messaging().apnsToken = deviceToken
+        
+        if #available(iOS 10.0, *) {
+            // For iOS 10 display notification (sent via APNS)
+            UNUserNotificationCenter.current().delegate = self
+            
+            let authOptions: UNAuthorizationOptions = [.alert, .badge, .sound]
+            UNUserNotificationCenter.current().requestAuthorization(
+                options: authOptions,
+                completionHandler: {_, _ in })
+        } else {
+            let settings: UIUserNotificationSettings =
+                UIUserNotificationSettings(types: [.alert, .badge, .sound], categories: nil)
+            application.registerUserNotificationSettings(settings)
+        }
+        //application.registerForRemoteNotifications()
+    }
+    
+    func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String) {
+        print("Firebase registration token: \(fcmToken)")
+        
+        InstanceID.instanceID().instanceID { (result, error) in
+            if let error = error {
+                print("Error fetching remote instance ID: \(error)")
+            } else if let result = result {
+                print("Remote instance ID token: \(result.token)")
+                //self.instanceIDTokenMessage.text  = "Remote InstanceID token: \(result.token)"
+            }
+        }
+        
+        let dataDict:[String: String] = ["token": fcmToken]
+        NotificationCenter.default.post(name: Notification.Name("FCMToken"), object: nil, userInfo: dataDict)
+        // TODO: If necessary send token to application server.
+        // Note: This callback is fired at each app startup and whenever a new token is generated.
     }
     
     func applicationWillResignActive(_ application: UIApplication) {
