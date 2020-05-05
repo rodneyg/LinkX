@@ -16,8 +16,9 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var searchBar: UISearchBar!
     @IBOutlet var topBarButton: UIButton!
-    @IBOutlet var filterSegment: UISegmentedControl!
-    
+    //@IBOutlet var filterSegment: UISegmentedControl!
+    var filterSegment = 1
+
     var investors = [Investor]()
     var filteredInvestors = [Investor]()
     var filteredFunds = [Fund]()
@@ -46,6 +47,9 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         
         AppStore.shared.showReview()
         
+        
+        searchBar.placeholder = "Search funds by name"
+        
 //        fetchAllFunds(completion: { (funds) in
 //            print("got funds: \(funds.count)")
 //        }) { (error) in
@@ -70,7 +74,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     }
     
     @IBAction func filterChanged(_ sender: Any) {
-        searchBar.placeholder = filterSegment.selectedSegmentIndex == 0 ? "Search investors by name" : "Search funds by name"
+        searchBar.placeholder = filterSegment == 0 ? "Search investors by name" : "Search funds by name"
         self.filterContentForSearchText("")
     }
     
@@ -87,7 +91,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         Analytics.logEvent("fetch_funds", parameters: ["text" : text])
         
         //.queryEnding(atValue: text.lowercased() + "\u{f8ff}")
-        ref.queryOrdered(byChild: "name_search").queryStarting(atValue: text.lowercased()).queryEnding(atValue: text.lowercased() + "\u{f8ff}").queryLimited(toFirst: 10)
+        ref.queryOrdered(byChild: "sector_search").queryStarting(atValue: text.lowercased()).queryEnding(atValue: text.lowercased() + "\u{f8ff}").queryLimited(toFirst: 10)
             .observeSingleEvent(of: .value, with: { snapshot in
                 guard let children = snapshot.children.allObjects as? [DataSnapshot] else {
                     completion([])
@@ -179,7 +183,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
                         value["sector_search"] = sectorSearch
                         Database.database().reference().child("funds").child(child.key).setValue(value)
                     }
-                    
+
                     if  value["stage_search"] != nil {
                         guard let stages = value["stage"] as? [String] else {
                             return
@@ -230,7 +234,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     }
     
     func filterContentForSearchText(_ searchText: String) {
-        if filterSegment.selectedSegmentIndex == 0 {
+        if filterSegment == 0 {
             fetchInvestors(text: searchText, completion: { (investors) in
                 DispatchQueue.main.async {
                     self.filteredInvestors = investors
@@ -241,7 +245,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
             }) { error in
                 //TODO: handle error
             }
-        } else if filterSegment.selectedSegmentIndex == 1 {
+        } else if filterSegment == 1 {
             fetchFunds(text: searchText, completion: { (funds) in
                 DispatchQueue.main.async {
                     self.filteredFunds = funds
@@ -266,7 +270,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     
     // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if filterSegment.selectedSegmentIndex == 0 {
+        if filterSegment == 0 {
             guard let investor = selectedInvestor else {
                 return
             }
@@ -279,7 +283,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
                     vc.dismiss(animated: true, completion: nil)
                 }
             }
-        } else if filterSegment.selectedSegmentIndex == 1 {
+        } else if filterSegment == 1 {
             guard let fund = selectedFund else {
                 return
             }
@@ -307,15 +311,15 @@ extension ViewController {
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return filterSegment.selectedSegmentIndex == 0 ? 104.0 : 100.0
+        return filterSegment == 0 ? 104.0 : 100.0
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return filterSegment.selectedSegmentIndex == 0 ? filteredInvestors.count : filteredFunds.count
+        return filterSegment == 0 ? filteredInvestors.count : filteredFunds.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        if filterSegment.selectedSegmentIndex == 0 {
+        if filterSegment == 0 {
             guard let cell =
                 tableView.dequeueReusableCell(withIdentifier: "InvestorTableViewCell", for: indexPath) as? InvestorTableViewCell else {
                     return UITableViewCell()
@@ -337,7 +341,7 @@ extension ViewController {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: false)
 
-        if filterSegment.selectedSegmentIndex == 0 {
+        if filterSegment == 0 {
             guard indexPath.row < filteredInvestors.count else {
                 return
             }

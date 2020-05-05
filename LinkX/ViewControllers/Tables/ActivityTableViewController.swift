@@ -10,7 +10,7 @@ import UIKit
 
 class ActivityTableViewController: UITableViewController {
     
-    let activities = [LXConstants.REFERRAL, LXConstants.CONTRIBUTE_INVESTOR]
+    let activities = [LXConstants.CONTRIBUTE_INVESTOR]
     
     var activitySelected: ((Activity) -> ())?
 

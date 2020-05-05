@@ -368,7 +368,7 @@
                                 <textInputTraits key="textInputTraits"/>
                             </searchBar>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="Mcy-ap-1oL">
-                                <rect key="frame" x="0.0" y="178" width="375" height="440"/>
+                                <rect key="frame" x="0.0" y="142" width="375" height="476"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             </tableView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Discover" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="5Di-ar-AST">
@@ -390,32 +390,15 @@
                                     <action selector="topBarTouched:" destination="BYZ-38-t0r" eventType="touchUpInside" id="Djj-Ic-xwe"/>
                                 </connections>
                             </button>
-                            <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="fA0-Bm-vdx">
-                                <rect key="frame" x="16" y="142" width="343" height="29"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="343" id="IFS-yN-V0X"/>
-                                    <constraint firstAttribute="height" constant="28" id="uM9-vn-vtt"/>
-                                </constraints>
-                                <segments>
-                                    <segment title="Investors"/>
-                                    <segment title="Funds"/>
-                                </segments>
-                                <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                <connections>
-                                    <action selector="filterChanged:" destination="BYZ-38-t0r" eventType="valueChanged" id="Lss-X7-4qe"/>
-                                </connections>
-                            </segmentedControl>
                         </subviews>
                         <color key="backgroundColor" red="0.87925177809999999" green="0.35766321420000002" blue="0.2882355452" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="top" secondItem="KaF-E2-Cjn" secondAttribute="top" constant="20" id="1Lk-s1-03e"/>
                             <constraint firstItem="KaF-E2-Cjn" firstAttribute="width" secondItem="8bC-Xf-vdC" secondAttribute="width" constant="-145" id="3oA-mD-hE3"/>
                             <constraint firstItem="5Di-ar-AST" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="25" id="5JJ-Pa-e8x"/>
-                            <constraint firstItem="Mcy-ap-1oL" firstAttribute="top" secondItem="fA0-Bm-vdx" secondAttribute="bottom" constant="8" id="ArY-sX-7YE"/>
+                            <constraint firstItem="Mcy-ap-1oL" firstAttribute="top" secondItem="twV-g8-shZ" secondAttribute="bottom" id="B52-zG-fID"/>
                             <constraint firstItem="twV-g8-shZ" firstAttribute="leading" secondItem="Mcy-ap-1oL" secondAttribute="leading" id="FYH-lW-uin"/>
-                            <constraint firstItem="fA0-Bm-vdx" firstAttribute="centerX" secondItem="6Tk-OE-BBY" secondAttribute="centerX" id="KGX-gr-uB1"/>
                             <constraint firstItem="Mcy-ap-1oL" firstAttribute="bottom" secondItem="6Tk-OE-BBY" secondAttribute="bottom" id="MnR-yr-V9A"/>
-                            <constraint firstItem="fA0-Bm-vdx" firstAttribute="top" secondItem="twV-g8-shZ" secondAttribute="bottom" id="QWe-Vs-XCA"/>
                             <constraint firstItem="twV-g8-shZ" firstAttribute="top" secondItem="5Di-ar-AST" secondAttribute="bottom" constant="20" id="XLa-kX-vz6"/>
                             <constraint firstItem="twV-g8-shZ" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="faV-PY-XyQ"/>
                             <constraint firstItem="5Di-ar-AST" firstAttribute="centerX" secondItem="6Tk-OE-BBY" secondAttribute="centerX" id="ker-Jc-gTp"/>
@@ -429,7 +412,6 @@
                     <navigationItem key="navigationItem" id="4pX-aP-A9O"/>
                     <connections>
                         <outlet property="emailsLabel" destination="5Di-ar-AST" id="ePd-bb-Ff6"/>
-                        <outlet property="filterSegment" destination="fA0-Bm-vdx" id="8Qy-Nt-zjh"/>
                         <outlet property="searchBar" destination="twV-g8-shZ" id="HS2-mp-DOs"/>
                         <outlet property="searchDisplayController" destination="rjY-mN-nrt" id="gmc-J4-SFB"/>
                         <outlet property="tableView" destination="Mcy-ap-1oL" id="QnP-eo-ggk"/>
@@ -2064,7 +2046,7 @@
     <inferredMetricsTieBreakers>
         <segue reference="lA9-Mr-Naj"/>
         <segue reference="0k0-la-VTi"/>
-        <segue reference="Ure-YX-N1m"/>
+        <segue reference="FQ7-U6-n2n"/>
         <segue reference="Lga-tq-4ay"/>
         <segue reference="7OJ-zo-fEI"/>
     </inferredMetricsTieBreakers>
